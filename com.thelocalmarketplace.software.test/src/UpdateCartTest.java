@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 import static org.junit.Assert.*;
 
 public class UpdateCartTest {
-    private SelfCheckoutSoftware checkout;
+    private Software checkout;
     private SelfCheckoutStationGold station;
     private BarcodedProduct product;
     private BarcodedProduct product2;
@@ -45,7 +45,7 @@ public class UpdateCartTest {
         PowerGrid.engageUninterruptiblePowerSource();
         SelfCheckoutStationGold.resetConfigurationToDefaults();
         station = new SelfCheckoutStationGold();
-        checkout = SelfCheckoutSoftware.getInstance(station);
+        checkout = Software.getInstance(station);
         checkout.turnOn();
         attendant = new Attendant(checkout);
         touchScreen = new TouchScreen(checkout);
@@ -173,7 +173,7 @@ public class UpdateCartTest {
 
     private static class MockTouchScreen extends TouchScreen {
 
-        public MockTouchScreen(SelfCheckoutSoftware checkout) {
+        public MockTouchScreen(Software checkout) {
             super(checkout);
         }
 

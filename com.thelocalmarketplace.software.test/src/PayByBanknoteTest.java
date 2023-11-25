@@ -26,7 +26,7 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import powerutility.PowerGrid;
 
 public class PayByBanknoteTest {
-	private SelfCheckoutSoftware checkout;
+	private Software checkout;
 	private SelfCheckoutStationBronze station;
 
 	public BanknoteValidator banknoteValidator;
@@ -39,7 +39,7 @@ public class PayByBanknoteTest {
 	public void setUp() {
 		AbstractSelfCheckoutStation.resetConfigurationToDefaults();
 		station = new SelfCheckoutStationBronze();
-		checkout = SelfCheckoutSoftware.getInstance(station);
+		checkout = Software.getInstance(station);
 		PowerGrid poewerGrid = PowerGrid.instance();
 		station.plugIn(poewerGrid);
 		station.turnOn();

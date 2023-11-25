@@ -32,7 +32,7 @@ import java.util.List;
 
 public class WeightDiscrepancyTest {
 
-    private SelfCheckoutSoftware checkout;
+    private Software checkout;
     private AbstractSelfCheckoutStation station;
     private BarcodedProduct product;
     private Barcode barcode;
@@ -103,7 +103,7 @@ public class WeightDiscrepancyTest {
         station = new SelfCheckoutStationGold();
 
 
-        checkout = SelfCheckoutSoftware.getInstance(station);
+        checkout = Software.getInstance(station);
         checkout.setExpectedTotalWeight(new Mass(1000));
 
         touchScreen = new TouchScreen(checkout);

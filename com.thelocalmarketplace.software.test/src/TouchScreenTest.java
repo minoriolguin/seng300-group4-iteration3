@@ -24,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TouchScreenTest {
-    private SelfCheckoutSoftware checkout;
+    private Software checkout;
     private SelfCheckoutStationGold station;
     private BarcodedProduct product;
     private Barcode barcode;
@@ -36,7 +36,7 @@ public class TouchScreenTest {
         PowerGrid.engageUninterruptiblePowerSource();
         SelfCheckoutStationGold.resetConfigurationToDefaults();
         station = new SelfCheckoutStationGold();
-        checkout = SelfCheckoutSoftware.getInstance(station);
+        checkout = Software.getInstance(station);
         checkout.turnOn();
         touchScreen = new TouchScreen(checkout);
         Numeral[] testBarcode = new Numeral[4];
@@ -65,7 +65,7 @@ public class TouchScreenTest {
 
     @Test
     public void payBySwipe() {
-        touchScreen.payBySwipe();
+        touchScreen.payByCard();
         assertFalse(checkout.cardReader.isDisabled());
         assertFalse(checkout.printer.isDisabled());
     }

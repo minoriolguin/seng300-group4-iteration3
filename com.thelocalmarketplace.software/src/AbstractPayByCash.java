@@ -1,15 +1,3 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
@@ -34,10 +22,10 @@ public abstract class AbstractPayByCash {
     // The amount due by the customer
     private BigDecimal amountDue;
     // The main control software
-    private final SelfCheckoutSoftware station;
+    private final Software software;
 
-    public AbstractPayByCash(SelfCheckoutSoftware station) {
-        this.station = station;
+    public AbstractPayByCash(Software software) {
+        this.software = software;
     }
 
     /**
@@ -49,31 +37,31 @@ public abstract class AbstractPayByCash {
      */
     public void pay(Currency currency, BigDecimal denomination) {
         // The current total price of the order
-        amountDue = station.getOrderTotal();
+        amountDue = software.getOrderTotal();
         amountDue = amountDue.subtract(denomination);
 
         if (amountDue.compareTo(BigDecimal.ZERO) > 0) {
             // The payment has not completed, there is still amount due by the customer
             // Signal to the customer the amount still needed to complete payment
             System.out.println("Amount still due for payment: " + amountDue);
-            station.setUpdatedOrderTotal(amountDue);
+            software.setUpdatedOrderTotal(amountDue);
         } else if (amountDue.compareTo(BigDecimal.ZERO) < 0) {
             // The payment is completed, with change due to the customer
             // Signal to the customer that the payment is completed, with the change due
             System.out.println("Payment completed.\nChange due to customer: " + (amountDue.negate()));
-            station.setUpdatedOrderTotal(amountDue);
+            software.setUpdatedOrderTotal(amountDue);
             returnChange(currency);
-            station.printReceipt.print(station.getBarcodedProductsInOrder());
-            station.endSession();
+            software.printReceipt.print();
+            software.endSession();
 
             // Support for printing receipt will come in later iterations
         } else {
             // The payment is completed, with no change due; completed with exact amount
             // Signal to the customer that the payment is completed
             System.out.println("Payment complete with exact amount.");
-            station.setUpdatedOrderTotal(amountDue);
-            station.printReceipt.print(station.getBarcodedProductsInOrder());
-            station.endSession();
+            software.setUpdatedOrderTotal(amountDue);
+            software.printReceipt.print();
+            software.endSession();
 
             // Support for printing receipt will come in later iterations
         }
@@ -93,10 +81,10 @@ public abstract class AbstractPayByCash {
         ArrayList<Coin> coinChangeList = new ArrayList<>();
 
         // The denominations of banknotes
-        BigDecimal[] banknoteDenominations = station.getBanknoteDenominations();
+        BigDecimal[] banknoteDenominations = software.getBanknoteDenominations();
 
         // The denomination of coins
-        List<BigDecimal> coinDenominations = station.getCoinDenominations();
+        List<BigDecimal> coinDenominations = software.getCoinDenominations();
 
         // Sort both denominations from greatest to least
         Arrays.sort(banknoteDenominations, Collections.reverseOrder());
@@ -128,9 +116,9 @@ public abstract class AbstractPayByCash {
             }
         }
 
-        station.setUpdatedOrderTotal(amountDue);
+        software.setUpdatedOrderTotal(amountDue);
 
-        BanknoteDispensationSlot banknoteDispenser = station.getBanknoteDispenser();
+        BanknoteDispensationSlot banknoteDispenser = software.getBanknoteDispenser();
         for (Banknote banknote : banknoteChangeList) {
             try {
                 // For each banknote in the list of banknotes to be returned,
@@ -150,7 +138,7 @@ public abstract class AbstractPayByCash {
         // Dispense the list of banknotes inserted into the dispenser
         banknoteDispenser.dispense();
 
-        CoinTray coinTray = station.getCoinTray();
+        CoinTray coinTray = software.getCoinTray();
         for (Coin coin : coinChangeList) {
             try {
                 // For each coin in the list of coins to be returned,

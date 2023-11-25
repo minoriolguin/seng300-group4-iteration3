@@ -35,7 +35,7 @@ public class PayByCoinTest {
     private BigDecimal quarter = new BigDecimal("0.25");
     private BigDecimal toonie = new BigDecimal("2.00");
     private BigDecimal loonie = new BigDecimal("1.00");
-    private SelfCheckoutSoftware station;
+    private Software station;
     private IComponent<IComponentObserver> myFakeComponent;
 
     @Before
@@ -55,7 +55,7 @@ public class PayByCoinTest {
                 new BigDecimal[coindenominations.size()]));
 
         stationBronze = new SelfCheckoutStationBronze();
-        station = SelfCheckoutSoftware.getInstance(stationBronze);
+        station = Software.getInstance(stationBronze);
         powerGrid = PowerGrid.instance();
         stationBronze.plugIn(powerGrid);
         stationBronze.turnOn();

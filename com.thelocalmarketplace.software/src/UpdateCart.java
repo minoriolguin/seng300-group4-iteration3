@@ -1,15 +1,4 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
@@ -26,20 +15,20 @@ import java.math.BigDecimal;
 */
 public class UpdateCart implements BarcodeScannerListener {
     WeightDiscrepancy weightDiscrepancy;
-    SelfCheckoutSoftware checkout;
+    Software software;
 
     /**
      * Constructs an UpdateCart instance.
      *
-     * @param checkout The SelfCheckoutSoftware instance associated with the UpdateCart.
+     * @param software The Software instance associated with the UpdateCart.
      */
-    public UpdateCart(SelfCheckoutSoftware checkout) {
-        this.checkout = checkout;
-        this.weightDiscrepancy = checkout.weightDiscrepancy;
+    public UpdateCart(Software software) {
+        this.software = software;
+        this.weightDiscrepancy = software.weightDiscrepancy;
 
         // register both scanners, Both are automatically dealt with
-        checkout.handHeldScanner.register(this);
-        checkout.mainScanner.register(this);
+        software.handHeldScanner.register(this);
+        software.mainScanner.register(this);
     }
     
     /**
@@ -49,32 +38,32 @@ public class UpdateCart implements BarcodeScannerListener {
      */
     public void addScannedItem(Barcode barcode) {
         //2. System: Blocks the self-checkout station from further customer interaction.
-        checkout.blockCustomer();
+        software.blockCustomer();
         //3. System: Determines the characteristics (weight and cost) of the product associated with the
         //barcode.
         BarcodedProduct product = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
         //deals with heavy item
-        if(checkout.touchScreen.skipBaggingItem()) {
-            checkout.attendant.notifySkipBagging();
+        if(software.touchScreen.skipBaggingItem()) {
+            software.attendant.notifySkipBagging();
         }
         else {
             //4. System: Updates the expected weight from the bagging area.
             Mass productsWeight = new Mass(product.getExpectedWeight());
-            checkout.setExpectedTotalWeight(checkout.getExpectedTotalWeight().sum(productsWeight));
+            software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(productsWeight));
             //5. System: Signals to the Customer to place the scanned item in the bagging area.
             weightDiscrepancy.notifyAddItemToScale();
             // if item is less than sensitivity limit of scale it will not notify weightDiscrepancy
             // therefore customer won't get unblocked till attendant verifies item
-            if (productsWeight.compareTo(checkout.baggingAreaScale.getSensitivityLimit()) < 0)
-                checkout.attendant.verifyItemInBaggingArea();
+            if (productsWeight.compareTo(software.baggingAreaScale.getSensitivityLimit()) < 0)
+                software.attendant.verifyItemInBaggingArea();
             //6.When weight on scale changes to correct weight, weightDiscrepancy will unblock Customer
             //item added to bagged products
-            checkout.addBaggedProduct(product);
+            software.addBaggedProduct(product);
         }
         //7.Update the orderTotal (not part of use case for some reason)
-        checkout.addBarcodedProduct(product);
+        software.addBarcodedProduct(product);
         BigDecimal price = BigDecimal.valueOf(product.getPrice());
-        checkout.addToOrderTotal(price);
+        software.addToOrderTotal(price);
     }
     
     /**
@@ -83,11 +72,11 @@ public class UpdateCart implements BarcodeScannerListener {
      * @param product The BarcodedProduct to be removed.
      */
     public void removeItem(BarcodedProduct product){
-        checkout.blockCustomer();
+        software.blockCustomer();
         BigDecimal price = BigDecimal.valueOf(product.getPrice());
-        checkout.subtractFromOrderTotal(price);
-        checkout.removeBarcodedProduct(product);
-        checkout.weightDiscrepancy.notifyRemoveItemFromScale();
+        software.subtractFromOrderTotal(price);
+        software.removeBarcodedProduct(product);
+        software.weightDiscrepancy.notifyRemoveItemFromScale();
         // when item is removed isWeightDiscrepancy auto called and if
         // weight corrected station enabled
     }

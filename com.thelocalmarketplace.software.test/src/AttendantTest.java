@@ -21,7 +21,7 @@ import powerutility.PowerGrid;
 import static org.junit.Assert.*;
 
 public class AttendantTest {
-    private SelfCheckoutSoftware checkout;
+    private Software checkout;
     private SelfCheckoutStationGold station;
     private Attendant attendant;
     private Mass testMass;
@@ -32,7 +32,7 @@ public class AttendantTest {
         PowerGrid.engageUninterruptiblePowerSource();
         SelfCheckoutStationGold.resetConfigurationToDefaults();
         station = new SelfCheckoutStationGold();
-        checkout = SelfCheckoutSoftware.getInstance(station);
+        checkout = Software.getInstance(station);
         checkout.turnOn();
         attendant = new Attendant(checkout);
         testMass = new Mass(5000);

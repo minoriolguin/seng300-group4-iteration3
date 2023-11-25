@@ -1,15 +1,4 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+
 
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 
@@ -26,7 +15,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
     /**
      * The self-checkout software instance associated with the touch screen.
      */
-    private final SelfCheckoutSoftware checkout;
+    private final Software software;
     /**
      * Flag indicating whether to skip the bagging process for the next item.
      */
@@ -36,11 +25,11 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Constructs a new {@code TouchScreen} instance associated with the provided self-checkout software.
      * Registers the touch screen as a listener for weight discrepancies.
      *
-     * @param checkout The self-checkout software instance.
+     * @param software The self-checkout software instance.
      */
-    public TouchScreen(SelfCheckoutSoftware checkout){
-        checkout.weightDiscrepancy.register(this);
-        this.checkout = checkout;
+    public TouchScreen(Software software){
+        software.weightDiscrepancy.register(this);
+        this.software = software;
         skip = false;
     }
     
@@ -49,9 +38,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Enables and activates the coin validator and enables the printer.
      */
     public void payByCoin () {
-        checkout.coinValidator.enable();
-        checkout.coinValidator.activate();
-        checkout.printer.enable();
+        software.coinValidator.enable();
+        software.coinValidator.activate();
+        software.printer.enable();
     }
     
     /**
@@ -59,25 +48,25 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Enables and activates the banknote validator and enables the printer.
      */
     public void payByBanknote () {
-        checkout.banknoteValidator.enable();
-        checkout.banknoteValidator.activate();
-        checkout.printer.enable();
+        software.banknoteValidator.enable();
+        software.banknoteValidator.activate();
+        software.printer.enable();
     }
     
     /**
      * Initiates the payment process using a card swipe.
      * Enables the card reader and enables the printer.
      */
-    public void payBySwipe () {
-        checkout.cardReader.enable();
-        checkout.printer.enable();
+    public void payByCard () {
+        software.cardReader.enable();
+        software.printer.enable();
     }
     
     /**
      * Prints the receipt for the current order.
      */
     public void printReceipt() {
-        checkout.printReceipt.print(checkout.getBarcodedProductsInOrder());
+        software.printReceipt.print();
     }
 
     /**
@@ -86,7 +75,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * @param product The barcoded product to be removed.
      */
     public void removeSelectedBarcodedProduct(BarcodedProduct product){
-        checkout.updateCart.removeItem(product);
+        software.updateCart.removeItem(product);
     }
     
     /**
@@ -103,9 +92,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Disables scanners and expects the addition of own bags.
      */
     public void selectAddOwnBags(){
-        checkout.mainScanner.disable();
-        checkout.handHeldScanner.disable();
-        checkout.weightDiscrepancy.expectOwnBagsToBeAdded = true;
+        software.mainScanner.disable();
+        software.handHeldScanner.disable();
+        software.weightDiscrepancy.expectOwnBagsToBeAdded = true;
     }
     
     /**
@@ -119,9 +108,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Signals that the bags have been added, enabling scanners.
      */
     public void bagsAdded(){
-        checkout.weightDiscrepancy.expectOwnBagsToBeAdded = false;
-        checkout.mainScanner.enable();
-        checkout.handHeldScanner.enable();
+        software.weightDiscrepancy.expectOwnBagsToBeAdded = false;
+        software.mainScanner.enable();
+        software.handHeldScanner.enable();
     }
     
     /**

@@ -1,15 +1,3 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 
 import com.jjjwelectronics.*;
 import com.jjjwelectronics.scale.ElectronicScaleListener;
@@ -25,7 +13,7 @@ import java.util.ArrayList;
  */
 public class WeightDiscrepancy implements ElectronicScaleListener {
     private final ArrayList<WeightDiscrepancyListener>listeners;
-    private final SelfCheckoutSoftware checkout;
+    private final Software software;
 
     /**
      * Flag indicating whether the system expects the customer to add their own bags.
@@ -43,11 +31,11 @@ public class WeightDiscrepancy implements ElectronicScaleListener {
     /**
      * Constructs a WeightDiscrepancy instance to listen to the Bagging Area Scale.
      *
-     * @param checkout The SelfCheckoutSoftware instance associated with the WeightDiscrepancy.
+     * @param software The Software instance associated with the WeightDiscrepancy.
      */
-    public WeightDiscrepancy(SelfCheckoutSoftware checkout){
-        this.checkout = checkout;
-        checkout.baggingAreaScale.register(this);
+    public WeightDiscrepancy(Software software){
+        this.software = software;
+        software.baggingAreaScale.register(this);
         listeners = new ArrayList<>();
         expectOwnBagsToBeAdded = false;
         massOfOwnBags = Mass.ZERO;
@@ -80,27 +68,27 @@ public class WeightDiscrepancy implements ElectronicScaleListener {
     public void isWeightDiscrepancy(Mass currentWeight) {
         overRideWeight = currentWeight;
         if(expectOwnBagsToBeAdded){
-            long bagWeight = currentWeight.inMicrograms().longValue() - checkout.getExpectedTotalWeight().inMicrograms().longValue();
+            long bagWeight = currentWeight.inMicrograms().longValue() - software.getExpectedTotalWeight().inMicrograms().longValue();
             Mass bagMass = new Mass(bagWeight);
             massOfOwnBags = massOfOwnBags.sum(bagMass);
-            if(massOfOwnBags.compareTo(checkout.allowableBagWeight) > 0)
+            if(massOfOwnBags.compareTo(software.allowableBagWeight) > 0)
                 notifyBagsTooHeavy();
-            if(massOfOwnBags.compareTo(checkout.allowableBagWeight) < 0)
-                checkout.setExpectedTotalWeight(checkout.getExpectedTotalWeight().sum(bagMass));
+            if(massOfOwnBags.compareTo(software.allowableBagWeight) < 0)
+                software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(bagMass));
         }
         //find out if it is greater than or equal to the expected
         // compareTo returns an int value of 1,0 or -1
-        if(checkout.getExpectedTotalWeight().compareTo(currentWeight) > 0) {
-            checkout.blockCustomer();
+        if(software.getExpectedTotalWeight().compareTo(currentWeight) > 0) {
+            software.blockCustomer();
             notifyRemoveItemFromScale();
-        } else if (checkout.getExpectedTotalWeight().compareTo(currentWeight) < 0) {
-            checkout.blockCustomer();
+        } else if (software.getExpectedTotalWeight().compareTo(currentWeight) < 0) {
+            software.blockCustomer();
             notifyAddItemToScale();
         }
         else
             //Project Iteration 3: Potentially update attendant as there may be situations where you don't want to unblock
             if(!expectOwnBagsToBeAdded)
-                checkout.unblockCustomer();
+                software.unblockCustomer();
             notifyNoDiscrepancy();
     }
 

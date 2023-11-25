@@ -99,7 +99,7 @@ public class PrintReceiptTest{
         cart = new ArrayList<>();
 
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         assertEquals(1, attendantStub.outOfPaperCounter);
     }
 
@@ -118,7 +118,7 @@ public class PrintReceiptTest{
         printerBronze.register(attendantStub);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         assertEquals(1, attendantStub.outOfInkCounter);
     }
 
@@ -126,7 +126,7 @@ public class PrintReceiptTest{
     public void testPrintOnlyDefaultTemplate(){
         cart = new ArrayList<>();
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                     
                     Thelocalmarketplace
@@ -145,7 +145,7 @@ public class PrintReceiptTest{
         cart = new ArrayList<>();
         cart.add(product);
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                     Hello
                          product                                      $1.00
@@ -182,7 +182,7 @@ public class PrintReceiptTest{
         cart = new ArrayList<>();
         cart.add(product);
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                      product                                      $1.00
                                                            Total: $1.00
@@ -197,7 +197,7 @@ public class PrintReceiptTest{
         cart = new ArrayList<>();
         cart.add(product);
         PrintReceipt r = new PrintReceipt(printerSilver);
-        r.print(cart);
+        r.print();
         String expected = """
                      product                                      $1.00
                                                            Total: $1.00
@@ -212,7 +212,7 @@ public class PrintReceiptTest{
         cart = new ArrayList<>();
         cart.add(product);
         PrintReceipt r = new PrintReceipt(printerGold);
-        r.print(cart);
+        r.print();
         String expected = """
                      product                                      $1.00
                                                            Total: $1.00
@@ -232,7 +232,7 @@ public class PrintReceiptTest{
         cart.add(product);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                      product                                      $2.51
                                                            Total: $2.51
@@ -252,7 +252,7 @@ public class PrintReceiptTest{
         cart.add(product);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                      -----------------------------------...       $1.00
                                                            Total: $1.00
@@ -272,7 +272,7 @@ public class PrintReceiptTest{
         cart.add(product);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print(cart);
+        r.print();
         String expected = """
                      product                                      $1.00
                      product                                      $1.00

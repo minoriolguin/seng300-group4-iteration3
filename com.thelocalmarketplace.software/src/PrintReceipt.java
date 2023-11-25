@@ -1,28 +1,12 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import powerutility.NoPowerException;
-
-import javax.management.RuntimeErrorException;
 
 public class PrintReceipt {
 
@@ -32,14 +16,17 @@ public class PrintReceipt {
     private BigDecimal totalPrice = BigDecimal.ZERO;
     private static NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.CANADA);
     private List<BarcodedProduct> cart;
+    private Software software;
+
     private IReceiptPrinter printer;
 
     /**
      * A constructor that takes a copy of the software.
-     * @param s the software object that has a printer
+     * @param software the software object that has a printer
      */
-    public PrintReceipt(SelfCheckoutSoftware s){
-        printer = s.printer;
+    public PrintReceipt(Software software){
+        this.software = software;
+        printer = software.printer;
     }
 
     /**
@@ -53,18 +40,10 @@ public class PrintReceipt {
     /**
      * Prints the start string, followed by a line for each item in the inputCart, then the total
      * followed by the end string.
-     * Exception if inputCart is null.
-     * Exception if the printer is off.
-     * @param inputCart the ArrayList of products that will be on the receipt.
      */
-    public void print(List<BarcodedProduct> inputCart){
-        // errors
-        if (inputCart == null)
-            throw new NullPointerException("cart");
-        if (!printer.isPoweredUp())
-            throw new NoPowerException();
-        // set cart so other local methods can see it
-        cart = inputCart;
+    public void print(){
+
+        cart = software.getBarcodedProductsInOrder();
         // print the start template
         printLine(startString);
         // print a line for each item in the cart
@@ -78,6 +57,9 @@ public class PrintReceipt {
         printer.cutPaper();
         // reset
         totalPrice = BigDecimal.ZERO;
+        software.maintenance.needInk();
+        software.maintenance.needPaper();
+
     }
 
     /**

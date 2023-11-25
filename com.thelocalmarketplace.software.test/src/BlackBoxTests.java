@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class BlackBoxTests {
 
     private SelfCheckoutStationBronze station;
-    private SelfCheckoutSoftware software;
+    private Software software;
     private BarcodedItem inRange;
     private BarcodedProduct inRangeProduct;
     private BarcodedItem lessThanSensitivity;
@@ -43,7 +43,7 @@ public class BlackBoxTests {
         //Attach Station to software
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         station = new SelfCheckoutStationBronze();
-        software = SelfCheckoutSoftware.getInstance(station);
+        software = Software.getInstance(station);
 
         //create barcoded products to test with
         Numeral[] InRangebar = new Numeral[3];

@@ -1,15 +1,3 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
@@ -20,9 +8,9 @@ import com.tdc.coin.CoinValidatorObserver;
 import java.math.BigDecimal;
 
 public class PayByCoin extends AbstractPayByCash implements CoinValidatorObserver {
-    public PayByCoin(SelfCheckoutSoftware station){
-        super(station);
-        station.coinValidator.attach(this);
+    public PayByCoin(Software software){
+        super(software);
+        software.coinValidator.attach(this);
 
     }
 
