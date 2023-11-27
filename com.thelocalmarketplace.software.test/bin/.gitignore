@@ -1,0 +1,17 @@
+/AbstractPayByCashTest.class
+/AttendantTest.class
+/BlackBoxTests.class
+/PayByBanknoteTest.class
+/PayByCoinTest$FakeComponent.class
+/PayByCoinTest.class
+/PrintReceiptTest.class
+/PrintReceiptTestAttendantStub.class
+/SoftwareTest.class
+/TestSuiteMain.class
+/TouchScreenTest.class
+/UpdateCartTest$MockTouchScreen.class
+/UpdateCartTest.class
+/WeightDiscrepancyTest$MockDevice.class
+/WeightDiscrepancyTest$MockElectronicScale.class
+/WeightDiscrepancyTest$TestMockListener.class
+/WeightDiscrepancyTest.class
