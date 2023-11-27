@@ -1,6 +1,7 @@
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.jjjwelectronics.Mass;
@@ -32,10 +33,13 @@ public class Software {
 	private BigDecimal orderTotal;
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
+	private final HashMap<Product,Mass> productsInOrder;
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
-	private final ArrayList<BarcodedProduct> baggedProducts;
+	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
+	private final HashMap<Product,Mass> baggedProducts;
 
 	public final IElectronicScale baggingAreaScale;
+	public final IElectronicScale scannerScale;
 	public final IBarcodeScanner handHeldScanner;
 	public final IBarcodeScanner mainScanner;
 	public final BanknoteValidator banknoteValidator;
@@ -71,6 +75,7 @@ public class Software {
 		if (hardware instanceof SelfCheckoutStationBronze bronze) {
 			this.station = bronze;
 			this.baggingAreaScale = bronze.baggingArea;
+			this.scannerScale = bronze.scanningArea;
 			this.handHeldScanner = bronze.handheldScanner;
 			this.mainScanner = bronze.mainScanner;
 			this.banknoteValidator = bronze.banknoteValidator;
@@ -82,6 +87,7 @@ public class Software {
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.baggingArea;
+			this.scannerScale = silver.scanningArea;
 			this.handHeldScanner = silver.handheldScanner;
 			this.mainScanner = silver.mainScanner;
 			this.banknoteValidator = silver.banknoteValidator;
@@ -93,6 +99,7 @@ public class Software {
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.baggingArea;
+			this.scannerScale = gold.scanningArea;
 			this.handHeldScanner = gold.handheldScanner;
 			this.mainScanner = gold.mainScanner;
 			this.banknoteValidator = gold.banknoteValidator;
@@ -103,6 +110,7 @@ public class Software {
 			this.printer = gold.printer;
 		} else {
 			this.baggingAreaScale = hardware.baggingArea;
+			this.scannerScale = hardware.scanningArea;
 			this.handHeldScanner = hardware.handheldScanner;
 			this.mainScanner = hardware.mainScanner;
 			this.banknoteValidator = hardware.banknoteValidator;
@@ -128,8 +136,10 @@ public class Software {
 		maintenance = new Maintenance(this);
 
 		//Initialize Product Lists and Weight Limit
+		productsInOrder = new HashMap<>();
 		barcodedProductsInOrder = new ArrayList<>();
-		baggedProducts = new ArrayList<>();
+		pluCodedProductsInOrder = new ArrayList<>();
+		baggedProducts = new HashMap<>();
 		allowableBagWeight = new Mass(200.0);   // default value of 200g
 	}
 	/**
@@ -196,12 +206,22 @@ public class Software {
 	public boolean isBlocked() {
 		return blocked;
 	}
-	
+
+	public HashMap<Product, Mass> getProductsInOrder() {
+		return productsInOrder;
+	}
+
+	public ArrayList<PLUCodedProduct> getPluCodedProductsInOrder(){
+		return pluCodedProductsInOrder;
+	}
+
 	/**
 	 * Retrieves the current order total amount.
 	 *
 	 * @return The current order total amount.
 	 */
+
+
 	public BigDecimal getOrderTotal() {
 		return orderTotal;
 	}
@@ -256,8 +276,16 @@ public class Software {
 	 *
 	 * @param product The barcoded product to be added to the order.
 	 */
-	public void addBarcodedProduct(BarcodedProduct product) {
+	public void addBarcodedProductToOrder(BarcodedProduct product) {
 		barcodedProductsInOrder.add(product);
+	}
+
+	public void addPLUcodedProduct(PLUCodedProduct product){
+		pluCodedProductsInOrder.add(product);
+	}
+
+	public void setAllowableBagWeight(Mass allowableBagWeight) {
+		this.allowableBagWeight = allowableBagWeight;
 	}
 
 	/**
@@ -265,8 +293,8 @@ public class Software {
 	 *
 	 * @param product The barcoded product to be added to the bagged products list.
 	 */
-	public void addBaggedProduct(BarcodedProduct product) {
-		baggedProducts.add(product);
+	public void addBaggedProduct(Product product, Mass mass) {
+		baggedProducts.put(product, mass);
 	}
 	
 	/**
@@ -274,31 +302,11 @@ public class Software {
 	 *
 	 * @return The list of bagged products.
 	 */
-	public ArrayList<BarcodedProduct> getBaggedProducts(){
+	public HashMap<Product, Mass> getBaggedProducts(){
 		return baggedProducts;
 	}
 
-	/**
-	 * Removes a barcoded product from the current order. If the product is also in the list of bagged products,
-	 * it removes it from there as well and updates the expected total weight accordingly.
-	 *
-	 * @param product The barcoded product to be removed from the order.
-	 */
-	public void removeBarcodedProduct(BarcodedProduct product) {
-		barcodedProductsInOrder.remove(product);
-		if (baggedProducts.contains(product)) {
-			baggedProducts.remove(product);
-			//resets the expected weight to zero plus weight of added bags
-			expectedTotalWeight = weightDiscrepancy.massOfOwnBags;
-			for (BarcodedProduct barcodedProduct : baggedProducts) {
-				Mass productsWeight = new Mass(barcodedProduct.getExpectedWeight());
-				expectedTotalWeight = expectedTotalWeight.sum(productsWeight);
-			}
 
-		}
-		else
-			attendant.verifyItemRemovedFromOrder();
-	}
 
 	/**
 	 * Retrieves the array of banknote denominations supported by the self-checkout station.

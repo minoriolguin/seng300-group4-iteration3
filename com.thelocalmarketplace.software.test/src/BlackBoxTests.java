@@ -1,15 +1,3 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
@@ -101,8 +89,8 @@ public class BlackBoxTests {
         //assert expected weight updated
         assertEquals(0,inRange.getMass().compareTo(software.getExpectedTotalWeight()));
         //assert product in order, in bagged item, order total updated
-        assertTrue(software.getBaggedProducts().contains(inRangeProduct));
-        assertTrue(software.getBarcodedProductsInOrder().contains(inRangeProduct));
+        assertTrue(software.getBaggedProducts().containsKey(inRangeProduct));
+        assertTrue(software.getProductsInOrder().containsKey(inRangeProduct));
         assertEquals(inRangeProduct.getPrice(), software.getOrderTotal().longValue());
         //add item to bagging area scale
         station.baggingArea.addAnItem(inRange);
@@ -121,8 +109,8 @@ public class BlackBoxTests {
         //assert expected weight not updated
         assertEquals(new Mass(BigDecimal.ZERO), software.getExpectedTotalWeight());
         //assert product in order, in not in bagged item, order total updated
-        assertFalse(software.getBaggedProducts().contains(inRangeProduct));
-        assertTrue(software.getBarcodedProductsInOrder().contains(inRangeProduct));
+        assertFalse(software.getBaggedProducts().containsKey(inRangeProduct));
+        assertTrue(software.getProductsInOrder().containsKey(inRangeProduct));
         assertEquals(inRangeProduct.getPrice(), software.getOrderTotal().longValue());
         //assert customer can now add items
         //was auto enabled by attendant
@@ -138,8 +126,8 @@ public class BlackBoxTests {
         //assert expected weight updated
         assertEquals(0,lessThanSensitivity.getMass().compareTo(software.getExpectedTotalWeight()));
         //assert product in order, in bagged item, order total updated
-        assertTrue(software.getBaggedProducts().contains(LessThanSensitivityProduct));
-        assertTrue(software.getBarcodedProductsInOrder().contains(LessThanSensitivityProduct));
+        assertTrue(software.getBaggedProducts().containsKey(LessThanSensitivityProduct));
+        assertTrue(software.getProductsInOrder().containsKey(LessThanSensitivityProduct));
         assertEquals(LessThanSensitivityProduct.getPrice(), software.getOrderTotal().longValue());
     }
     @Test

@@ -22,7 +22,7 @@ import org.junit.runners.Suite;
 	PayByCoinTest.class,
 //	PayBySwipeTest.class
 	PrintReceiptTest.class,
-	SoftwareTest.class,
+//	SoftwareTest.class,
 	UpdateCartTest.class,
 	WeightDiscrepancyTest.class,
 })

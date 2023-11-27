@@ -1,12 +1,17 @@
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.Product;
 
 public class PrintReceipt {
 
@@ -15,7 +20,8 @@ public class PrintReceipt {
     private final static int MAX_LINE_LENGTH = 60;
     private BigDecimal totalPrice = BigDecimal.ZERO;
     private static NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.CANADA);
-    private List<BarcodedProduct> cart;
+    private ArrayList<PLUCodedProduct> pluInCart;
+    private ArrayList<BarcodedProduct> barcodedProductsInCart;
     private Software software;
 
     private IReceiptPrinter printer;
@@ -43,11 +49,15 @@ public class PrintReceipt {
      */
     public void print(){
 
-        cart = software.getBarcodedProductsInOrder();
+        pluInCart = software.getPluCodedProductsInOrder();
+        barcodedProductsInCart = software.getBarcodedProductsInOrder();
         // print the start template
         printLine(startString);
         // print a line for each item in the cart
-        for (BarcodedProduct product : cart){
+        for (BarcodedProduct product : barcodedProductsInCart ){
+            printLine(makeLineFromCartItem(product));
+        }
+        for (PLUCodedProduct product : pluInCart ){
             printLine(makeLineFromCartItem(product));
         }
         // print the total
@@ -131,7 +141,44 @@ public class PrintReceipt {
     private String makeLineFromCartItem(BarcodedProduct product) {
         String retStr = "     "; // the cumulative string that will end up being the whole line of the order and returned.
         StringBuilder ph; // placeholder string for intermediate steps value
+        // Product description
+        ph = new StringBuilder(product.getDescription());
+        // If the description is too long, cut it off and place a "..."
+        if (ph.length() > 38)
+            ph = new StringBuilder(ph.substring(0, 35) + "...");
+        // fill the length up to 38.
+        while (ph.length() < 38)
+            ph.append(" ");
+        retStr += ph;
 
+        // product price
+        BigDecimal price = BigDecimal.valueOf(product.getPrice()).divide(BigDecimal.valueOf(100));
+        totalPrice = totalPrice.add(price);
+        ph = new StringBuilder(currencyFormat.format(price));
+        // fill the left space up to 12.
+        while (ph.length() < 12)
+            ph.insert(0, " ");
+        retStr += ph;
+
+        // end with a new line character
+        retStr += '\n';
+
+        return retStr;
+    }
+
+    /**
+     * Takes a PLU Coded product and returns a line that is ready to print on the receipt.
+     * If the product description is too long, it will be truncated and appended with an ellipsis.
+     * A line will be in the form:
+     * [5 blank spaces][Description, up to 38 chars]
+     * 			[price, up to 12 chars but more can overflow 5 additional spaces]['/n']
+     * where blank spaces are filled with a ' ' space.
+     * @param product The product that will be on this line of the receipt.
+     * @return a line that is ready to print on the receipt.
+     */
+    private String makeLineFromCartItem(PLUCodedProduct product) {
+        String retStr = "     "; // the cumulative string that will end up being the whole line of the order and returned.
+        StringBuilder ph; // placeholder string for intermediate steps value
         // Product description
         ph = new StringBuilder(product.getDescription());
         // If the description is too long, cut it off and place a "..."
