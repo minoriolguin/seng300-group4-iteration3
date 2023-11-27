@@ -36,15 +36,8 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         software.mainScanner.register(this);
         software.scannerScale.register(this);
     }
-    public void addPLUProduct(PLUCodedProduct product){
-        software.getProductsInOrder().put(product,currentMassOnScanner);
-        software.addPLUcodedProduct(product);
-        //Converting Mass to grams than to kg
-        long tempPrice = ((currentMassOnScanner.inGrams().longValue())/1000) * product.getPrice();
-        BigDecimal price = BigDecimal.valueOf(tempPrice);
-        software.addToOrderTotal(price);
-        software.getExpectedTotalWeight().sum(currentMassOnScanner);
-    }
+    
+    
 
     /**
      * Adds a scanned item to the cart.
