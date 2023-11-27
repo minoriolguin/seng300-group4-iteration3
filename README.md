@@ -13,3 +13,5 @@ Steven Huang / stevenhuang007 / 30145866
 Althea Non / altheanon / 30172442
 
 Minori Olguin / minoriolguin / 30035923
+
+Sofia Rubio / sofiarubio / 30113733
