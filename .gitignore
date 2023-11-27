@@ -10,3 +10,5 @@ local.properties
 .classpath
 .settings
 .loadpath
+*.class
+.DS_Store
