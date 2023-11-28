@@ -39,7 +39,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     /**
      * Adds a PLU product to the cart
      *
-     * @param PLUProduct, An object of PLUProduct contains PLUCode, description and price
+     * @param product, An object of PLUProduct contains PLUCode, description and price
      */
     public void addPLUProduct(PLUCodedProduct product){
     	//System: Blocks the self-checkout station from further customer interaction
