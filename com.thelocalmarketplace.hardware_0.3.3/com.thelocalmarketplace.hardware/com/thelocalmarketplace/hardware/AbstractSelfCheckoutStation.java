@@ -42,7 +42,7 @@ import powerutility.PowerGrid;
  * 
  * @author TheLocalMarketplace
  */
-public abstract class AbstractSelfCheckoutStation {
+public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStation  {
 	static {
 		resetConfigurationToDefaults();
 	}
@@ -240,95 +240,26 @@ public abstract class AbstractSelfCheckoutStation {
 		scaleSensitivityConfiguration = 0.5;
 	}
 
-	/**
-	 * Represents the large scale where items are to be placed once they have been
-	 * scanned or otherwise entered.
-	 */
-	public final IElectronicScale baggingArea;
-	/**
-	 * Represents the small scale used to weigh items that are sold by weight.
-	 */
-	public final IElectronicScale scanningArea;
-	/**
-	 * Represents a touch screen display on which is shown a graphical user
-	 * interface.
-	 */
-	public final ITouchScreen screen;
-	/**
-	 * Represents the dispenser of reusable-bags.
-	 */
-	public final IReusableBagDispenser reusableBagDispenser;
-	/**
-	 * Represents a printer for receipts.
-	 */
-	public final IReceiptPrinter printer;
-	/**
-	 * Represents a device that can read electronic cards, through one or more input
-	 * modes according to the setup of the card.
-	 */
-	public final ICardReader cardReader;
-	/**
-	 * Represents a large, central barcode scanner.
-	 */
-	public final IBarcodeScanner mainScanner;
-	/**
-	 * Represents a handheld, secondary barcode scanner.
-	 */
-	public final IBarcodeScanner handheldScanner;
-	/**
-	 * Represents a device that permits banknotes to be entered.
-	 */
-	public final BanknoteInsertionSlot banknoteInput;
-	/**
-	 * Represents a device that permits banknotes to be given to the customer.
-	 */
-	public final BanknoteDispensationSlot banknoteOutput;
-	/**
-	 * Represents a device that checks the validity of a banknote, and determines
-	 * its denomination.
-	 */
-	public final BanknoteValidator banknoteValidator;
-	/**
-	 * Represents a device that stores banknotes.
-	 */
-	public final BanknoteStorageUnit banknoteStorage;
-	/**
-	 * Represents the set of denominations supported by the self-checkout system.
-	 */
-	public final BigDecimal[] banknoteDenominations;
-	/**
-	 * Represents the set of banknote dispensers, indexed by the denomination that
-	 * each contains. Note that nothing prevents banknotes of the wrong denomination
-	 * to be loaded into a given dispenser.
-	 */
-	public final Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
-	/**
-	 * Represents a device that permits coins to be entered.
-	 */
-	public final CoinSlot coinSlot;
-	/**
-	 * Represents a device that checks the validity of a coin, and determines its
-	 * denomination.
-	 */
-	public final CoinValidator coinValidator;
-	/**
-	 * Represents a device that stores coins that have been entered by customers.
-	 */
-	public final CoinStorageUnit coinStorage;
-	/**
-	 * Represents the set of denominations of coins supported by this self-checkout
-	 * system.
-	 */
-	public final List<BigDecimal> coinDenominations;
-	/**
-	 * Represents the set of coin dispensers, indexed by the denomination of coins
-	 * contained by each.
-	 */
-	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
-	/**
-	 * Represents a device that receives coins to return to the customer.
-	 */
-	public final CoinTray coinTray;
+	protected IElectronicScale baggingArea;
+	protected IElectronicScale scanningArea;
+	protected ITouchScreen screen;
+	protected IReusableBagDispenser reusableBagDispenser;
+	protected IReceiptPrinter printer;
+	protected ICardReader cardReader;
+	protected IBarcodeScanner mainScanner;
+	protected IBarcodeScanner handheldScanner;
+	protected BanknoteInsertionSlot banknoteInput;
+	protected BanknoteDispensationSlot banknoteOutput;
+	protected BanknoteValidator banknoteValidator;
+	protected BanknoteStorageUnit banknoteStorage;
+	protected BigDecimal[] banknoteDenominations;
+	protected Map<BigDecimal, IBanknoteDispenser> banknoteDispensers;
+	protected CoinSlot coinSlot;
+	protected CoinValidator coinValidator;
+	protected CoinStorageUnit coinStorage;
+	protected List<BigDecimal> coinDenominations;
+	protected Map<BigDecimal, ICoinDispenser> coinDispensers;
+	protected CoinTray coinTray;
 
 	protected AbstractSelfCheckoutStation(IElectronicScale baggingArea, IElectronicScale scanningArea,
 		ITouchScreen screen, IReusableBagDispenser bagDispenser, IReceiptPrinter printer, ICardReader cardReader,
@@ -360,22 +291,119 @@ public abstract class AbstractSelfCheckoutStation {
 		this.coinTray = coinTray;
 	}
 
+	@Override
+	public IElectronicScale getBaggingArea() {
+		return baggingArea;
+	}
+
+	@Override
+	public IElectronicScale getScanningArea() {
+		return scanningArea;
+	}
+
+	@Override
+	public ITouchScreen getScreen() {
+		return screen;
+	}
+
+	@Override
+	public IReusableBagDispenser getReusableBagDispenser() {
+		return reusableBagDispenser;
+	}
+
+	@Override
+	public IReceiptPrinter getPrinter() {
+		return printer;
+	}
+
+	@Override
+	public ICardReader getCardReader() {
+		return cardReader;
+	}
+
+	@Override
+	public IBarcodeScanner getMainScanner() {
+		return mainScanner;
+	}
+
+	@Override
+	public IBarcodeScanner getHandheldScanner() {
+		return handheldScanner;
+	}
+
+	@Override
+	public BanknoteInsertionSlot getBanknoteInput() {
+		return banknoteInput;
+	}
+
+	@Override
+	public BanknoteDispensationSlot getBanknoteOutput() {
+		return banknoteOutput;
+	}
+
+	@Override
+	public BanknoteValidator getBanknoteValidator() {
+		return banknoteValidator;
+	}
+
+	@Override
+	public BanknoteStorageUnit getBanknoteStorage() {
+		return banknoteStorage;
+	}
+
+	@Override
+	public BigDecimal[] getBanknoteDenominations() {
+		return banknoteDenominations;
+	}
+
+	@Override
+	public Map<BigDecimal, IBanknoteDispenser> getBanknoteDispensers() {
+		return banknoteDispensers;
+	}
+
+	@Override
+	public CoinSlot getCoinSlot() {
+		return coinSlot;
+	}
+
+	@Override
+	public CoinValidator getCoinValidator() {
+		return coinValidator;
+	}
+
+	@Override
+	public CoinStorageUnit getCoinStorage() {
+		return coinStorage;
+	}
+
+	@Override
+	public List<BigDecimal> getCoinDenominations() {
+		return coinDenominations;
+	}
+
+	@Override
+	public Map<BigDecimal, ICoinDispenser> getCoinDispensers() {
+		return coinDispensers;
+	}
+
+	@Override
+	public CoinTray getCoinTray() {
+		return coinTray;
+	}
+
 	private AttendantStation supervisor = null;
 
-	boolean isSupervised() {
+	@Override
+	public boolean isSupervised() {
 		return supervisor != null;
 	}
 
-	void setSupervisor(AttendantStation supervisor) {
+	@Override
+	public void setSupervisor(AttendantStation supervisor) {
 		this.supervisor = supervisor;
 	}
 
-	/**
-	 * Plugs in all the devices in the station.
-	 * 
-	 * @param grid
-	 *            The power grid to plug into. Cannot be null.
-	 */
+	@Override
 	public void plugIn(PowerGrid grid) {
 		baggingArea.plugIn(grid);
 		for(IBanknoteDispenser bd : banknoteDispensers.values())
@@ -399,9 +427,7 @@ public abstract class AbstractSelfCheckoutStation {
 		reusableBagDispenser.plugIn(grid);
 	}
 
-	/**
-	 * Unplugs all the devices in the station.
-	 */
+	@Override
 	public void unplug() {
 		baggingArea.unplug();
 		for(IBanknoteDispenser bd : banknoteDispensers.values())
@@ -425,9 +451,7 @@ public abstract class AbstractSelfCheckoutStation {
 		reusableBagDispenser.unplug();
 	}
 
-	/**
-	 * Turns on all the devices in the station.
-	 */
+	@Override
 	public void turnOn() {
 		baggingArea.turnOn();
 		for(IBanknoteDispenser bd : banknoteDispensers.values())
@@ -451,9 +475,7 @@ public abstract class AbstractSelfCheckoutStation {
 		reusableBagDispenser.turnOn();
 	}
 
-	/**
-	 * Turns off all the devices in the station.
-	 */
+	@Override
 	public void turnOff() {
 		baggingArea.turnOff();
 		for(IBanknoteDispenser bd : banknoteDispensers.values())

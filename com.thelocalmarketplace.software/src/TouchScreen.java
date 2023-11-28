@@ -1,6 +1,10 @@
 
 
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 /**
  * The {@code TouchScreen} class represents the touch screen interface in a self-checkout system.
@@ -60,6 +64,11 @@ public class TouchScreen implements WeightDiscrepancyListener {
     public void payByCard () {
         software.cardReader.enable();
         software.printer.enable();
+    }
+
+    public void addPLUProduct(PriceLookUpCode code){
+        PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+        software.updateCart.addPLUProduct(product);
     }
     
     /**

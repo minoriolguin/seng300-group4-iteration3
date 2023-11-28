@@ -33,11 +33,14 @@ public class PrintReceiptTest{
     BarcodedProduct product;
     PrintReceiptTestAttendantStub attendantStub;
 
-    // product details
+    // barcode product details
     Barcode barcode;
     String description;
     long price;
     double weight;
+
+    // plu product details
+
 
     @Before
     public void setUp() throws OverloadedDevice {
