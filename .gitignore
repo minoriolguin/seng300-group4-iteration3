@@ -1,3 +1,14 @@
 .metadata
 *.class
 .DS_Store
+.project
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*~.nib
+local.properties
+.classpath
+.settings
+.loadpath
