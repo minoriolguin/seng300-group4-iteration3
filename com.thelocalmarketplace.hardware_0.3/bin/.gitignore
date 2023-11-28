@@ -1,8 +1,4 @@
 /.DS_Store
-/biz/
-/ca/
-/com/
-/powerutility/
 /AbstractPayByCash.class
 /AbstractPayByCashTest.class
 /Attendant.class
@@ -19,7 +15,6 @@
 /PrintReceiptTest.class
 /PrintReceiptTestAttendantStub.class
 /Software.class
-/SoftwareTest.class
 /TestSuiteMain.class
 /TouchScreen.class
 /TouchScreenTest.class
@@ -32,3 +27,7 @@
 /WeightDiscrepancyTest$MockElectronicScale.class
 /WeightDiscrepancyTest$TestMockListener.class
 /WeightDiscrepancyTest.class
+/biz/
+/ca/
+/com/
+/powerutility/

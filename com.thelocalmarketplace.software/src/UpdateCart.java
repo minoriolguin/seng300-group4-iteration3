@@ -42,8 +42,28 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
      * @param PLUProduct, An object of PLUProduct contains PLUCode, description and price
      */
     public void addPLUProduct(PLUCodedProduct product){
+    	//System: Blocks the self-checkout station from further customer interaction
+    	software.blockCustomer();
     	// Add product to Hashmap, with detected weight on scale.
         software.getProductsInOrder().put(product,currentMassOnScanner);
+        //Dealing With Heavy Item
+        if(software.touchScreen.skipBaggingItem()) {
+            software.attendant.notifySkipBagging();
+        }
+        else {
+            // System: Updates the expected weight from the bagging area.
+            Mass productsWeight = currentMassOnScanner;
+            software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(productsWeight));
+            // System: Signals to the Customer to place the scanned item in the bagging area.
+            weightDiscrepancy.notifyAddItemToScale();
+            // if item is less than sensitivity limit of scale it will not notify weightDiscrepancy
+            // therefore customer won't get unblocked till attendant verifies item
+            if (productsWeight.compareTo(software.baggingAreaScale.getSensitivityLimit()) < 0)
+                software.attendant.verifyItemInBaggingArea();
+            //6.When weight on scale changes to correct weight, weightDiscrepancy will unblock Customer
+            //item added to bagged products
+            software.addBaggedProduct(product, productsWeight);
+        }
         //Converting Mass to grams than to kg in type long
         long tempPrice = ((currentMassOnScanner.inGrams().longValue())/1000) * product.getPrice();
         // Convert price to type BigDecimal
