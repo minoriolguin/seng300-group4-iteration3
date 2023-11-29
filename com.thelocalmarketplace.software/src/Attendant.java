@@ -22,6 +22,13 @@ public class Attendant implements WeightDiscrepancyListener {
         software.setExpectedTotalWeight(software.weightDiscrepancy.overRideWeight);
         software.weightDiscrepancy.isWeightDiscrepancy(software.getExpectedTotalWeight());
     }
+    
+    public void enableCustomerStation() {
+    	if (software.isBlocked()) {
+    		software.unblockCustomer();
+    	}
+    	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
+    }
 
     @Override
     public void RemoveItemFromScale() {
