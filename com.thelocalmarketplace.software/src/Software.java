@@ -314,7 +314,7 @@ public class Software {
 	 * @return The array of banknote denominations.
 	 */
 	public BigDecimal[] getBanknoteDenominations() {
-		return station.banknoteDenominations;
+		return station.getBanknoteDenominations();
 	}
 
 	/**
@@ -323,7 +323,7 @@ public class Software {
 	 * @return The list of coin denominations.
 	 */
 	public List<BigDecimal> getCoinDenominations() {
-		return station.coinDenominations;
+		return station.getCoinDenominations();
 	}
 
 	/**
