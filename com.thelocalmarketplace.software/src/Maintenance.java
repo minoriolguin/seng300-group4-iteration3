@@ -4,15 +4,21 @@ import com.jjjwelectronics.printer.ReceiptPrinterListener;
 
 public class Maintenance implements ReceiptPrinterListener {
     private Software software;
+    boolean notifyAttendant; // have to discuss with GUI and Misc teams
     public Maintenance(Software software){
         this.software = software;
+        // make predictions (check component statuses)
+        this.notifyAttendant = false;
     }
 
     // needs to be implemented and tested
     // should be called after every printed receipt, start up?
     // notify attendant
     // may need different return type
-    public void needInk(){
+    public void checkInk(){
+    	if (!software.station.instanceOf()) {
+    		
+    	}
     }
     // needs to be implemented and tested
     // should be called after every printed receipt, start up?
@@ -65,8 +71,7 @@ public class Maintenance implements ReceiptPrinterListener {
 
 	@Override
 	public void thePrinterIsOutOfInk() {
-		// TODO Auto-generated method stub
-		
+		this.notifyAttendant  = true;
 	}
 
 	@Override
