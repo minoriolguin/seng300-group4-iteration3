@@ -1,18 +1,18 @@
+package com.thelocalmarketplace.software;
 
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
-import com.tdc.banknote.BanknoteValidator;
-import com.tdc.banknote.BanknoteValidatorObserver;
+import com.tdc.coin.Coin;
+import com.tdc.coin.CoinValidator;
+import com.tdc.coin.CoinValidatorObserver;
 
 import java.math.BigDecimal;
-import java.util.Currency;
-/**
- * A class that supports methods for paying with banknotes
- */
-public class PayByBanknote extends AbstractPayByCash implements BanknoteValidatorObserver {
-    public PayByBanknote(Software software){
+
+public class PayByCoin extends AbstractPayByCash implements CoinValidatorObserver {
+    public PayByCoin(Software software){
         super(software);
-        software.banknoteValidator.attach(this);
+        software.coinValidator.attach(this);
+
     }
 
     /**
@@ -56,26 +56,26 @@ public class PayByBanknote extends AbstractPayByCash implements BanknoteValidato
     }
 
     /**
-     * An event announcing that the indicated banknote has been detected and
+     * An event announcing that the indicated coin has been detected and
      * determined to be valid.
      *
      * @param validator    The component on which the event occurred.
-     * @param currency     The kind of currency of the inserted banknote.
-     * @param denomination The value of the inserted banknote.
+     * @param value        The value of the inserted coin.
      */
+
     @Override
-    public void goodBanknote(BanknoteValidator validator, Currency currency, BigDecimal denomination) {
-        pay(currency, denomination);
+    public void validCoinDetected(CoinValidator validator, BigDecimal value) {
+        pay(Coin.DEFAULT_CURRENCY, value);
     }
 
     /**
-     * An event announcing that the indicated banknote has been detected and
+     * An event announcing that the indicated coin has been detected and
      * determined to be invalid.
      *
      * @param validator The component on which the event occurred.
      */
     @Override
-    public void badBanknote(BanknoteValidator validator) {
+    public void invalidCoinDetected(CoinValidator validator) {
 
     }
 }

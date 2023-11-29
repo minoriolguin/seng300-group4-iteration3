@@ -10,6 +10,7 @@
 //Maria Munoz 30175339
 //Anne Lumumba 30171346
 //Nathaniel Dafoe 30181948
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
@@ -18,6 +19,8 @@ import com.jjjwelectronics.printer.ReceiptPrinterGold;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.software.PrintReceipt;
+
 import powerutility.PowerGrid;
 import java.util.ArrayList;
 import org.junit.Before;

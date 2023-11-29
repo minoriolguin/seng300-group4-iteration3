@@ -10,6 +10,7 @@
 //Maria Munoz 30175339
 //Anne Lumumba 30171346
 //Nathaniel Dafoe 30181948
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.*;
 import com.jjjwelectronics.scale.ElectronicScaleGold;
@@ -21,6 +22,11 @@ import com.jjjwelectronics.Numeral;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
+import com.thelocalmarketplace.software.Software;
+import com.thelocalmarketplace.software.TouchScreen;
+import com.thelocalmarketplace.software.WeightDiscrepancy;
+import com.thelocalmarketplace.software.WeightDiscrepancyListener;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
