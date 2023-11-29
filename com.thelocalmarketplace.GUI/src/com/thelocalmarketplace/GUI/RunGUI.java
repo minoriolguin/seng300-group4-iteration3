@@ -250,12 +250,13 @@ public class RunGUI extends JFrame implements logicObserver {
         });
         
         JButton button6 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "BLANK<br>..</div></html>");
+        		+ "SELECT LANGUAGE</div></html>");
         button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	guiLogicInstance.buttonR6_BLANK();
-            	//Additional Button just in case
+            	SelectLanguage languagesPanel = new SelectLanguage();
+              	addOverlayPanel(languagesPanel);
             }
         });
         JButton button7 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
@@ -361,7 +362,6 @@ public class RunGUI extends JFrame implements logicObserver {
         JButton bot_button3 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
         		+ "Add Item<br>RFID Tag</div></html>");
         // Button 4: Custom Title
-        JFrame frame = this;
         bot_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -398,6 +398,7 @@ public class RunGUI extends JFrame implements logicObserver {
             public void actionPerformed(ActionEvent e) {
                 // Handle Custom Title button click
                 System.out.println("Button Clicked!");
+              
             }
         });
         
@@ -782,7 +783,7 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button7.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                switchPanels("AddItemsPanel");
+                switchPanels("AddItemsPanel"); 
             }
         });
         gbc.gridx = 0; gbc.gridy = 0;
@@ -806,7 +807,7 @@ public class RunGUI extends JFrame implements logicObserver {
         CoinBillPanel.add(payment_button5, gbc);
         
         gbc.gridx = 0; gbc.gridy = 5;
-        payment_button6.setPreferredSize(new Dimension(150,150));
+        payment_button6.setPreferredSize(new Dimension(150,150)); 
         CoinBillPanel.add(payment_button6, gbc);
         
         gbc.gridx = 0; gbc.gridy = 6;
@@ -816,91 +817,6 @@ public class RunGUI extends JFrame implements logicObserver {
         return CoinBillPanel;        
     }
     
-    
-    //Screen 3 Payment Panel (Coin Coin)
-
-    /*
-     * 3-part Method that causes a Numberpad
-     */
-   /* class TransparentNumpadPanel extends JPanel {
-    	    private JFrame parentFrame;
-
-    	    public TransparentNumpadPanel(JFrame parentFrame) {
-                this.parentFrame = parentFrame;
-                setOpaque(true); // Make the panel transparent
-                setLayout(new GridBagLayout());
-                setPreferredSize(new Dimension(400, 400)); // Set the preferred size to 400x400
-            }
-
-    	    @Override
-    	    protected void paintComponent(Graphics g) {
-    	        super.paintComponent(g);
-
-    	        // Draw a semi-transparent background
-    	        Graphics2D g2d = (Graphics2D) g.create();
-    	        g2d.setColor(new Color(128, 128, 128, 128)); // 128, 128, 128 is grey, 128 is the alpha value
-    	        g2d.fillRect(0, 0, getWidth(), getHeight());
-    	        g2d.dispose();
-    	    }
-
-            public void addNumPadButtons() {
-                // Create buttons and add them to the center of the panel
-                JButton button1 = new JButton("1");
-                JButton button2 = new JButton("2");
-                JButton button3 = new JButton("3");
-                JButton button4 = new JButton("1");
-                JButton button5 = new JButton("2");
-                JButton button6 = new JButton("3");
-                JButton button7 = new JButton("1");
-                JButton button8 = new JButton("2");
-                JButton button9 = new JButton("3");
-                JButton buttonCLEAR = new JButton("CLEAR");
-                JButton button0 = new JButton("0");
-                JButton buttonENTER = new JButton("ENTER");
-
-                GridBagConstraints gbc = new GridBagConstraints();
-                //Placements of Button (indentation for readability)
-                gbc.gridy = 0;
-	                gbc.gridx = 0;
-	                add(button1, gbc);
-	                gbc.gridx = 1;
-	                add(button2, gbc);
-	                gbc.gridx = 2;
-	                add(button3, gbc);
-                gbc.gridx = 1;    
-	                gbc.gridx = 0;
-	                add(button4, gbc);
-	                gbc.gridx = 1;
-	                add(button5, gbc);
-	                gbc.gridx = 2;
-	                add(button6, gbc);
-	            
-                
-                
-
-                button1.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button1_CustomersAddsToBaggingArea();
-                    	closeNumPadPanel();
-                    }
-                });
-                button2.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button2_CustomersDOESNOTAddsToBaggingArea();
-                    	closeNumPadPanel();
-                    }
-                });
-                button3.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button3_BLANK();
-                    	closeNumPadPanel();
-                    }
-                });
-    	}
-    }*/
     /*c
      * NumberPad Pop Up Part 2/3 
      * What causes the Overlay to show up

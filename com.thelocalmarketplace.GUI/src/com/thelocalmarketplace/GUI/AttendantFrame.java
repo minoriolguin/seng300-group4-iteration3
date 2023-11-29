@@ -35,7 +35,7 @@ public class AttendantFrame {
 	// It assumes that there is only one SelfCheckoutStation right now 
 	
     public void AttendantFrame() {
-        JFrame attend_frame = new JFrame("Attendant Screen");
+        JFrame attend_frame = new JFrame("Attendant Screen"); 
         attend_frame.setSize(450, 800);
         attend_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         attend_frame.setLocation(1000, 0); // Adjust the coordinates as needed
