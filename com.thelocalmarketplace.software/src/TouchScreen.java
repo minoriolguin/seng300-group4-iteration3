@@ -129,7 +129,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
      */
     public void visualProductClicked(Product itemClicked) {
     	//Is PLU coded Product
-    	if (itemClicked.isPerUnit()) {
+    	if (!itemClicked.isPerUnit()) {
     		// CAST TYPE: Unsure if this works
     		software.updateCart.addPLUProduct((PLUCodedProduct) itemClicked);
     	}
