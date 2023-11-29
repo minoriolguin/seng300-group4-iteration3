@@ -1,4 +1,4 @@
-
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
@@ -12,6 +12,7 @@ import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.*;
 import org.junit.Before;
 import org.junit.Test;
 import powerutility.PowerGrid;
