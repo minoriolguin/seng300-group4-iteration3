@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.GUI/src"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/com.jjjwelectronics"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/com.tdc"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/com.thelocalmarketplace.hardware"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/powerutility"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/simulation"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.software.test/src"/>
+	<classpathentry kind="src" path="com.thelocalmarketplace.software/src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
