@@ -10,6 +10,7 @@
 //Maria Munoz 30175339
 //Anne Lumumba 30171346
 //Nathaniel Dafoe 30181948
+package com.thelocalmarketplace.software.test;
 
 import java.math.*;
 import java.util.*;
@@ -19,6 +20,11 @@ import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.software.AbstractPayByCash;
+import com.thelocalmarketplace.software.PayByBanknote;
+import com.thelocalmarketplace.software.PayByCoin;
+import com.thelocalmarketplace.software.Software;
+
 //import com.thelocalmarketplace.software.*;
 import powerutility.*;
 
