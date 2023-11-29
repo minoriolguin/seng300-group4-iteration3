@@ -33,6 +33,7 @@ public class Software {
 	private BigDecimal orderTotal;
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
+	private boolean customerStationBlock = false;
 	private final HashMap<Product,Mass> productsInOrder;
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
@@ -205,6 +206,52 @@ public class Software {
 	 */
 	public boolean isBlocked() {
 		return blocked;
+	}
+	
+	/**
+	 * Blocks customer station from any type of interaction.
+	 * This method is used to prevent unwanted interactions during maintenance or when
+	 * the hardware or software is out of order.
+	 */
+	public void blockCustomerStation() {
+		baggingAreaScale.disable();
+		scannerScale.disable();
+		handHeldScanner.disable();;
+		mainScanner.disable();;
+		banknoteValidator.disable();
+		coinValidator.disable();;
+		cardReader.disable();;
+		banknoteDispenser.disable();
+		coinTray.disable();
+		printer.disable();
+		customerStationBlock = true;
+	}
+
+	/**
+	 * Unblocks customer interactions by enabling necessary hardware and software components.
+	 * This method is used to restore system interaction after being blocked.
+	 */
+	public void unblockCustomerStation() {
+		baggingAreaScale.enable();
+		scannerScale.enable();
+		handHeldScanner.enable();;
+		mainScanner.enable();;
+		banknoteValidator.enable();
+		coinValidator.enable();;
+		cardReader.enable();;
+		banknoteDispenser.enable();
+		coinTray.enable();
+		printer.enable();
+		customerStationBlock = false;
+	}
+	
+	/**
+	 * Checks if the customer station is currently blocked.
+	 *
+	 * @return True if interactions are blocked, false otherwise.
+	 */
+	public boolean isCustomerStationBlocked() {
+		return customerStationBlock;
 	}
 
 	public HashMap<Product, Mass> getProductsInOrder() {
