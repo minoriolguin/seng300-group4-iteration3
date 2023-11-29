@@ -27,7 +27,7 @@ public class Attendant implements WeightDiscrepancyListener {
     	
     }
     
-    //Enables the customer station after being blocked
+    //Enables the customer station software and hardware after being blocked
     //Precondition: Customer station must be blocked
     public void enableCustomerStation() {
     	if (software.isCustomerStationBlocked()) {
