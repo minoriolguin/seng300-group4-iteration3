@@ -360,12 +360,15 @@ public class RunGUI extends JFrame implements logicObserver {
         JButton bot_button3 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
         		+ "Add Item<br>RFID Tag</div></html>");
         // Button 4: Custom Title
+        JFrame frame = this;
         bot_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	String addItem_result = guiLogicInstance.buttonB3_CustomerScansBarcodedProduct_RFIDTag();
             	addNewLabel(addItem_result);
-            	openOverlayPanel();
+            	TransparentOverlayPanel overlayPanel = new TransparentOverlayPanel(guiLogicInstance);
+            	addOverlayPanel(overlayPanel);
+            	//openOverlayPanel();
             }
         });
         
@@ -818,7 +821,7 @@ public class RunGUI extends JFrame implements logicObserver {
     /*
      * 3-part Method that causes a Numberpad
      */
-    class TransparentNumpadPanel extends JPanel {
+   /* class TransparentNumpadPanel extends JPanel {
     	    private JFrame parentFrame;
 
     	    public TransparentNumpadPanel(JFrame parentFrame) {
@@ -896,8 +899,8 @@ public class RunGUI extends JFrame implements logicObserver {
                     }
                 });
     	}
-    }
-    /*
+    }*/
+    /*c
      * NumberPad Pop Up Part 2/3 
      * What causes the Overlay to show up
      * 
@@ -905,7 +908,7 @@ public class RunGUI extends JFrame implements logicObserver {
      */
     private void openNumPadPanel() {
     	    // Create a transparent overlay panel
-    	TransparentNumpadPanel numpadPanel = new TransparentNumpadPanel(this);
+    	TransparentNumpadPanel numpadPanel = new TransparentNumpadPanel(guiLogicInstance);
 
     	    // Add buttons to the overlay panel
     	    numpadPanel.addNumPadButtons();
@@ -920,110 +923,16 @@ public class RunGUI extends JFrame implements logicObserver {
      * What causes the Overlay to disappear
      */
     private void closeNumPadPanel() {
-    	TransparentNumpadPanel numpadPanel = new TransparentNumpadPanel(this);
+    	TransparentNumpadPanel numpadPanel = new TransparentNumpadPanel(guiLogicInstance);
 	    numpadPanel.addNumPadButtons();
 	    setGlassPane(numpadPanel);
 	    numpadPanel.setVisible(false);
 }
 
-    
-  //-----------------------------------------
-    /*
-     * Add Item Pop Up Part 1/3 
-     * 
-     * When Customer adds any Item, it will cause GUI to show up and ask if 
-     * Customer would place item into Bagging Area or Not 
-     * 3rd Option is Extra Button 
-     */
-    class TransparentOverlayPanel extends JPanel {
-    	    private JFrame parentFrame;
-
-    	    public TransparentOverlayPanel(JFrame parentFrame) {
-                this.parentFrame = parentFrame;
-                setOpaque(true); // Make the panel transparent
-                setLayout(new GridBagLayout());
-                setPreferredSize(new Dimension(400, 400)); // Set the preferred size to 400x400
-            }
-
-    	    @Override
-    	    protected void paintComponent(Graphics g) {
-    	        super.paintComponent(g);
-
-    	        // Draw a semi-transparent background
-    	        Graphics2D g2d = (Graphics2D) g.create();
-    	        g2d.setColor(new Color(128, 128, 128, 128)); // 128, 128, 128 is grey, 128 is the alpha value
-    	        g2d.fillRect(0, 0, getWidth(), getHeight());
-    	        g2d.dispose();
-    	    }
-
-            public void addCenteredButtons() {
-                // Create buttons and add them to the center of the panel
-                JButton button1 = new JButton("Button 1");
-                JButton button2 = new JButton("Button 2");
-                JButton button3 = new JButton("Button 3");
-
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                add(button1, gbc);
-
-                gbc.gridy = 1;
-                add(button2, gbc);
-
-                gbc.gridy = 2;
-                add(button3, gbc);
-
-                button1.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button1_CustomersAddsToBaggingArea();
-                		closeOverlayPanel();
-                    }
-                });
-                button2.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button2_CustomersDOESNOTAddsToBaggingArea();
-                		closeOverlayPanel();
-                    }
-                });
-                button3.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                    	guiLogicInstance.addItemPopUp_button3_BLANK();
-                		closeOverlayPanel();
-                    }
-                });
-            }
-    }
-    /*
-     * Add Item Pop Up Part 2/3 
-     * What causes the Overlay to show up
-     * 
-     * If needed, copy paste this code for each Add Item  
-     */
-    private void openOverlayPanel() {
-    	    // Create a transparent overlay panel
-    	    TransparentOverlayPanel overlayPanel = new TransparentOverlayPanel(this);
-
-    	    // Add buttons to the overlay panel
-    	    overlayPanel.addCenteredButtons();
-
-    	    // Add the overlay panel to the main frame
-    	    setGlassPane(overlayPanel);
-    	    overlayPanel.setVisible(true);
-    }
-    
-    /*
-     * Add Item Pop Up Part 3/3 
-     * What causes the Overlay to disappear
-     */
-    private void closeOverlayPanel() {
-	    TransparentOverlayPanel overlayPanel = new TransparentOverlayPanel(this);
-	    overlayPanel.addCenteredButtons();
-	    setGlassPane(overlayPanel);
-	    overlayPanel.setVisible(false);
-    }
+    private void addOverlayPanel(JPanel panel) {
+    	setGlassPane(panel);
+    	panel.setVisible(true);
+	}
 
     	
     // Function Methods ------------------------------------BEGIN
