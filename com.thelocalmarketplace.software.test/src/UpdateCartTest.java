@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 import static org.junit.Assert.*;
 
 public class UpdateCartTest {
-    private Software checkout;
+    private Software software;
     private SelfCheckoutStationGold station;
     private BarcodedProduct product;
     private BarcodedProduct product2;
@@ -45,12 +45,12 @@ public class UpdateCartTest {
         PowerGrid.engageUninterruptiblePowerSource();
         SelfCheckoutStationGold.resetConfigurationToDefaults();
         station = new SelfCheckoutStationGold();
-        checkout = Software.getInstance(station);
-        checkout.turnOn();
-        attendant = new Attendant(checkout);
-        touchScreen = new TouchScreen(checkout);
-        updateCart = new UpdateCart(checkout);
-        weightDiscrepancy = checkout.weightDiscrepancy;
+        software = Software.getInstance(station);
+        software.turnOn();
+        attendant = new Attendant(software);
+        touchScreen = new TouchScreen(software);
+        updateCart = new UpdateCart(software);
+        weightDiscrepancy = software.weightDiscrepancy;
 
         Numeral[] testBarcode = new Numeral[4];
         testBarcode[0] = Numeral.nine;
@@ -82,14 +82,14 @@ public class UpdateCartTest {
         updateCart.addScannedItem(barcode);
 
         // Verify that the product was added to the cart
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product));
+        assertTrue(software.getBarcodedProductsInOrder().contains(product));
 
         // Verify that the expected total weight is updated
         assertEquals(new Mass(product.getExpectedWeight()),
-                checkout.getExpectedTotalWeight());
+                software.getExpectedTotalWeight());
 
         // Verify that the scanned item was added to the cart
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product));
+        assertTrue(software.getBarcodedProductsInOrder().contains(product));
 
     }
 
@@ -101,7 +101,7 @@ public class UpdateCartTest {
         updateCart.removeItem(product);
 
         // Verify that the product was removed from the cart
-        assertFalse(checkout.getBarcodedProductsInOrder().contains(product));
+        assertFalse(software.getBarcodedProductsInOrder().contains(product));
 
     }
 
@@ -110,14 +110,14 @@ public class UpdateCartTest {
         updateCart.addScannedItem(barcode);
         BigDecimal expectedTotal = new BigDecimal(5);
         // Verify that the order total has been changed correctly
-        assertEquals(expectedTotal, checkout.getOrderTotal());
+        assertEquals(expectedTotal, software.getOrderTotal());
     }
 
     @Test
     public void testRemoveNonExistentItem() {
         updateCart.removeItem(product);
         // Verify the cart remains unchanged
-        assertTrue(checkout.getBarcodedProductsInOrder().isEmpty());
+        assertTrue(software.getBarcodedProductsInOrder().isEmpty());
     }
 
     @Test
@@ -128,10 +128,10 @@ public class UpdateCartTest {
         }
         BigDecimal expectedTotal = new BigDecimal(15);
 
-        assertEquals(expectedTotal, checkout.getOrderTotal());
+        assertEquals(expectedTotal, software.getOrderTotal());
         assertEquals(new Mass(product.getExpectedWeight() * 3),
-                checkout.getExpectedTotalWeight());
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product));
+                software.getExpectedTotalWeight());
+        assertTrue(software.getBarcodedProductsInOrder().contains(product));
 
 
     }
@@ -142,32 +142,32 @@ public class UpdateCartTest {
         updateCart.addScannedItem(barcode); // First item
         updateCart.addScannedItem(barcode2); // Second item
         BigDecimal expectedTotal = new BigDecimal(105);
-        assertEquals(expectedTotal, checkout.getOrderTotal());
+        assertEquals(expectedTotal, software.getOrderTotal());
         assertEquals(new Mass(product.getExpectedWeight() + product2.getExpectedWeight()),
-                checkout.getExpectedTotalWeight());
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product));
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product2));
+                software.getExpectedTotalWeight());
+        assertTrue(software.getBarcodedProductsInOrder().contains(product));
+        assertTrue(software.getBarcodedProductsInOrder().contains(product2));
     }
 
     @Test
     public void testSkipBaggingItem() {
-        MockTouchScreen mockTouchScreen = new MockTouchScreen(checkout);
-        checkout.setTestTouchScreen(mockTouchScreen);
+        MockTouchScreen mockTouchScreen = new MockTouchScreen(software);
+        software.setTestTouchScreen(mockTouchScreen);
         updateCart.addScannedItem(barcode);
-        assertFalse(checkout.isBlocked());
+        assertFalse(software.isBlocked());
 
     }
 
     @Test
     public void testLightItems() {
         updateCart.addScannedItem(barcode3);
-        assertFalse(checkout.isBlocked());
+        assertFalse(software.isBlocked());
     }
 
     @Test
     public void testBarcodeScanEvent() {
-        updateCart.aBarcodeHasBeenScanned(station.handheldScanner, barcode);
-        assertTrue(checkout.getBarcodedProductsInOrder().contains(product));
+        updateCart.aBarcodeHasBeenScanned(station.getHandheldScanner(), barcode);
+        assertTrue(software.getBarcodedProductsInOrder().contains(product));
     }
 
 

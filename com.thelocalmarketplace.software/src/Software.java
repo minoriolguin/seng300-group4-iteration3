@@ -271,18 +271,6 @@ public class Software {
 		return barcodedProductsInOrder;
 	}
 
-	/**
-	 * Adds a barcoded product to the current order.
-	 *
-	 * @param product The barcoded product to be added to the order.
-	 */
-	public void addBarcodedProductToOrder(BarcodedProduct product) {
-		barcodedProductsInOrder.add(product);
-	}
-
-	public void addPLUcodedProduct(PLUCodedProduct product){
-		pluCodedProductsInOrder.add(product);
-	}
 
 	public void setAllowableBagWeight(Mass allowableBagWeight) {
 		this.allowableBagWeight = allowableBagWeight;
