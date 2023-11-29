@@ -105,7 +105,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
             software.addBaggedProduct(product, productsWeight);
         }
         //7.Update the orderTotal (not part of use case for some reason)
-        software.addBarcodedProductToOrder(product);
+        software.getBarcodedProductsInOrder().add(product);
         Mass productsWeight = new Mass(product.getExpectedWeight());
         software.getProductsInOrder().put(product, productsWeight);
         BigDecimal price = BigDecimal.valueOf(product.getPrice());
