@@ -73,11 +73,12 @@ public class RunGUI extends JFrame implements logicObserver {
         //Or use method switchPanels("welcomePanel")
         
         setVisible(true);
+    }
         
         // Open Attendant Frame beside the Self CheckOut
-        AttendantFrame attendantFrame = new AttendantFrame();
-        attendantFrame.AttendantFrame();
-    }
+//        AttendantFrame attendantFrame = new AttendantFrame();
+//        attendantFrame.AttendantFrame();
+//    }
 
     // Customer Screen 1 
     private JPanel StartSessionPanel() {

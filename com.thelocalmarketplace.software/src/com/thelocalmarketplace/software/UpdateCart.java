@@ -1,4 +1,4 @@
-
+package com.thelocalmarketplace.software;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
@@ -203,4 +203,3 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
 
     }
 }
-

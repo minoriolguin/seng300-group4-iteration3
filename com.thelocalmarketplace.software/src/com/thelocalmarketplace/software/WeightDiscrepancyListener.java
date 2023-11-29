@@ -1,3 +1,5 @@
+package com.thelocalmarketplace.software;
+
 
 public interface WeightDiscrepancyListener {
     void RemoveItemFromScale();
