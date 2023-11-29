@@ -1,3 +1,5 @@
+package com.thelocalmarketplace.software;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -362,4 +364,3 @@ public class Software {
 		this.touchScreen = touchScreen;
 	}
 }
-

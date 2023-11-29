@@ -10,9 +10,13 @@
 //Maria Munoz 30175339
 //Anne Lumumba 30171346
 //Nathaniel Dafoe 30181948
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
+import com.thelocalmarketplace.software.Attendant;
+import com.thelocalmarketplace.software.Software;
+
 import org.junit.Before;
 import org.junit.Test;
 import powerutility.PowerGrid;

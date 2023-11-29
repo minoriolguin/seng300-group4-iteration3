@@ -1,4 +1,4 @@
-//
+package com.thelocalmarketplace.software.test;
 //
 //import com.jjjwelectronics.Mass;
 //import com.jjjwelectronics.Numeral;
@@ -495,3 +495,5 @@
 //        assertEquals(after_value, add_value);
 //    }
 //}
+
+
