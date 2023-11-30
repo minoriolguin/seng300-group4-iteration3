@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
@@ -56,6 +57,7 @@ public class PayByCard implements CardReaderListener {
      */
     public void makePayment(CardData data) {
         String cardNumber = data.getNumber();
+        System.out.println("card number is: " + cardNumber);
 
         // Setting the correct CardIssuer for the given card.
         if(data.getType().equals("debit")) cardIssuer = debitCardIssuer;
@@ -70,6 +72,7 @@ public class PayByCard implements CardReaderListener {
             // Payment success, release hold. Print receipt.
             cardIssuer.releaseHold(cardNumber, holdNumber);
             //software.notifyCustomer("payment succesful", software.notifyPaymentSuccess);
+            software.setUpdatedOrderTotal(BigDecimal.ZERO);
             software.printReceipt.print();
         } else {
             // Payment failed, release hold.
