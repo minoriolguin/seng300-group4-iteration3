@@ -37,6 +37,8 @@ public class Software {
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
 	private final HashMap<Product,Mass> baggedProducts;
+	private MembershipNumberValidator membershipValidator;
+	private MembershipDatabase membershipDatabase;
 
 	public final IElectronicScale baggingAreaScale;
 	public final IElectronicScale scannerScale;
@@ -141,6 +143,8 @@ public class Software {
 		pluCodedProductsInOrder = new ArrayList<>();
 		baggedProducts = new HashMap<>();
 		allowableBagWeight = new Mass(200.0);   // default value of 200g
+		this.membershipDatabase = new MembershipDatabase();
+	    this.membershipValidator = new MembershipNumberValidator(this.membershipDatabase);
 	}
 	/**
 	 * Turns on the self-checkout system by plugging it into the power grid and activating the hardware components.
@@ -361,5 +365,32 @@ public class Software {
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
 	}
+	
+	public MembershipNumberValidator getMembershipValidator() {
+        return membershipValidator;
+	}
+	/// Handy for GUI team
+	public void handleMembershipNumber(String membershipNumber) {
+		        // First, validate the format of the membership number
+		        if (membershipValidator.isValid(membershipNumber)) {
+		            // Convert the string to an integer for database lookup
+		            int memberId = Integer.parseInt(membershipNumber);
+
+		            // Check if the member exists in the database
+		            if (membershipDatabase.memberExists(memberId)) {
+		                // Process the valid membership number
+		                System.out.println("Membership number is valid and found in the database.");
+		                // TODO: Link to customer session, update points, etc.
+		            } else {
+		                // Valid format, but not found in the database
+		                System.out.println("Membership number not found in the database.");
+		                // TODO: Handle this case, potentially send feedback to GUI
+		            }
+		        } else {
+		            // Invalid format
+		            System.out.println("Invalid membership number format.");
+		            // TODO: Send invalid format feedback to GUI
+		        }	
+		 }
 }
 
