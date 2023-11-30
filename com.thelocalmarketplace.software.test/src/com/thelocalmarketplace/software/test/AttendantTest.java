@@ -1,28 +1,17 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
 package com.thelocalmarketplace.software.test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.Software;
 
-import org.junit.Before;
-import org.junit.Test;
 import powerutility.PowerGrid;
-
-
-import static org.junit.Assert.*;
 
 public class AttendantTest {
     private Software checkout;
@@ -59,7 +48,7 @@ public class AttendantTest {
     public void testOverRideWeightDiscrepancy() {
     	// Test when Attendant has overrided Weight Discrepancy
         checkout.weightDiscrepancy.overRideWeight = testMass;
-        attendant.OverRideWeightDiscrepancy();
+        attendant.overRideWeightDiscrepancy();
         assertEquals(testMass, checkout.getExpectedTotalWeight());
     }
 }

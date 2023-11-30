@@ -1,3 +1,4 @@
+package com.thelocalmarketplace.software.test;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,10 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.PurchaseBags;
+import com.thelocalmarketplace.software.Software;
+import com.thelocalmarketplace.software.UpdateCart;
+import com.thelocalmarketplace.software.WeightDiscrepancy;
 
 public class PurchaseBagsTest {
 	private Software checkout;

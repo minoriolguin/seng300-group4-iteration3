@@ -234,7 +234,7 @@ public class BlackBoxTests {
         assertTrue(hardware.getCoinValidator().isDisabled());
         assertTrue(hardware.getCardReader().isDisabled());
         //attendant overrides
-        software.attendant.OverRideWeightDiscrepancy();
+        software.attendant.overRideWeightDiscrepancy();
         //expected weight included discrepancy
         assertEquals(inRange.getMass(),software.getExpectedTotalWeight());
         //customer enabled

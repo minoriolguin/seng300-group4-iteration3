@@ -230,7 +230,9 @@ public class WeightDiscrepancyTest {
         WeightDiscrepancy instance = new WeightDiscrepancy(checkout);
 
         instance.register(mockListener);
-        weightDiscrepancy.notifyWeightOverLimit();
+        
+//        Needs to be fixed
+//        weightDiscrepancy.notifyWeightOverLimit();
 
         Assert.assertEquals(true, mockListener.isWeightOverLimitCalled());
 

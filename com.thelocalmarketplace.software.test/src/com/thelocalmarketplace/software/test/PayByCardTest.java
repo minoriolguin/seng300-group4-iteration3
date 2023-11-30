@@ -1,9 +1,12 @@
+package com.thelocalmarketplace.software.test;
 import java.io.IOException;
 import java.math.*;
 import java.util.*;
 
 import com.jjjwelectronics.card.*;
 import com.thelocalmarketplace.hardware.external.CardIssuer;
+import com.thelocalmarketplace.software.Software;
+
 import org.junit.*;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
