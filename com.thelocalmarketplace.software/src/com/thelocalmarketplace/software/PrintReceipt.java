@@ -25,6 +25,11 @@ public class PrintReceipt {
     private ArrayList<BarcodedProduct> barcodedProductsInCart;
     private Software software;
 
+    private int printedChars;
+    private int averagePrintedChars;
+    private int paperUsed;
+    private int averagePaperUsed;
+
     private IReceiptPrinter printer;
 
     /**
@@ -34,6 +39,8 @@ public class PrintReceipt {
     public PrintReceipt(Software software){
         this.software = software;
         printer = software.printer;
+        averagePaperUsed = 0;
+        averagePrintedChars = 0;
     }
 
     /**
@@ -66,10 +73,13 @@ public class PrintReceipt {
         // print the end template
         printLine(endString);
         printer.cutPaper();
+        averagePrintedChars = getAveragePrintedChars();
         // reset
+        printedChars = 0;
+        paperUsed = 0;
         totalPrice = BigDecimal.ZERO;
-        software.maintenance.needInk();
-        software.maintenance.needPaper();
+        software.maintenance.checkInk(averagePrintedChars);
+        software.maintenance.checkPaper(averagePaperUsed); 
 
     }
 
@@ -93,6 +103,10 @@ public class PrintReceipt {
                 try {
                     printer.print(s.charAt(i));
                     emptyPrinter = false;
+
+                    if (s.charAt(i) != ' ' && !Character.isWhitespace(s.charAt(i))) {
+                    	printedChars += 0;
+                    }
                 }
                 catch (EmptyDevice e) {
                     // pause the system with a message
@@ -111,6 +125,7 @@ public class PrintReceipt {
                 }
             } while(emptyPrinter);
         }// end of for each character loop
+        this.paperUsed += 1;
     }
 
     /**
@@ -267,5 +282,13 @@ public class PrintReceipt {
                 throw new RuntimeException("The end template has a line that is too long for the printer.");
         }
         endString = s;
+    }
+    
+    public int getAveragePrintedChars() {
+    	return (printedChars + averagePrintedChars) / 2;
+    }
+    
+    public int getAveragePaperUsed() {
+    	return (paperUsed + averagePaperUsed) / 2;
     }
 }

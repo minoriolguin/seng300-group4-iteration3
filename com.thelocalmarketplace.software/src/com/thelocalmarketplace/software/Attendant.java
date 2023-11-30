@@ -17,7 +17,7 @@ public class Attendant implements WeightDiscrepancyListener {
     public void verifyItemRemovedFromOrder(){
         software.unblockCustomer();
     }
-    public void OverRideWeightDiscrepancy(){
+    public void overRideWeightDiscrepancy(){
         software.setExpectedTotalWeight(software.weightDiscrepancy.overRideWeight);
         software.weightDiscrepancy.isWeightDiscrepancy(software.getExpectedTotalWeight());
     }
@@ -37,11 +37,11 @@ public class Attendant implements WeightDiscrepancyListener {
     }
 
     @Override
-    public void RemoveItemFromScale() {
+    public void removeItemFromScale() {
     }
 
     @Override
-    public void AddItemToScale() {
+    public void addItemToScale() {
 
     }
 
