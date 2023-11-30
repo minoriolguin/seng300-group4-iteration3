@@ -1,10 +1,10 @@
+package com.thelocalmarketplace.software;
 
 
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 /**

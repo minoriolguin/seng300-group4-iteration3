@@ -1,3 +1,5 @@
+package com.thelocalmarketplace.software;
+
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class Software {
 	private BigDecimal orderTotal;
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
+	private boolean customerStationBlock = false;
 	private final HashMap<Product,Mass> productsInOrder;
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
@@ -63,7 +66,7 @@ public class Software {
 
 
 	private AbstractSelfCheckoutStation station;
-
+	
 	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
 		return new Software(hardware);
 	}
@@ -74,51 +77,51 @@ public class Software {
 	private Software(AbstractSelfCheckoutStation hardware) {
 		if (hardware instanceof SelfCheckoutStationBronze bronze) {
 			this.station = bronze;
-			this.baggingAreaScale = bronze.baggingArea;
-			this.scannerScale = bronze.scanningArea;
-			this.handHeldScanner = bronze.handheldScanner;
-			this.mainScanner = bronze.mainScanner;
-			this.banknoteValidator = bronze.banknoteValidator;
-			this.coinValidator = bronze.coinValidator;
-			this.cardReader = bronze.cardReader;
-			this.banknoteDispenser = bronze.banknoteOutput;
-			this.coinTray = bronze.coinTray;
-			this.printer = bronze.printer;
+			this.baggingAreaScale = bronze.getBaggingArea();
+			this.scannerScale = bronze.getScanningArea();
+			this.handHeldScanner = bronze.getHandheldScanner();
+			this.mainScanner = bronze.getMainScanner();
+			this.banknoteValidator = bronze.getBanknoteValidator();
+			this.coinValidator = bronze.getCoinValidator();
+			this.cardReader = bronze.getCardReader();
+			this.banknoteDispenser = bronze.getBanknoteOutput();
+			this.coinTray = bronze.getCoinTray();
+			this.printer = bronze.getPrinter();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
-			this.baggingAreaScale = silver.baggingArea;
-			this.scannerScale = silver.scanningArea;
-			this.handHeldScanner = silver.handheldScanner;
-			this.mainScanner = silver.mainScanner;
-			this.banknoteValidator = silver.banknoteValidator;
-			this.coinValidator = silver.coinValidator;
-			this.cardReader = silver.cardReader;
-			this.banknoteDispenser = silver.banknoteOutput;
-			this.coinTray = silver.coinTray;
-			this.printer = silver.printer;
+			this.baggingAreaScale = silver.getBaggingArea();
+			this.scannerScale = silver.getScanningArea();
+			this.handHeldScanner = silver.getHandheldScanner();
+			this.mainScanner = silver.getMainScanner();
+			this.banknoteValidator = silver.getBanknoteValidator();
+			this.coinValidator = silver.getCoinValidator();
+			this.cardReader = silver.getCardReader();
+			this.banknoteDispenser = silver.getBanknoteOutput();
+			this.coinTray = silver.getCoinTray();
+			this.printer = silver.getPrinter();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
-			this.baggingAreaScale = gold.baggingArea;
-			this.scannerScale = gold.scanningArea;
-			this.handHeldScanner = gold.handheldScanner;
-			this.mainScanner = gold.mainScanner;
-			this.banknoteValidator = gold.banknoteValidator;
-			this.coinValidator = gold.coinValidator;
-			this.cardReader = gold.cardReader;
-			this.banknoteDispenser = gold.banknoteOutput;
-			this.coinTray = gold.coinTray;
-			this.printer = gold.printer;
+			this.baggingAreaScale = gold.getBaggingArea();
+			this.scannerScale = gold.getScanningArea();
+			this.handHeldScanner = gold.getHandheldScanner();
+			this.mainScanner = gold.getMainScanner();
+			this.banknoteValidator = gold.getBanknoteValidator();
+			this.coinValidator = gold.getCoinValidator();
+			this.cardReader = gold.getCardReader();
+			this.banknoteDispenser = gold.getBanknoteOutput();
+			this.coinTray = gold.getCoinTray();
+			this.printer = gold.getPrinter();
 		} else {
-			this.baggingAreaScale = hardware.baggingArea;
-			this.scannerScale = hardware.scanningArea;
-			this.handHeldScanner = hardware.handheldScanner;
-			this.mainScanner = hardware.mainScanner;
-			this.banknoteValidator = hardware.banknoteValidator;
-			this.coinValidator = hardware.coinValidator;
-			this.cardReader = hardware.cardReader;
-			this.banknoteDispenser = hardware.banknoteOutput;
-			this.coinTray = hardware.coinTray;
-			this.printer = hardware.printer;
+			this.baggingAreaScale = hardware.getBaggingArea();
+			this.scannerScale = hardware.getScanningArea();
+			this.handHeldScanner = hardware.getHandheldScanner();
+			this.mainScanner = hardware.getMainScanner();
+			this.banknoteValidator = hardware.getBanknoteValidator();
+			this.coinValidator = hardware.getCoinValidator();
+			this.cardReader = hardware.getCardReader();
+			this.banknoteDispenser = hardware.getBanknoteOutput();
+			this.coinTray = hardware.getCoinTray();
+			this.printer = hardware.getPrinter();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -206,6 +209,52 @@ public class Software {
 	public boolean isBlocked() {
 		return blocked;
 	}
+	
+	/**
+	 * Blocks customer station from any type of interaction.
+	 * This method is used to prevent unwanted interactions during maintenance or when
+	 * the hardware or software is out of order.
+	 */
+	public void blockCustomerStation() {
+		baggingAreaScale.disable();
+		scannerScale.disable();
+		handHeldScanner.disable();;
+		mainScanner.disable();;
+		banknoteValidator.disable();
+		coinValidator.disable();;
+		cardReader.disable();;
+		banknoteDispenser.disable();
+		coinTray.disable();
+		printer.disable();
+		customerStationBlock = true;
+	}
+
+	/**
+	 * Unblocks customer interactions by enabling necessary hardware and software components.
+	 * This method is used to restore system interaction after being blocked.
+	 */
+	public void unblockCustomerStation() {
+		baggingAreaScale.enable();
+		scannerScale.enable();
+		handHeldScanner.enable();;
+		mainScanner.enable();;
+		banknoteValidator.enable();
+		coinValidator.enable();;
+		cardReader.enable();;
+		banknoteDispenser.enable();
+		coinTray.enable();
+		printer.enable();
+		customerStationBlock = false;
+	}
+	
+	/**
+	 * Checks if the customer station is currently blocked.
+	 *
+	 * @return True if interactions are blocked, false otherwise.
+	 */
+	public boolean isCustomerStationBlocked() {
+		return customerStationBlock;
+	}
 
 	public HashMap<Product, Mass> getProductsInOrder() {
 		return productsInOrder;
@@ -271,18 +320,6 @@ public class Software {
 		return barcodedProductsInOrder;
 	}
 
-	/**
-	 * Adds a barcoded product to the current order.
-	 *
-	 * @param product The barcoded product to be added to the order.
-	 */
-	public void addBarcodedProductToOrder(BarcodedProduct product) {
-		barcodedProductsInOrder.add(product);
-	}
-
-	public void addPLUcodedProduct(PLUCodedProduct product){
-		pluCodedProductsInOrder.add(product);
-	}
 
 	public void setAllowableBagWeight(Mass allowableBagWeight) {
 		this.allowableBagWeight = allowableBagWeight;
@@ -314,7 +351,7 @@ public class Software {
 	 * @return The array of banknote denominations.
 	 */
 	public BigDecimal[] getBanknoteDenominations() {
-		return station.banknoteDenominations;
+		return station.getBanknoteDenominations();
 	}
 
 	/**
@@ -323,7 +360,7 @@ public class Software {
 	 * @return The list of coin denominations.
 	 */
 	public List<BigDecimal> getCoinDenominations() {
-		return station.coinDenominations;
+		return station.getCoinDenominations();
 	}
 
 	/**
@@ -361,5 +398,5 @@ public class Software {
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
 	}
+	
 }
-

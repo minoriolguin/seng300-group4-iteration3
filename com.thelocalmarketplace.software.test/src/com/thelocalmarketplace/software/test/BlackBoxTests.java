@@ -1,3 +1,4 @@
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
@@ -7,6 +8,8 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.Software;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +21,7 @@ import static org.junit.Assert.*;
 
 public class BlackBoxTests {
 
-    private SelfCheckoutStationBronze station;
+    private SelfCheckoutStationBronze hardware;
     private Software software;
     private BarcodedItem inRange;
     private BarcodedProduct inRangeProduct;
@@ -30,8 +33,8 @@ public class BlackBoxTests {
 
         //Attach Station to software
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-        station = new SelfCheckoutStationBronze();
-        software = Software.getInstance(station);
+        hardware = new SelfCheckoutStationBronze();
+        software = Software.getInstance(hardware);
 
         //create barcoded products to test with
         Numeral[] InRangebar = new Numeral[3];
@@ -79,13 +82,13 @@ public class BlackBoxTests {
         //ensure the items from setup in Data Base
         assertEquals(2,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
         //scan an item in the baggingArea scales range (over-sensitivity, less than max)
-        station.handheldScanner.scan(inRange);
+        hardware.getHandheldScanner().scan(inRange);
         //assert customer interaction disabled
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
-        assertTrue(station.banknoteValidator.isDisabled());
-        assertTrue(station.coinValidator.isDisabled());
-        assertTrue(station.cardReader.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
+        assertTrue(hardware.getBanknoteValidator().isDisabled());
+        assertTrue(hardware.getCoinValidator().isDisabled());
+        assertTrue(hardware.getCardReader().isDisabled());
         //assert expected weight updated
         assertEquals(0,inRange.getMass().compareTo(software.getExpectedTotalWeight()));
         //assert product in order, in bagged item, order total updated
@@ -93,10 +96,10 @@ public class BlackBoxTests {
         assertTrue(software.getProductsInOrder().containsKey(inRangeProduct));
         assertEquals(inRangeProduct.getPrice(), software.getOrderTotal().longValue());
         //add item to bagging area scale
-        station.baggingArea.addAnItem(inRange);
+        hardware.getBaggingArea().addAnItem(inRange);
         //assert customer can now add items
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
 
     }
     @Test
@@ -105,7 +108,7 @@ public class BlackBoxTests {
         software.startSession();
         //select not to bag item
         software.touchScreen.skip = true;
-        station.handheldScanner.scan(inRange);
+        hardware.getHandheldScanner().scan(inRange);
         //assert expected weight not updated
         assertEquals(new Mass(BigDecimal.ZERO), software.getExpectedTotalWeight());
         //assert product in order, in not in bagged item, order total updated
@@ -114,14 +117,14 @@ public class BlackBoxTests {
         assertEquals(inRangeProduct.getPrice(), software.getOrderTotal().longValue());
         //assert customer can now add items
         //was auto enabled by attendant
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
     }
     @Test
     public void addTooLightOfProductForScaleToDetect() {
         software.startSession();
         software.touchScreen.skip = false;
-        station.mainScanner.scan(lessThanSensitivity);
+        hardware.getMainScanner().scan(lessThanSensitivity);
 
         //assert expected weight updated
         assertEquals(0,lessThanSensitivity.getMass().compareTo(software.getExpectedTotalWeight()));
@@ -134,15 +137,15 @@ public class BlackBoxTests {
     public void removeUnBaggedItem() {
         software.startSession();
         software.touchScreen.skip = true;
-        station.handheldScanner.scan(inRange);
+        hardware.getHandheldScanner().scan(inRange);
         //know product adds from test case above, now remove and ensure its gone
         software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
         //assert it's removed from order
         assertTrue(software.getBarcodedProductsInOrder().isEmpty());
         assertEquals(BigDecimal.ZERO, software.getOrderTotal());
         //assert that customer can add items (attendant auto verified)
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
     }
     @Test
     public void removeBaggedItem() {
@@ -151,25 +154,25 @@ public class BlackBoxTests {
         software.touchScreen.skip = false;
         software.startSession();
         //add item and put on scale
-        station.handheldScanner.scan(inRange);
-        station.baggingArea.addAnItem(inRange);
+        hardware.getHandheldScanner().scan(inRange);
+        hardware.getBaggingArea().addAnItem(inRange);
         //remove item
         software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
         //assert customer disabled
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
-        assertTrue(station.banknoteValidator.isDisabled());
-        assertTrue(station.coinValidator.isDisabled());
-        assertTrue(station.cardReader.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
+        assertTrue(hardware.getBanknoteValidator().isDisabled());
+        assertTrue(hardware.getCoinValidator().isDisabled());
+        assertTrue(hardware.getCardReader().isDisabled());
         //assert it's removed from order
         assertTrue(software.getBaggedProducts().isEmpty());
         assertTrue(software.getBarcodedProductsInOrder().isEmpty());
         assertEquals(BigDecimal.ZERO, software.getOrderTotal());
         //remove from scale
-        station.baggingArea.removeAnItem(inRange);
+        hardware.getBaggingArea().removeAnItem(inRange);
         //assert customer can now add items
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
 
     }
 
@@ -179,10 +182,10 @@ public class BlackBoxTests {
         software.startSession();
         software.touchScreen.selectAddOwnBags();
         assertTrue(software.weightDiscrepancy.expectOwnBagsToBeAdded);
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
         //add the bag
-        station.baggingArea.addAnItem(inRange);
+        hardware.getBaggingArea().addAnItem(inRange);
         //make sure the mass updated in weight discrepancy
         assertEquals(inRange.getMass(),software.weightDiscrepancy.massOfOwnBags);
         //make sure expected weight in software updated
@@ -190,8 +193,8 @@ public class BlackBoxTests {
         software.touchScreen.bagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
     }
 
     @Test
@@ -202,45 +205,41 @@ public class BlackBoxTests {
         software.startSession();
         software.touchScreen.selectAddOwnBags();
         assertTrue(software.weightDiscrepancy.expectOwnBagsToBeAdded);
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
         //add inRange to scale
-        station.baggingArea.addAnItem(inRange);
+        hardware.getBaggingArea().addAnItem(inRange);
         //make sure expected weight in software is still zero
         assertEquals(Mass.ZERO,software.getExpectedTotalWeight());
-        station.baggingArea.removeAnItem(inRange);
+        hardware.getBaggingArea().removeAnItem(inRange);
         //make sure customer can't continue after removing bag
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
         //say they are done
         software.touchScreen.bagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
     }
     @Test
     public void attendantOverRidesWeightDiscrepancy(){
         software.startSession();
         //create discrepancy
-        station.baggingArea.addAnItem(inRange);
+        hardware.getBaggingArea().addAnItem(inRange);
         //assert customer disabled
-        assertTrue(station.handheldScanner.isDisabled());
-        assertTrue(station.mainScanner.isDisabled());
-        assertTrue(station.banknoteValidator.isDisabled());
-        assertTrue(station.coinValidator.isDisabled());
-        assertTrue(station.cardReader.isDisabled());
+        assertTrue(hardware.getHandheldScanner().isDisabled());
+        assertTrue(hardware.getMainScanner().isDisabled());
+        assertTrue(hardware.getBanknoteValidator().isDisabled());
+        assertTrue(hardware.getCoinValidator().isDisabled());
+        assertTrue(hardware.getCardReader().isDisabled());
         //attendant overrides
         software.attendant.OverRideWeightDiscrepancy();
         //expected weight included discrepancy
         assertEquals(inRange.getMass(),software.getExpectedTotalWeight());
         //customer enabled
-        assertFalse(station.handheldScanner.isDisabled());
-        assertFalse(station.mainScanner.isDisabled());
+        assertFalse(hardware.getHandheldScanner().isDisabled());
+        assertFalse(hardware.getMainScanner().isDisabled());
 
     }
-
-
-
-
 }
