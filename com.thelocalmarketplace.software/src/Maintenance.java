@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
 
 /**
@@ -13,10 +14,13 @@ import com.jjjwelectronics.printer.ReceiptPrinterListener;
  */
 public class Maintenance implements ReceiptPrinterListener {
     private Software software;
-    boolean notifyAttendant; // have to discuss with GUI and Misc teams
-    int inkRemaining;
-    boolean lowInk, lowInkSoon;
-    int averageInkUsagePerSession;
+    private boolean notifyAttendant; // have to discuss with GUI and Misc teams
+    private int inkRemaining;
+    private int averageInkUsagePerSession;
+    
+    // Specs
+    public static final int MAXIMUM_INK = 1 << 20;
+    public int lowInkLevel = (int)(MAXIMUM_INK * 0.1);
     
     ArrayList<String> issues;
 
@@ -32,7 +36,7 @@ public class Maintenance implements ReceiptPrinterListener {
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
         
-        checkInk();
+        checkInk(averageInkUsagePerSession);
     }
     
     /**
@@ -49,7 +53,10 @@ public class Maintenance implements ReceiptPrinterListener {
     // should be called after every printed receipt, start up?
     // notify attendant
     // may need different return type
-    public void checkInk(){
+    public void checkInk(int averagePrintedChars){
+    	
+    	this.averageInkUsagePerSession = averagePrintedChars;
+   
     	try {
     		this.inkRemaining = software.printer.inkRemaining();
     	} catch (UnsupportedOperationException e) {
@@ -58,9 +65,13 @@ public class Maintenance implements ReceiptPrinterListener {
     	
     	if (inkRemaining == 0) {
     		thePrinterIsOutOfInk();
-    	} else if (lowInk) {
+    	} else if (inkRemaining <= lowInkLevel) {
     		thePrinterHasLowInk();
-    	} else {
+    	} else { // If no issues or prior issues has been resolved
+    		// Remove if exists in issues arraylist; does nothing otherwise
+    		issues.remove(lowInkMsg);
+    		issues.remove(outOfInkMsg);
+    		// Estimate when low ink might occur
     		predictLowInk();
     	}
     }
@@ -71,13 +82,22 @@ public class Maintenance implements ReceiptPrinterListener {
      * 
      */
     public void predictLowInk() {
-    	if (inkRemaining < averageInkUsagePerSession) {
-    		this.lowInkSoon = true;
-    		//this.notifyAttendant = true;
-    		this.issues.add(lowInkSoonMsg);
+    	if (inkRemaining <= lowInkLevel+averageInkUsagePerSession) {
+    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
+    		issues.add(lowInkSoonMsg);
+    		software.blockCustomerStation();
     	} else {
-    		this.lowInkSoon = false;
+    		issues.remove(lowInkSoonMsg);
     	}
+    }
+    
+    
+    public void resolveInkIssue(int quantity) throws OverloadedDevice {
+    	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
+    		throw new RuntimeException("Process aborted: Quantity will overload the device.");
+    	}
+    	software.printer.addInk(quantity);
+    	checkInk(averageInkUsagePerSession);	
     }
     
     // needs to be implemented and tested
@@ -131,14 +151,25 @@ public class Maintenance implements ReceiptPrinterListener {
 
 	@Override
 	public void thePrinterIsOutOfInk() {
-		//this.notifyAttendant  = true;
-		this.issues.add(outOfInkMsg);
+		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
+		issues.add(outOfInkMsg);
+		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(lowInkMsg);
+		issues.remove(lowInkSoonMsg);
+		
+		software.blockCustomerStation();
 	}
 
 	@Override
 	public void thePrinterHasLowInk() {
-		//this.notifyAttendant = true;
-		this.issues.add(lowInkSoonMsg);
+		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
+		issues.add(lowInkSoonMsg);
+		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(lowInkSoonMsg);
+		
+		software.blockCustomerStation();
 	}
 
 	@Override
