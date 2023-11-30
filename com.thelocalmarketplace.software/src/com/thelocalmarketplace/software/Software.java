@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.card.ICardReader;
@@ -14,6 +15,7 @@ import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinValidator;
+import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import powerutility.PowerGrid;
 
@@ -63,6 +65,7 @@ public class Software {
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
 	public final CoinTray coinTray;
+	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 
 
 	private AbstractSelfCheckoutStation station;
@@ -87,6 +90,7 @@ public class Software {
 			this.banknoteDispenser = bronze.getBanknoteOutput();
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
+			this.coinDispensers = bronze.getCoinDispensers();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -99,6 +103,7 @@ public class Software {
 			this.banknoteDispenser = silver.getBanknoteOutput();
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
+			this.coinDispensers = silver.getCoinDispensers();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -111,6 +116,7 @@ public class Software {
 			this.banknoteDispenser = gold.getBanknoteOutput();
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
+			this.coinDispensers = gold.getCoinDispensers();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -122,6 +128,7 @@ public class Software {
 			this.banknoteDispenser = hardware.getBanknoteOutput();
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
+			this.coinDispensers = hardware.getCoinDispensers();
 		}
 
 		expectedTotalWeight = Mass.ZERO;

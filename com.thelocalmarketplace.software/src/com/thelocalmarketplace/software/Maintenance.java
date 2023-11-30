@@ -1,9 +1,18 @@
+package com.thelocalmarketplace.software;
+
 import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
+import com.tdc.IComponent;
+import com.tdc.IComponentObserver;
+import com.tdc.coin.Coin;
+import com.tdc.coin.CoinDispenserObserver;
+import com.tdc.coin.CoinStorageUnit;
+import com.tdc.coin.CoinStorageUnitObserver;
+import com.tdc.coin.ICoinDispenser;
 
 /**
  * Handles maintenance of hardware ink, paper, coins, and banknotes status
@@ -12,7 +21,7 @@ import com.jjjwelectronics.printer.ReceiptPrinterListener;
  * type in the Arraylist `issues` to simulate maintenance codes.
  * 
  */
-public class Maintenance implements ReceiptPrinterListener {
+public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
     private Software software;
     private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
@@ -186,6 +195,90 @@ public class Maintenance implements ReceiptPrinterListener {
 
 	@Override
 	public void inkHasBeenAddedToThePrinter() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void enabled(IComponent<? extends IComponentObserver> component) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void disabled(IComponent<? extends IComponentObserver> component) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void turnedOn(IComponent<? extends IComponentObserver> component) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void turnedOff(IComponent<? extends IComponentObserver> component) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsFull(CoinStorageUnit unit) {
+		//this.notifyAttendant = true;
+		
+	}
+
+	@Override
+	public void coinAdded(CoinStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsLoaded(CoinStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsUnloaded(CoinStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsFull(ICoinDispenser dispenser) {
+		//this.notifyAttendant = true;
+		
+	}
+
+	@Override
+	public void coinsEmpty(ICoinDispenser dispenser) {
+		//this.notifyAttendant = true;
+		
+	}
+
+	@Override
+	public void coinAdded(ICoinDispenser dispenser, Coin coin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinRemoved(ICoinDispenser dispenser, Coin coin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsLoaded(ICoinDispenser dispenser, Coin... coins) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coinsUnloaded(ICoinDispenser dispenser, Coin... coins) {
 		// TODO Auto-generated method stub
 		
 	}
