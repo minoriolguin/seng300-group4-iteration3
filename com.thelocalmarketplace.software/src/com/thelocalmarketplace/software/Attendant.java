@@ -36,11 +36,9 @@ public class Attendant implements WeightDiscrepancyListener {
     	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
     }
 
-    @Override
     public void removeItemFromScale() {
     }
 
-    @Override
     public void addItemToScale() {
 
     }
@@ -59,4 +57,14 @@ public class Attendant implements WeightDiscrepancyListener {
     public void bagsTooHeavy() {
         software.weightDiscrepancy.massOfOwnBags = Mass.ZERO;
     }
+	@Override
+	public void RemoveItemFromScale() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void AddItemToScale() {
+		// TODO Auto-generated method stub
+		
+	}
 }

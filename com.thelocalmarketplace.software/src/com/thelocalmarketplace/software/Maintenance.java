@@ -33,7 +33,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
     private int averagePaperUsedPerSession;
-	  private int remainingPaper;
+	private int averageInkUsagePerSession;
+	private int remainingPaper;
     
     // Specs
     public static final int MAXIMUM_INK = 1 << 20;
