@@ -1,3 +1,4 @@
+package com.thelocalmarketplace.software;
 
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;

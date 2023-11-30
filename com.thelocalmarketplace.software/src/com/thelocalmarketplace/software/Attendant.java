@@ -1,5 +1,4 @@
-
-
+package com.thelocalmarketplace.software;
 import com.jjjwelectronics.Mass;
 
 public class Attendant implements WeightDiscrepancyListener {
@@ -18,24 +17,31 @@ public class Attendant implements WeightDiscrepancyListener {
     public void verifyItemRemovedFromOrder(){
         software.unblockCustomer();
     }
-    public void OverRideWeightDiscrepancy(){
+    public void overRideWeightDiscrepancy(){
         software.setExpectedTotalWeight(software.weightDiscrepancy.overRideWeight);
         software.weightDiscrepancy.isWeightDiscrepancy(software.getExpectedTotalWeight());
     }
     
+    public void disableCustomerStation() {
+    	software.blockCustomerStation();
+    	
+    }
+    
+    //Enables the customer station software and hardware after being blocked
+    //Precondition: Customer station must be blocked
     public void enableCustomerStation() {
-    	if (software.isBlocked()) {
-    		software.unblockCustomer();
+    	if (software.isCustomerStationBlocked()) {
+    		software.unblockCustomerStation();
     	}
     	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
     }
 
     @Override
-    public void RemoveItemFromScale() {
+    public void removeItemFromScale() {
     }
 
     @Override
-    public void AddItemToScale() {
+    public void addItemToScale() {
 
     }
 

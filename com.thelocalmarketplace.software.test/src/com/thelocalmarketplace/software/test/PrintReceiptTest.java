@@ -10,6 +10,7 @@
 //Maria Munoz 30175339
 //Anne Lumumba 30171346
 //Nathaniel Dafoe 30181948
+package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
@@ -18,6 +19,10 @@ import com.jjjwelectronics.printer.ReceiptPrinterGold;
 import com.jjjwelectronics.printer.ReceiptPrinterSilver;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.software.PrintReceipt;
+
 import powerutility.PowerGrid;
 import java.util.ArrayList;
 import org.junit.Before;
@@ -29,19 +34,23 @@ public class PrintReceiptTest{
     ReceiptPrinterBronze printerBronze;
     ReceiptPrinterSilver printerSilver;
     ReceiptPrinterGold printerGold;
-    ArrayList<BarcodedProduct> cart;
-    BarcodedProduct product;
+    ArrayList<BarcodedProduct> barcodeInCart;
+    ArrayList<PLUCodedProduct> pluInCart;
+    BarcodedProduct barcodeProduct;
+    PLUCodedProduct pluProduct;
     PrintReceiptTestAttendantStub attendantStub;
 
     // barcode product details
     Barcode barcode;
-    String description;
-    long price;
-    double weight;
+    String barProductDescription;
+    long barProductPrice;
+    double barProductWeight;
 
     // plu product details
-
-
+    PriceLookUpCode pluCode;
+    String pluProductDescription;
+    long pluProductPrice;
+    
     @Before
     public void setUp() throws OverloadedDevice {
         // hardware setup
@@ -71,13 +80,21 @@ public class PrintReceiptTest{
         // Product setup
         Numeral[] num1 = {Numeral.one};
         barcode = new Barcode(num1);
-        description = "product";
-        price = 100L;
-        weight = 1;
+        barProductDescription = "Barcoded product";
+        barProductPrice = 100L;
+        barProductWeight = 1;
+        
+        pluCode = new PriceLookUpCode("1234");
+        pluProductDescription = "PLU product";
+        pluProductPrice = 150L;
 
-        product = new BarcodedProduct(barcode,description,price,weight);
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeProduct = new BarcodedProduct(barcode,barProductDescription,barProductPrice,barProductWeight);
+        barcodeInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        
+        pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
+        pluInCart = new ArrayList<>();
+        pluInCart.add(pluProduct);
         
         // stub setup
         attendantStub = new PrintReceiptTestAttendantStub(printerBronze);
@@ -99,8 +116,9 @@ public class PrintReceiptTest{
         attendantStub = new PrintReceiptTestAttendantStub(printerBronze);
         printerBronze.register(attendantStub);
 
-        cart = new ArrayList<>();
-
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
         assertEquals(1, attendantStub.outOfPaperCounter);
@@ -110,7 +128,8 @@ public class PrintReceiptTest{
     public void testOutOfInkCallsAttendantStub() throws OverloadedDevice {
         PrintReceipt.setStartString(".\n");
         PrintReceipt.setEndString("");
-        cart = new ArrayList<>();
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
 
         printerBronze = new ReceiptPrinterBronze();
         printerBronze.plugIn(power);
@@ -127,7 +146,8 @@ public class PrintReceiptTest{
 
     @Test
     public void testPrintOnlyDefaultTemplate(){
-        cart = new ArrayList<>();
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();        
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
         String expected = """
@@ -145,8 +165,10 @@ public class PrintReceiptTest{
     public void testSetTemplatesAndSimpleSingleLine(){
         PrintReceipt.setStartString("Hello\n");
         PrintReceipt.setEndString("world!\n");
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
         String expected = """
@@ -182,8 +204,10 @@ public class PrintReceiptTest{
     public void testPrintSimpleSingleLineBronze(){
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
         String expected = """
@@ -197,8 +221,10 @@ public class PrintReceiptTest{
     public void testPrintSimpleSingleLineSilver(){
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerSilver);
         r.print();
         String expected = """
@@ -212,8 +238,10 @@ public class PrintReceiptTest{
     public void testPrintSimpleSingleLineGold(){
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerGold);
         r.print();
         String expected = """
@@ -228,11 +256,13 @@ public class PrintReceiptTest{
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
 
-        price = 251L;
-        product = new BarcodedProduct(barcode, description, price, weight);
+        barProductPrice = 251L;
+        barcodeProduct = new BarcodedProduct(barcode, barProductDescription, barProductPrice, barProductWeight);
 
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
@@ -248,11 +278,13 @@ public class PrintReceiptTest{
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
 
-        description = "------------------------------------------------------------";
-        product = new BarcodedProduct(barcode, description, price, weight);
+        barProductDescription = "------------------------------------------------------------";
+        barcodeProduct = new BarcodedProduct(barcode, barProductDescription, barProductPrice, barProductWeight);
+        pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
 
-        cart = new ArrayList<>();
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
@@ -268,11 +300,12 @@ public class PrintReceiptTest{
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
 
-        cart = new ArrayList<>();
-        cart.add(product);
-        cart.add(product);
-        cart.add(product);
-        cart.add(product);
+        barcodeInCart = new ArrayList<>();
+        pluInCart = new ArrayList<>();
+        barcodeInCart.add(barcodeProduct);
+        barcodeInCart.add(barcodeProduct);
+        pluInCart.add(pluProduct);
+        pluInCart.add(pluProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
         r.print();
