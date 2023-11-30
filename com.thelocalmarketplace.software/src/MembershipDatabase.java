@@ -10,21 +10,12 @@ public class MembershipDatabase {
     public MembershipDatabase() {
         this.members = new HashMap<>();
     }
-
-    // Adds a new member and returns the unique memberId
-    public int addMember(String name) {
-        Member newMember = new Member(++idCounter, name);
-        members.put(newMember.getMemberId(), newMember);
-        return newMember.getMemberId();
-    }
-
     // Adds points to a member's account
     public void addPoints(int memberId, int points) {
         if (members.containsKey(memberId)) {
             members.get(memberId).addPoints(points);
         }
     }
-
     // Retrieves a member by memberId
     public Member getMember(int memberId) {
         return members.get(memberId);
