@@ -33,6 +33,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
     private int averageInkUsagePerSession;
+  
     
     // Specs
     public static final int MAXIMUM_INK = 1 << 20;
@@ -44,6 +45,9 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     String outOfInkMsg = "PRINTER_OUT_OF_INK";
     String lowInkMsg = "PRINTER_LOW_INK";
     String lowInkSoonMsg = "PRINTER_LOW_INK_SOON";
+    String lowCoinsSoonDisp = "COIN_DISPENSER_LOW_COINS";
+    String dispAlmostFull = "COIN_DISPENSER_ALMOST_FULL";
+    String storAlmostFull = "COIN_STORAGE_ALMOST_FULL";
     
     public Maintenance(Software software){
         this.software = software;
@@ -59,7 +63,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * Returns arraylist of issues that require Attendant attention
      * 
      * @return Arraylist of strings which could have any of the following string objects:
-     * 		"PRINTER_OUT_OF_INK", "PRINTER_LOW_INK", "PRINTER_LOW_INK_SOON"
+     * 		"PRINTER_OUT_OF_INK", "PRINTER_LOW_INK", "PRINTER_LOW_INK_SOON",
+     * 		"COIN_DISPENSER_LOW_COINS", "COIN_DISPENSER_ALMOST_FULL", "COIN_STORAGE_ALMOST_FULL"
      */
     public ArrayList<String> getIssues() {
 		return issues;
@@ -116,6 +121,62 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	checkInk(averageInkUsagePerSession);	
     }
     
+    /**
+     * predicts if the dispenser has low coins
+     * @param denomination - the denomination associated with the dispenser
+     */
+    public void predictLowCoinsDispenser(BigDecimal denomination) {
+		int maxCapacity = software.getCoinDispensers().get(denomination).getCapacity();
+		int coinsInDispenser = software.getCoinDispensers().get(denomination).size();
+		// 25% of max capacity
+		int twentyFivePer = Math.round(maxCapacity/4);
+		
+		// if the coins in the dispenser is less than or equal to 25% of max capacity
+		if (coinsInDispenser <= twentyFivePer) {
+			// notifyAttendant
+			issues.add(lowCoinsSoonDisp);
+			software.blockCustomerStation();
+		} else {
+			issues.remove(lowCoinsSoonDisp);
+		}	
+    }
+    
+    /**
+     * predicts if the dispenser is almost full
+     * @param denomination - the denomination associated with the dispenser
+     */
+    public void predictCoinsFullDispenser(BigDecimal denomination) {
+    	int maxCapacity = software.getCoinDispensers().get(denomination).getCapacity();
+    	int coinsInDispenser = software.getCoinDispensers().get(denomination).size();
+    	// 75% of max capacity
+    	int seventyFivePer = Math.round((maxCapacity * 3)/4);
+    	//if coins in the dispenser is greater than or equal to 75% of max capacity
+    	if (coinsInDispenser >= seventyFivePer) {
+    		// notify attendant
+    		issues.add(dispAlmostFull);
+    		software.blockCustomerStation();
+    	} else {
+    		issues.remove(dispAlmostFull);
+    	}
+    }
+    
+    /**
+     * predicts if the coin storage unit is almost full
+     */
+    public void predictCoinsFullStorage() {
+    	int maxCapacity = software.getCoinStorage().getCapacity();
+    	int coinsInStorage = software.getCoinStorage().getCoinCount();
+    	// 75% of max capacity
+    	int seventyFivePer = Math.round((maxCapacity * 3)/4);
+    	//if coins in the storage unit is greater than or equal to 75% of max capacity
+    	if (coinsInStorage >= seventyFivePer) {
+    		// notify attendant
+    		issues.add(storAlmostFull);
+    		software.blockCustomerStation();
+    	} else {
+    		issues.remove(storAlmostFull);
+    	}
+    }
     
     /** 
      * Simulates adding coins to a dispenser of its associated denomination
@@ -142,7 +203,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		dispenser.load(coins);
     		
     	}
-	}
+   	}
     	    
     /**
      * Simulates removing coins in a dispenser of its associated 

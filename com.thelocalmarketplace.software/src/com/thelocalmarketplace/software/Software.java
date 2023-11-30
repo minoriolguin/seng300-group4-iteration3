@@ -14,6 +14,7 @@ import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
@@ -404,5 +405,23 @@ public class Software {
 	 */
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
+	}
+	
+	/**
+	 * Retrieves the coin dispensers of the self-checkout station.
+	 *
+	 * @return The coin dispensers.
+	 */
+	public Map<BigDecimal, ICoinDispenser> getCoinDispensers() {
+		return coinDispensers;
+	}
+	
+	/**
+	 * Retrieves the coin storage unit of the self-checkout station.
+	 *
+	 * @return The coin storage unit.
+	 */
+	public CoinStorageUnit getCoinStorage() {
+		return station.getCoinStorage();
 	}
 }
