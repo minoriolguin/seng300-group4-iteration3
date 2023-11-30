@@ -14,7 +14,7 @@ import com.jjjwelectronics.printer.ReceiptPrinterListener;
  * type in the Arraylist `issues` to simulate maintenance codes.
  * 
  */
-public class Maintenance implements ReceiptPrinterListener {
+public abstract class Maintenance implements ReceiptPrinterListener {
     private Software software;
     private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
@@ -40,7 +40,7 @@ public class Maintenance implements ReceiptPrinterListener {
     String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
     
     
-    public Maintenance(Software software){
+    public Maintenance(){
         this.software = software;
         // make predictions (check component statuses)
         this.notifyAttendant = false;
@@ -205,6 +205,10 @@ public class Maintenance implements ReceiptPrinterListener {
 		
 	}
 
+	public abstract void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device);
+
+	public abstract void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device);
+
 	@Override
 	public void thePrinterIsOutOfPaper() {
 		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
@@ -218,7 +222,7 @@ public class Maintenance implements ReceiptPrinterListener {
 	}
 
 	@Override
-	public void thePrinterIsOutOfInk() {
+	public void thePrinterIsOutOfInk() throws InterruptedException {
 		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
 		issues.add(outOfInkMsg);
 		
@@ -230,7 +234,7 @@ public class Maintenance implements ReceiptPrinterListener {
 	}
 
 	@Override
-	public void thePrinterHasLowInk() {
+	public void thePrinterHasLowInk() throws InterruptedException {
 		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
 		issues.add(lowInkSoonMsg);
 		

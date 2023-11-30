@@ -136,7 +136,7 @@ public class Software {
 		payByCard = new PayByCard(this);
 		payByCoin = new PayByCoin(this);
 		printReceipt = new PrintReceipt(this);
-		maintenance = new Maintenance(this);
+		maintenance = new Maintenance();
 
 		//Initialize Product Lists and Weight Limit
 		productsInOrder = new HashMap<>();

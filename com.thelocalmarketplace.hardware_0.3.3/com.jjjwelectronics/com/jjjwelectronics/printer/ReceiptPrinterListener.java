@@ -16,12 +16,12 @@ public interface ReceiptPrinterListener extends IDeviceListener {
 	/**
 	 * Announces that the printer is out of ink.
 	 */
-	void thePrinterIsOutOfInk();
+	void thePrinterIsOutOfInk() throws InterruptedException;
 
 	/**
 	 * Announces that the printer is low on ink.
 	 */
-	void thePrinterHasLowInk();
+	void thePrinterHasLowInk() throws InterruptedException;
 
 	/**
 	 * Announces that the printer is low on paper.
