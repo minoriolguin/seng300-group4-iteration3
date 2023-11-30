@@ -97,7 +97,7 @@ public class Maintenance implements ReceiptPrinterListener {
     	if (inkRemaining <= lowInkLevel+averageInkUsagePerSession) {
     		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowInkSoonMsg);
-    		software.blockCustomerStation();
+    		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(lowInkSoonMsg);
     	}
@@ -148,7 +148,7 @@ public class Maintenance implements ReceiptPrinterListener {
     	if (remainingPaper <= lowPaperLevel+averagePaperUsedPerSession) {
     		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowPaperSoonMsg);
-    		software.blockCustomerStation();
+    		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(lowPaperSoonMsg);
     	}
@@ -214,7 +214,7 @@ public class Maintenance implements ReceiptPrinterListener {
 		issues.remove(lowPaperMsg);
 		issues.remove(lowPaperSoonMsg);
 				
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
@@ -226,7 +226,7 @@ public class Maintenance implements ReceiptPrinterListener {
 		issues.remove(lowInkMsg);
 		issues.remove(lowInkSoonMsg);
 		
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public class Maintenance implements ReceiptPrinterListener {
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowInkSoonMsg);
 		
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
@@ -248,7 +248,7 @@ public class Maintenance implements ReceiptPrinterListener {
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowPaperSoonMsg);
 				
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 		
 	}
 
