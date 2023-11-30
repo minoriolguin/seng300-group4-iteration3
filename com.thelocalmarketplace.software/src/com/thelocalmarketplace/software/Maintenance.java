@@ -56,7 +56,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
         
-        // checkInk(averageInkUsagePerSession);
+        checkInk(averageInkUsagePerSession);
     }
     
     /**
