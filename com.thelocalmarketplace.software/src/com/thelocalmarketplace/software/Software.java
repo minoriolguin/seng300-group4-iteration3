@@ -66,7 +66,7 @@ public class Software {
 
 
 	private AbstractSelfCheckoutStation station;
-
+	
 	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
 		return new Software(hardware);
 	}
@@ -398,4 +398,5 @@ public class Software {
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
 	}
+	
 }

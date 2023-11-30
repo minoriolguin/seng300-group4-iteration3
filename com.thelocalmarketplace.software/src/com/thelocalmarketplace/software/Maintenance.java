@@ -1,3 +1,5 @@
+package com.thelocalmarketplace.software;
+
 import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
@@ -17,10 +19,15 @@ public class Maintenance implements ReceiptPrinterListener {
     private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
     private int averageInkUsagePerSession;
+    private int averagePaperUsedPerSession;
+	private int remainingPaper;
+
     
     // Specs
     public static final int MAXIMUM_INK = 1 << 20;
     public int lowInkLevel = (int)(MAXIMUM_INK * 0.1);
+    public static final int MAXIMUM_PAPER = 1 << 10;
+    public int lowPaperLevel = (int)(MAXIMUM_PAPER * 0.1);
     
     ArrayList<String> issues;
 
@@ -28,6 +35,10 @@ public class Maintenance implements ReceiptPrinterListener {
     String outOfInkMsg = "PRINTER_OUT_OF_INK";
     String lowInkMsg = "PRINTER_LOW_INK";
     String lowInkSoonMsg = "PRINTER_LOW_INK_SOON";
+    String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
+    String lowPaperMsg = "PRINTER_LOW_PAPER";
+    String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
+    
     
     public Maintenance(Software software){
         this.software = software;
@@ -43,7 +54,8 @@ public class Maintenance implements ReceiptPrinterListener {
      * Returns arraylist of issues that require Attendant attention
      * 
      * @return Arraylist of strings which could have any of the following string objects:
-     * 		"PRINTER_OUT_OF_INK", "PRINTER_LOW_INK", "PRINTER_LOW_INK_SOON"
+     * 		"PRINTER_OUT_OF_INK", "PRINTER_LOW_INK", "PRINTER_LOW_INK_SOON",
+     * 		"PRINTER_OUT_OF_PAPER", "PRINTER_LOW_PAPER", "PRINTER_LOW_PAPER_SOON"
      */
     public ArrayList<String> getIssues() {
 		return issues;
@@ -85,7 +97,7 @@ public class Maintenance implements ReceiptPrinterListener {
     	if (inkRemaining <= lowInkLevel+averageInkUsagePerSession) {
     		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowInkSoonMsg);
-    		software.blockCustomerStation();
+    		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(lowInkSoonMsg);
     	}
@@ -100,12 +112,62 @@ public class Maintenance implements ReceiptPrinterListener {
     	checkInk(averageInkUsagePerSession);	
     }
     
-    // needs to be implemented and tested
-    // should be called after every printed receipt, start up?
-    // notify attendant
-    // may need different return type
-    public void needPaper(){
+    /**
+     * Checks the varying amounts of paper
+     * When there is no more paper
+     * When is there is low paper
+     * @param averagePaperUsed
+     */
+    public void checkPaper(int averagePaperUsed) { 
+    	this.averagePaperUsedPerSession = averagePaperUsed;
+    	
+    	try {
+    		this.remainingPaper = software.printer.paperRemaining();
+    	} catch (UnsupportedOperationException e) {
+    		// if station type is bronze
+    	}
+    	
+    	if (remainingPaper == 0) {
+    		thePrinterIsOutOfPaper();
+    	} else if (remainingPaper <= lowPaperLevel) {
+    		thePrinterHasLowPaper();
+    	} else { // If no issues or prior issues has been resolved
+    		// Remove if exists in issues arraylist; does nothing otherwise
+    		issues.remove(lowPaperMsg);
+    		issues.remove(outOfPaperMsg);
+    		// Estimate when low paper might occur
+    		predictLowPaper();
+    	}				 
+	}
+    
+    /**
+     * Predicts how many more usages before low paper using average
+     * amount of paper used
+     */
+    public void predictLowPaper() {
+    	if (remainingPaper <= lowPaperLevel+averagePaperUsedPerSession) {
+    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
+    		issues.add(lowPaperSoonMsg);
+    		software.attendant.disableCustomerStation();
+    	} else {
+    		issues.remove(lowPaperSoonMsg);
+    	}
     }
+	
+    /**
+     * Add the specified amount of paper to printer
+     * @param amount
+     * @throws OverloadedDevice
+     */
+	public void resolvePrinterPaperIssue(int amount) throws OverloadedDevice {
+		if (amount >= (MAXIMUM_PAPER-remainingPaper)) {
+    		throw new RuntimeException("Process aborted: Quantity will overload the device.");
+    	}
+    	software.printer.addPaper(amount);
+    	checkPaper(averagePaperUsedPerSession);	
+    }
+		  
+    
     // needs to be implemented and tested
     // should be called after every time change is given, startup?
     // notify attendant
@@ -145,8 +207,14 @@ public class Maintenance implements ReceiptPrinterListener {
 
 	@Override
 	public void thePrinterIsOutOfPaper() {
-		// TODO Auto-generated method stub
+		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
+		issues.add(outOfPaperMsg);
 		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(lowPaperMsg);
+		issues.remove(lowPaperSoonMsg);
+				
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
@@ -158,7 +226,7 @@ public class Maintenance implements ReceiptPrinterListener {
 		issues.remove(lowInkMsg);
 		issues.remove(lowInkSoonMsg);
 		
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
@@ -169,12 +237,18 @@ public class Maintenance implements ReceiptPrinterListener {
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowInkSoonMsg);
 		
-		software.blockCustomerStation();
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
 	public void thePrinterHasLowPaper() {
-		// TODO Auto-generated method stub
+		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
+		issues.add(lowPaperSoonMsg);
+				
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(lowPaperSoonMsg);
+				
+		software.attendant.disableCustomerStation();
 		
 	}
 
