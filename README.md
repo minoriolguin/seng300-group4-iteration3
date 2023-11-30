@@ -17,3 +17,5 @@ Minori Olguin / minoriolguin / 30035923
 Sofia Rubio / sofiarubio / 30113733
 
 Elizabeth Szentmiklossy / eliza / 30165216
+
+Kelly Osena / osenak / 30074352
