@@ -70,7 +70,7 @@ public class Software {
 
 
 	private AbstractSelfCheckoutStation station;
-
+	
 	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
 		return new Software(hardware);
 	}
