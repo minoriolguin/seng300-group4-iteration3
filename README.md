@@ -19,3 +19,25 @@ Sofia Rubio / sofiarubio / 30113733
 Elizabeth Szentmiklossy / eliza / 30165216
 
 Kelly Osena / osenak / 30074352
+
+Arvin Bolbolanardestani /  / 30165484
+
+Ahmed Elshabasi /  / 30188386
+
+Shawn Hanlon / Shawn426566 /  10021510
+
+Nada Mohamed /  / 30183972
+
+Jon Mulyk /  / 30093143
+
+Muhib Qureshi /  / 30076351
+
+Muzammil Saleem /  / 30180889
+
+Steven Susorov /  / 30197973
+
+Anthony Tolentino /  / 30081427
+
+Johnny Tran /  / 30140472
+
+Kaylee Xiao /  /  30173778
