@@ -1,18 +1,25 @@
 package com.thelocalmarketplace.software;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.printer.ReceiptPrinterListener;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
+import com.tdc.NoCashAvailableException;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinDispenserObserver;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinStorageUnitObserver;
 import com.tdc.coin.ICoinDispenser;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+import ca.ucalgary.seng300.simulation.SimulationException;
 
 /**
  * Handles maintenance of hardware ink, paper, coins, and banknotes status
@@ -45,7 +52,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
         
-        checkInk(averageInkUsagePerSession);
+        // checkInk(averageInkUsagePerSession);
     }
     
     /**
@@ -109,18 +116,81 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	checkInk(averageInkUsagePerSession);	
     }
     
+    
+    /** 
+     * Simulates adding coins to a dispenser of its associated denomination
+     * @param dispenser - the dispenser that needs coins to be added to
+     * @param denomination - the type of denomination for that dispenser
+     * @param amount - the amount of coins to be placed in the dispenser 
+     */
+    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
+    	if (dispenser == null) {
+    		throw new NullPointerSimulationException();   		
+    	}
+    	
+    	if (!software.isBlocked()) {
+    		System.out.println("Station must be disabled");
+    	} else {
+    		int i;
+    		Coin coin = new Coin(denomination);
+    		Coin[] coins = new Coin[amount];
+    		
+    		for (i = 0; i <= amount - 1; i++ ) {
+    			coins[i] = coin;
+    		}
+    		
+    		dispenser.load(coins);
+    		
+    	}
+	}
+    	    
+    /**
+     * Simulates removing coins in a dispenser of its associated 
+     * @param dispenser - the dispenser that needs coins to be removed from
+     * @param amount - the amount of coins to be placed in the dispenser 
+     */
+    public void removeCoinsInDispenser(ICoinDispenser dispenser, int amount) throws CashOverloadException, NoCashAvailableException, DisabledException {
+    	if (dispenser == null) {
+    		throw new NullPointerSimulationException();   		
+    	}
+    	
+    	if (!software.isBlocked()) {
+    		System.out.println("Station must be disabled");
+    	} else {
+    		int i;
+    		for (i = 0; i <= amount - 1; i++) {
+    			dispenser.emit();
+    		}
+    		
+    	}
+    }
+    		
+    
+    /**
+     * Simulates removing all coins from the coin storage unit
+     * @param unit - the storage unit to remove all coins from
+     */
+    public void removeAllCoinsInStorageUnit(CoinStorageUnit unit) {
+    	
+    	if (!software.isBlocked()) {
+    		System.out.println("Station must be disabled");
+    	} else {
+    		unit.unload();		
+    	}
+    }
+    
+    
+    
+    
+    
     // needs to be implemented and tested
     // should be called after every printed receipt, start up?
     // notify attendant
     // may need different return type
     public void needPaper(){
     }
-    // needs to be implemented and tested
-    // should be called after every time change is given, startup?
-    // notify attendant
-    // may need different return type
-    public void needCoins(){
-    }
+   
+    
     // needs to be implemented and tested
     // should be called after every time change is given, startup?
     // notify attendant
@@ -198,7 +268,24 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void coinsFull(ICoinDispenser dispenser) {
+		// notifyAttendant
+	}
 
+	@Override
+	public void coinsEmpty(ICoinDispenser dispenser) {
+		// notifyAttendant
+	}
+
+
+	@Override
+	public void coinsFull(CoinStorageUnit unit) {
+		// notifyAttendant
+		
+	}
+	
 	@Override
 	public void enabled(IComponent<? extends IComponentObserver> component) {
 		// TODO Auto-generated method stub
@@ -224,12 +311,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	}
 
 	@Override
-	public void coinsFull(CoinStorageUnit unit) {
-		//this.notifyAttendant = true;
-		
-	}
-
-	@Override
 	public void coinAdded(CoinStorageUnit unit) {
 		// TODO Auto-generated method stub
 		
@@ -247,17 +328,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		
 	}
 
-	@Override
-	public void coinsFull(ICoinDispenser dispenser) {
-		//this.notifyAttendant = true;
-		
-	}
-
-	@Override
-	public void coinsEmpty(ICoinDispenser dispenser) {
-		//this.notifyAttendant = true;
-		
-	}
 
 	@Override
 	public void coinAdded(ICoinDispenser dispenser, Coin coin) {
