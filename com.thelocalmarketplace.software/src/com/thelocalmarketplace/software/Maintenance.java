@@ -58,9 +58,14 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     String outOfInkMsg = "PRINTER_OUT_OF_INK";
     String lowInkMsg = "PRINTER_LOW_INK";
     String lowInkSoonMsg = "PRINTER_LOW_INK_SOON";
+    
     String lowCoinsSoonDisp = "COIN_DISPENSER_LOW_COINS";
     String dispAlmostFull = "COIN_DISPENSER_ALMOST_FULL";
     String storAlmostFull = "COIN_STORAGE_ALMOST_FULL";
+    String outOfCoinsDisp = "COIN_DISPENSER_OUT_OF_COINS";
+    String coinDispFull = "COIN_DISPENSER_IS_FULL";
+    String coinStorFull = "COIN_STORAGE_IS_FULL";
+    
     String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
     String lowPaperMsg = "PRINTER_LOW_PAPER";
     String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
@@ -159,7 +164,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		// if the coins in the dispenser is less than or equal to 25% of max capacity
 		if (coinsInDispenser <= twentyFivePer) {
 			issues.add(lowCoinsSoonDisp);
-			software.blockCustomerStation();
+			software.attendant.disableCustomerStation();
 		} else {
 			issues.remove(lowCoinsSoonDisp);
 		}	
@@ -178,7 +183,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	if (coinsInDispenser >= seventyFivePer) {
     		// notify attendant
     		issues.add(dispAlmostFull);
-    		software.blockCustomerStation();
+    		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(dispAlmostFull);
     	}
@@ -196,7 +201,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	if (coinsInStorage >= seventyFivePer) {
     		// notify attendant
     		issues.add(storAlmostFull);
-    		software.blockCustomerStation();
+    		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(storAlmostFull);
     	}
@@ -213,7 +218,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		throw new NullPointerSimulationException();   		
     	}
     	
-    	if (!software.isBlocked()) {
+    	if (!software.isCustomerStationBlocked()) {
     		System.out.println("Station must be disabled");
     	} else {
     		int i;
@@ -239,7 +244,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		throw new NullPointerSimulationException();   		
     	}
     	
-    	if (!software.isBlocked()) {
+    	if (!software.isCustomerStationBlocked()) {
     		System.out.println("Station must be disabled");
     	} else {
     		int i;
@@ -255,9 +260,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * Simulates removing all coins from the coin storage unit
      * @param unit - the storage unit to remove all coins from
      */
-    public void removeAllCoinsInStorageUnit(CoinStorageUnit unit) {
-    	
-    	if (!software.isBlocked()) {
+    public void removeAllCoinsInStorageUnit(CoinStorageUnit unit) { 	
+    	if (!software.isCustomerStationBlocked()) {
     		System.out.println("Station must be disabled");
     	} else {
     		unit.unload();		
@@ -467,18 +471,33 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	
 	@Override
 	public void coinsFull(ICoinDispenser dispenser) {
-		// notifyAttendant
+		issues.add(coinDispFull);
+		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(dispAlmostFull);
+		
+		software.attendant.disableCustomerStation();
 	}
 
 	@Override
 	public void coinsEmpty(ICoinDispenser dispenser) {
-		// notifyAttendant
+		issues.add(outOfCoinsDisp);
+		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(lowCoinsSoonDisp);
+		
+		software.attendant.disableCustomerStation();
 	}
 
 
 	@Override
 	public void coinsFull(CoinStorageUnit unit) {
-		// notifyAttendant
+		issues.add(coinStorFull);
+		
+		// remove these elements if exists in issues; does nothing otherwise
+		issues.remove(storAlmostFull);
+		
+		software.attendant.disableCustomerStation();
 		
 	}
 	
