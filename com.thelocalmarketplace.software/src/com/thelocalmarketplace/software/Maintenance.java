@@ -178,8 +178,16 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     // should be called after every time change is given, startup?
     // notify attendant
     // may need different return type
-    public void needBanknotes(){
-    }
+    public void maintainBanknotes() throws  OverloadedDevice{
+		try {
+			this.software.banknoteDispenser.dispense();
+
+			//this.notifyAttendant = true; --- communicate w Miscellaneous team
+
+		} catch (Exception e) {
+			issues.add("ERROR_MAINTAINING_BANKNOTES");
+		}
+	}
 
 	@Override
 	public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
