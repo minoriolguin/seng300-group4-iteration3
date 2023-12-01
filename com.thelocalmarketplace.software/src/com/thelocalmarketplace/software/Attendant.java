@@ -1,11 +1,14 @@
 package com.thelocalmarketplace.software;
 import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.OverloadedDevice;
 
 public class Attendant implements WeightDiscrepancyListener {
 
-    Software software;
+    private final Software software;
+    public boolean reusableBagsEmpty;
     public Attendant(Software software){
         this.software = software;
+        reusableBagsEmpty = false;
     }
     public void notifySkipBagging(){
         software.unblockCustomer();
@@ -37,7 +40,10 @@ public class Attendant implements WeightDiscrepancyListener {
     }
 
     public void reusableBagsEmpty() {
-
+        reusableBagsEmpty = true;
+    }
+    public void fillReusableBags(int amount) throws OverloadedDevice {
+        software.purchaseBags.addBagsToDispenser(amount);
     }
 
     public void removeItemFromScale() {

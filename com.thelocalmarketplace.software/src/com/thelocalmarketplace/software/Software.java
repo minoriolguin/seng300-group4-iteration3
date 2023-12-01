@@ -63,7 +63,7 @@ public class Software {
 	public final PrintReceipt printReceipt;
 	public final PayByCard payByCard;
 	public final UpdateCart updateCart;
-	//public final Maintenance maintenance;
+	public final Maintenance maintenance;
 	public final PurchaseBags purchaseBags;
 
 	public Mass allowableBagWeight;
@@ -151,7 +151,7 @@ public class Software {
 		payByCard = new PayByCard(this);
 		payByCoin = new PayByCoin(this);
 		printReceipt = new PrintReceipt(this);
-		//maintenance = new Maintenance(this);
+		maintenance = new Maintenance(this);
 		purchaseBags = new PurchaseBags(this);
 
 

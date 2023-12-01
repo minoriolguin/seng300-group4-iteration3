@@ -9,9 +9,8 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 public class PurchaseBags implements ReusableBagDispenserListener{
-	private Software software;
-	private IReusableBagDispenser reusableBagDispenser;
-	private Boolean addbag;
+	private final Software software;
+	private final IReusableBagDispenser reusableBagDispenser;
 	private Boolean OutOfBags;
 	private final Barcode reuseableBagBarcode;
 	private final ReusableBag bag;
@@ -40,21 +39,19 @@ public class PurchaseBags implements ReusableBagDispenserListener{
 	public void AddBagToOrder(int amount) throws EmptyDevice {
 		for (int i = amount; i>0; i--) {
 			if (!OutOfBags) {
-				software.updateCart.addScannedItem(reuseableBagBarcode);
 				reusableBagDispenser.dispense();
+				software.updateCart.addScannedItem(reuseableBagBarcode);
 			}
 		}
-			if(OutOfBags)
-				//notifies attendant
-				software.attendant.reusableBagsEmpty();
+		if(OutOfBags)
+			//notifies attendant
+			software.attendant.reusableBagsEmpty();
 	}
-	// maybe try catch?
 	public void addBagsToDispenser(int amount) throws OverloadedDevice {
 		for(int i = amount; i>0; i--)
 			reusableBagDispenser.load(bag);
 		OutOfBags = false;
 	}
-
 	@Override
 	public void theDispenserIsOutOfBags() {
 		OutOfBags = true; 
@@ -63,32 +60,26 @@ public class PurchaseBags implements ReusableBagDispenserListener{
 	@Override
 	public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void aDeviceHasBeenDisabled(IDevice<? extends IDeviceListener> device) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void aDeviceHasBeenTurnedOn(IDevice<? extends IDeviceListener> device) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void aDeviceHasBeenTurnedOff(IDevice<? extends IDeviceListener> device) {
 		// TODO Auto-generated method stub
-		
 	}
 	@Override
 	public void aBagHasBeenDispensedByTheDispenser() {
 		// TODO Auto-generated method stub
 	}
-		
 	@Override
 	public void bagsHaveBeenLoadedIntoTheDispenser(int count) {
 		// TODO Auto-generated method stub
-		
 	}
 
 
