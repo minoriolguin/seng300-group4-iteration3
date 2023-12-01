@@ -2,8 +2,13 @@ package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
+import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.Coin;
+import com.tdc.coin.CoinValidator;
+import com.tdc.coin.CoinValidatorObserver;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
@@ -14,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
 
 import static org.junit.Assert.*;
 
@@ -27,14 +34,30 @@ public class BlackBoxTests {
     private BarcodedProduct inRangeProduct;
     private BarcodedItem lessThanSensitivity;
     private BarcodedProduct LessThanSensitivityProduct;
+    private ArrayList<BigDecimal> coindenominations;
+    private Currency CAD;
+    private BigDecimal[] billDenominations;
+    private BanknoteValidator banknoteValidator;
+    private CoinValidatorObserver coinValidator;
+
+    private static final Currency CAD_Currency = Currency.getInstance("CAD");
+    private static final BigDecimal value_toonie = new BigDecimal("2.00");
+    private static final BigDecimal value_loonie = new BigDecimal("1.00");
+    private static final BigDecimal value_quarter = new BigDecimal("0.25");
+    private static final BigDecimal value_dime = new BigDecimal("0.10");
+    private static final BigDecimal value_nickel = new BigDecimal("0.05");
+    private static final BigDecimal value_penny = new BigDecimal("0.01");
+
+    private Coin coin_toonie = new Coin(CAD_Currency,value_toonie);
+    private Coin coin_loonie = new Coin(CAD_Currency,value_loonie);
+    private Coin coin_quarter = new Coin(CAD_Currency,value_quarter);
+    private Coin coin_dime = new Coin(CAD_Currency,value_dime);
+    private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
+    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
 
     @Before
-    public void Setup() {
+    public void Setup() throws OverloadedDevice {
 
-        //Attach Station to software
-        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-        hardware = new SelfCheckoutStationBronze();
-        software = Software.getInstance(hardware);
 
         //create barcoded products to test with
         Numeral[] InRangebar = new Numeral[3];
@@ -67,9 +90,47 @@ public class BlackBoxTests {
         Mass less = new Mass(LessThanSensitivityProduct.getExpectedWeight());
         lessThanSensitivity = new BarcodedItem(LessThanSensitivityProduct.getBarcode(),less);
 
+        coindenominations = new ArrayList<BigDecimal>();
+        CAD = Currency.getInstance("CAD");
+        coindenominations.add(value_toonie);
+        coindenominations.add(value_loonie);
+        coindenominations.add(value_quarter);
+        coindenominations.add(value_dime);
+        coindenominations.add(value_nickel);
+        coindenominations.add(value_penny);
+
+        billDenominations = new BigDecimal[5];
+        billDenominations[0] = new BigDecimal("5.00");
+        billDenominations[1] = new BigDecimal("10.00");
+        billDenominations[2] = new BigDecimal("20.00");
+        billDenominations[3] = new BigDecimal("50.00");
+        billDenominations[4] = new BigDecimal("100.00");
+
+        Currency c = Currency.getInstance("CAD");
+        BigDecimal[] billDenom = { new BigDecimal("5.00"),
+                new BigDecimal("10.00"),
+                new BigDecimal("20.00"),
+                new BigDecimal("50.00"),
+                new BigDecimal("100.00")};
+        BigDecimal[] coinDenom = { new BigDecimal("0.01"),
+                new BigDecimal("0.05"),
+                new BigDecimal("0.1"),
+                new BigDecimal("0.25"),
+                new BigDecimal("1"),
+                new BigDecimal("2") };
+
+        AbstractSelfCheckoutStation.configureCurrency(c);
+        AbstractSelfCheckoutStation.configureBanknoteDenominations(billDenom);
+        AbstractSelfCheckoutStation.configureCoinDenominations(coinDenom);
+        hardware = new SelfCheckoutStationBronze();
+        software = Software.getInstance(hardware);
+
         //fire it up!
         software.turnOn();
-
+        software.maintenance.resolvePrinterPaperIssue(1000);
+        software.maintenance.resolveInkIssue(1000);
+        software.banknoteStorageUnit.load();
+        software.coinStorageUnit.load();
     }
 
     @Test
@@ -79,6 +140,7 @@ public class BlackBoxTests {
         //new session
         software.touchScreen.skip = false;
         software.startSession();
+        assertFalse(software.handHeldScanner.isDisabled());
         //ensure the items from setup in Data Base
         assertEquals(3,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
         //scan an item in the baggingArea scales range (over-sensitivity, less than max)

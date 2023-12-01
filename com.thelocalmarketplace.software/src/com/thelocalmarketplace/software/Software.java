@@ -14,6 +14,7 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
@@ -46,13 +47,14 @@ public class Software {
 	private final HashMap<Product,Mass> baggedProducts;
 	private MembershipNumberValidator membershipValidator;
 	private MembershipDatabase membershipDatabase;
-
 	public final IElectronicScale baggingAreaScale;
 	public final IElectronicScale scannerScale;
 	public final IBarcodeScanner handHeldScanner;
 	public final IBarcodeScanner mainScanner;
 	public final BanknoteValidator banknoteValidator;
 	public final CoinValidator coinValidator;
+	public final BanknoteStorageUnit banknoteStorageUnit;
+	public final CoinStorageUnit coinStorageUnit;
 	public final ICardReader cardReader;
 	public final IReceiptPrinter printer;
 	public final IReusableBagDispenser reusableBagDispenser;
@@ -84,62 +86,21 @@ public class Software {
 	 *  
 	 */
 	public Software(AbstractSelfCheckoutStation hardware) {
-		if (hardware instanceof SelfCheckoutStationBronze bronze) {
-			this.station = bronze;
-			this.baggingAreaScale = bronze.getBaggingArea();
-			this.scannerScale = bronze.getScanningArea();
-			this.handHeldScanner = bronze.getHandheldScanner();
-			this.mainScanner = bronze.getMainScanner();
-			this.banknoteValidator = bronze.getBanknoteValidator();
-			this.coinValidator = bronze.getCoinValidator();
-			this.cardReader = bronze.getCardReader();
-			this.banknoteDispenser = bronze.getBanknoteOutput();
-			this.coinTray = bronze.getCoinTray();
-			this.printer = bronze.getPrinter();
-			this.coinDispensers = bronze.getCoinDispensers();
-			this.reusableBagDispenser = bronze.getReusableBagDispenser();
-		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
-			this.station = silver;
-			this.baggingAreaScale = silver.getBaggingArea();
-			this.scannerScale = silver.getScanningArea();
-			this.handHeldScanner = silver.getHandheldScanner();
-			this.mainScanner = silver.getMainScanner();
-			this.banknoteValidator = silver.getBanknoteValidator();
-			this.coinValidator = silver.getCoinValidator();
-			this.cardReader = silver.getCardReader();
-			this.banknoteDispenser = silver.getBanknoteOutput();
-			this.coinTray = silver.getCoinTray();
-			this.printer = silver.getPrinter();
-			this.coinDispensers = silver.getCoinDispensers();
-			this.reusableBagDispenser = silver.getReusableBagDispenser();
-		} else if (hardware instanceof SelfCheckoutStationGold gold) {
-			this.station = gold;
-			this.baggingAreaScale = gold.getBaggingArea();
-			this.scannerScale = gold.getScanningArea();
-			this.handHeldScanner = gold.getHandheldScanner();
-			this.mainScanner = gold.getMainScanner();
-			this.banknoteValidator = gold.getBanknoteValidator();
-			this.coinValidator = gold.getCoinValidator();
-			this.cardReader = gold.getCardReader();
-			this.banknoteDispenser = gold.getBanknoteOutput();
-			this.coinTray = gold.getCoinTray();
-			this.printer = gold.getPrinter();
-			this.coinDispensers = gold.getCoinDispensers();
-			this.reusableBagDispenser = gold.getReusableBagDispenser();
-		} else {
-			this.baggingAreaScale = hardware.getBaggingArea();
-			this.scannerScale = hardware.getScanningArea();
-			this.handHeldScanner = hardware.getHandheldScanner();
-			this.mainScanner = hardware.getMainScanner();
-			this.banknoteValidator = hardware.getBanknoteValidator();
-			this.coinValidator = hardware.getCoinValidator();
-			this.cardReader = hardware.getCardReader();
-			this.banknoteDispenser = hardware.getBanknoteOutput();
-			this.coinTray = hardware.getCoinTray();
-			this.printer = hardware.getPrinter();
-			this.coinDispensers = hardware.getCoinDispensers();
-			this.reusableBagDispenser = hardware.getReusableBagDispenser();
-		}
+
+		this.baggingAreaScale = hardware.getBaggingArea();
+		this.scannerScale = hardware.getScanningArea();
+		this.handHeldScanner = hardware.getHandheldScanner();
+		this.mainScanner = hardware.getMainScanner();
+		this.banknoteValidator = hardware.getBanknoteValidator();
+		this.coinValidator = hardware.getCoinValidator();
+		this.cardReader = hardware.getCardReader();
+		this.banknoteDispenser = hardware.getBanknoteOutput();
+		this.coinTray = hardware.getCoinTray();
+		this.printer = hardware.getPrinter();
+		this.coinDispensers = hardware.getCoinDispensers();
+		this.reusableBagDispenser = hardware.getReusableBagDispenser();
+		this.coinStorageUnit = hardware.getCoinStorage();
+		this.banknoteStorageUnit = hardware.getBanknoteStorage();
 
 		expectedTotalWeight = Mass.ZERO;
 		orderTotal = BigDecimal.ZERO;

@@ -47,6 +47,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	public int lowbanknoteslevel = (int)(MAXIMUM_BANKNOTES * 0.1);
 
 	private BanknoteStorageUnit banknoteStorageUnit;
+	private CoinStorageUnit coinStorageUnit;
+	private Co
 
 	private int averageBanknotesUsagePerSession;
 
@@ -82,6 +84,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
 		issues = new ArrayList<>();
+		this.banknoteStorageUnit = software.banknoteStorageUnit;
+		this.coinStorageUnit = software.coinStorageUnit;
     }
     
     /**
@@ -214,11 +218,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @param denomination - the type of denomination for that dispenser
      * @param amount - the amount of coins to be placed in the dispenser 
      */
-    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
-    	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
-    	}
-    	
+    public void addCoinsInDispenser(BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
+
     	if (!software.isCustomerStationBlocked()) {
     		System.out.println("Station must be disabled");
     	} else {
