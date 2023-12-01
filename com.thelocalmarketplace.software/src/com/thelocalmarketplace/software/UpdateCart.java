@@ -21,6 +21,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     public WeightDiscrepancy weightDiscrepancy;
     public Software software;
     public Mass currentMassOnScanner;
+    private MembershipScanner membershipScanner;
 
     /**
      * Constructs an UpdateCart instance.
@@ -30,6 +31,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     public UpdateCart(Software software) {
         this.software = software;
         this.weightDiscrepancy = software.weightDiscrepancy;
+        this.membershipScanner = new MembershipScanner(software);
 
         // register both scanners, Both are automatically dealt with
         software.handHeldScanner.register(this);
@@ -155,8 +157,22 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     //1. System: Detects a barcode from the handheld scanner.
     @Override
     public void aBarcodeHasBeenScanned(IBarcodeScanner barcodeScanner, Barcode barcode) {
-        addScannedItem(barcode);
+    	 if (isMembershipBarcode(barcode)) {
+             membershipScanner.handleMembershipBarcode(barcode);
+         } else {
+             addScannedItem(barcode);
+         }
     }
+    	 private boolean isMembershipBarcode(Barcode barcode) {
+        	 // Convert the barcode to its string representation
+            String barcodeString = barcode.toString();
+            // Check if the barcode string is exactly 8 digits long
+            if (barcodeString.length() == 8) {
+                // Further check if all characters are digits
+                return barcodeString.matches("\\d{8}");
+            }
+            return false;
+        }
     
     // The following methods are inherited from the BarcodeScannerListener interface
 

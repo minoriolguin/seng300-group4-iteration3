@@ -52,7 +52,7 @@ public class SoftwareTest {
     public ICardReader cardReader;
     public WeightDiscrepancy weightDiscrepancy;
     public TouchScreen touchScreen;
-    public Attendant attendant;
+    public AttendantTest attendant;
     public PayByBanknote payByBanknote;
 
     public UpdateCart updateCart;

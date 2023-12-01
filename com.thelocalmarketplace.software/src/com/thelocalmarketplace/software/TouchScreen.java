@@ -1,9 +1,11 @@
 package com.thelocalmarketplace.software;
 
 
+import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 /**
@@ -95,7 +97,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
     public boolean skipBaggingItem(){
         return skip;
     }
-
+ 
     /**
      * Initiates the process to add the customer's own bags.
      * Disables scanners and expects the addition of own bags.
@@ -121,7 +123,25 @@ public class TouchScreen implements WeightDiscrepancyListener {
         software.mainScanner.enable();
         software.handHeldScanner.enable();
     }
-    
+
+    /**
+     * Made with assumption that GUI will be presenting Database of items
+     * Item on GUI clicked and calls this method passing in a Product param
+     */
+    public void visualProductClicked(Product itemClicked) {
+    	//Is PLU coded Product
+    	if (!itemClicked.isPerUnit()) {
+    		// CAST TYPE: Unsure if this works
+    		software.updateCart.addPLUProduct((PLUCodedProduct) itemClicked);
+    	}
+    	else{
+    	// Is a barcoded product
+    	// Need barcode
+    	BarcodedProduct convertItemClicked = (BarcodedProduct)itemClicked;
+    	Barcode barcode = convertItemClicked.getBarcode();
+    	software.updateCart.addScannedItem(barcode);
+    	}
+    }
     /**
      * Displays a prompt for adding an item.
      */

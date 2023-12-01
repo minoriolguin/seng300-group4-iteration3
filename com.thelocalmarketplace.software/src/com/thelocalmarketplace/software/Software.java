@@ -5,15 +5,19 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.bag.IReusableBagDispenser;
 import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
+import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import powerutility.PowerGrid;
 
@@ -40,6 +44,8 @@ public class Software {
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
 	private final HashMap<Product,Mass> baggedProducts;
+	private MembershipNumberValidator membershipValidator;
+	private MembershipDatabase membershipDatabase;
 
 	public final IElectronicScale baggingAreaScale;
 	public final IElectronicScale scannerScale;
@@ -49,6 +55,7 @@ public class Software {
 	public final CoinValidator coinValidator;
 	public final ICardReader cardReader;
 	public final IReceiptPrinter printer;
+	public final IReusableBagDispenser reusableBagDispenser;
 	// add instances of your class here then initialize below
 	public final WeightDiscrepancy weightDiscrepancy;
 	public TouchScreen touchScreen;
@@ -59,10 +66,12 @@ public class Software {
 	public final PayByCard payByCard;
 	public final UpdateCart updateCart;
 	public final Maintenance maintenance;
+	public final PurchaseBags purchaseBags;
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
 	public final CoinTray coinTray;
+	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 
 
 	private AbstractSelfCheckoutStation station;
@@ -74,7 +83,7 @@ public class Software {
 	/*Constructor for SelfCheckout
 	 *  
 	 */
-	private Software(AbstractSelfCheckoutStation hardware) {
+	public Software(AbstractSelfCheckoutStation hardware) {
 		if (hardware instanceof SelfCheckoutStationBronze bronze) {
 			this.station = bronze;
 			this.baggingAreaScale = bronze.getBaggingArea();
@@ -87,6 +96,8 @@ public class Software {
 			this.banknoteDispenser = bronze.getBanknoteOutput();
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
+			this.coinDispensers = bronze.getCoinDispensers();
+			this.reusableBagDispenser = bronze.getReusableBagDispenser();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -99,6 +110,8 @@ public class Software {
 			this.banknoteDispenser = silver.getBanknoteOutput();
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
+			this.coinDispensers = silver.getCoinDispensers();
+			this.reusableBagDispenser = silver.getReusableBagDispenser();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -111,6 +124,8 @@ public class Software {
 			this.banknoteDispenser = gold.getBanknoteOutput();
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
+			this.coinDispensers = gold.getCoinDispensers();
+			this.reusableBagDispenser = gold.getReusableBagDispenser();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -122,6 +137,8 @@ public class Software {
 			this.banknoteDispenser = hardware.getBanknoteOutput();
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
+			this.coinDispensers = hardware.getCoinDispensers();
+			this.reusableBagDispenser = hardware.getReusableBagDispenser();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -136,7 +153,9 @@ public class Software {
 		payByCard = new PayByCard(this);
 		payByCoin = new PayByCoin(this);
 		printReceipt = new PrintReceipt(this);
-		maintenance = new Maintenance();
+		maintenance = new Maintenance(this);
+		purchaseBags = new PurchaseBags(this);
+
 
 		//Initialize Product Lists and Weight Limit
 		productsInOrder = new HashMap<>();
@@ -144,6 +163,8 @@ public class Software {
 		pluCodedProductsInOrder = new ArrayList<>();
 		baggedProducts = new HashMap<>();
 		allowableBagWeight = new Mass(200.0);   // default value of 200g
+		this.membershipDatabase = new MembershipDatabase();
+	    this.membershipValidator = new MembershipNumberValidator(this.membershipDatabase);
 	}
 	/**
 	 * Turns on the self-checkout system by plugging it into the power grid and activating the hardware components.
@@ -156,7 +177,7 @@ public class Software {
 	}
 	
 	/**
-	 * Starts a new self-checkout session by enabling necessary hardware components.
+	 * Starts a new self-checkout session by enabling necessary hardware components and checking maintenance.
 	 * This method should be called at the beginning of each customer interaction session.
 	 * It enables handheld and main scanners, as well as the bagging area scale.
 	 */
@@ -165,13 +186,38 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		
+		// Check for maintenance and predict issues
+		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
+        }
 	}
 	
 	/**
-	 * Ends the current self-checkout session, clearing the order data and resetting the expected total weight.
+	 * Ends the current self-checkout session, clearing the order data, checking maintenance,
+	 * and resetting the expected total weight.
 	 * This method should be called at the end of each customer interaction session.
 	 */
 	public void endSession() {
+		// Check for maintenance and predict issues
+		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
+        }
+        
 		baggedProducts.clear();
 		barcodedProductsInOrder.clear();
 		expectedTotalWeight = Mass.ZERO;
@@ -218,11 +264,11 @@ public class Software {
 	public void blockCustomerStation() {
 		baggingAreaScale.disable();
 		scannerScale.disable();
-		handHeldScanner.disable();;
-		mainScanner.disable();;
+		handHeldScanner.disable();
+		mainScanner.disable();
 		banknoteValidator.disable();
-		coinValidator.disable();;
-		cardReader.disable();;
+		coinValidator.disable();
+		cardReader.disable();
 		banknoteDispenser.disable();
 		coinTray.disable();
 		printer.disable();
@@ -398,17 +444,57 @@ public class Software {
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
 	}
-
-	public int adjustBanknoteDenominations(BigDecimal[] banknotesAdded, int banknotesRemoved) {
-		return station.configureBanknoteDenominations(banknotesAdded, banknotesRemoved);
-
+	
+	public MembershipNumberValidator getMembershipValidator() {
+        return membershipValidator;
 	}
+	/// Handy for GUI team
+	public void handleMembershipNumber(String membershipNumber) {
+		        // First, validate the format of the membership number
+		        if (membershipValidator.isValid(membershipNumber)) {
+		            // Convert the string to an integer for database lookup
+		            int memberId = Integer.parseInt(membershipNumber);
 
-	public boolean detectBanknoteDenominationChanges() {
-		return station.configureBanknoteDenominations(banknotesAdded, banknotesRemoved);
+		            // Check if the member exists in the database
+		            if (membershipDatabase.memberExists(memberId)) {
+		                // Process the valid membership number
+		                System.out.println("Membership number is valid and found in the database.");
+		                // TODO: Link to customer session, update points, etc.
+		            } else {
+		                // Valid format, but not found in the database
+		                System.out.println("Membership number not found in the database.");
+		                // TODO: Handle this case, potentially send feedback to GUI
+		            }
+		        } else {
+		            // Invalid format
+		            System.out.println("Invalid membership number format.");
+		            // TODO: Send invalid format feedback to GUI
+		        }	
+		 }
+	/**
+	 * Retrieves the coin dispensers of the self-checkout station.
+	 *
+	 * @return The coin dispensers.
+	 */
+	public Map<BigDecimal, ICoinDispenser> getCoinDispensers() {
+		return coinDispensers;
 	}
-
-	public int getBanknotesRemoved() {
-		return station.getBanknotesRemoved();
+	
+	/**
+	 * Retrieves the coin storage unit of the self-checkout station.
+	 *
+	 * @return The coin storage unit.
+	 */
+	public CoinStorageUnit getCoinStorage() {
+		return station.getCoinStorage();
+	}
+	
+	/**
+	 * Notifcation method specifically for addressing maintenance issues
+	 * @param issues, Arraylist of string
+	 */
+	public void notifyMaintenance(ArrayList<String> issues) {
+		attendant.addressMaintenanceIssues(issues);
+		//setNeedsAttentionToTrue(); // To be implemented by Misc team
 	}
 }

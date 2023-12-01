@@ -30,7 +30,15 @@ public class PrintReceipt {
     private int paperUsed;
     private int averagePaperUsed;
 
-    private IReceiptPrinter printer;
+    public int getAveragePrintedChars() {
+		return averagePrintedChars;
+	}
+
+	public int getAveragePaperUsed() {
+		return averagePaperUsed;
+	}
+
+	private IReceiptPrinter printer;
 
     /**
      * A constructor that takes a copy of the software.
@@ -73,14 +81,12 @@ public class PrintReceipt {
         // print the end template
         printLine(endString);
         printer.cutPaper();
-        averagePrintedChars = getAveragePrintedChars();
+        averagePrintedChars = calculateAveragePrintedChars();
+        averagePaperUsed = calculateAveragePaperUsed();
         // reset
         printedChars = 0;
         paperUsed = 0;
         totalPrice = BigDecimal.ZERO;
-        software.maintenance.checkInk(averagePrintedChars);
-        software.maintenance.checkPaper(averagePaperUsed); 
-
     }
 
     /**
@@ -284,11 +290,11 @@ public class PrintReceipt {
         endString = s;
     }
     
-    public int getAveragePrintedChars() {
+    public int calculateAveragePrintedChars() {
     	return (printedChars + averagePrintedChars) / 2;
     }
     
-    public int getAveragePaperUsed() {
+    public int calculateAveragePaperUsed() {
     	return (paperUsed + averagePaperUsed) / 2;
     }
 }

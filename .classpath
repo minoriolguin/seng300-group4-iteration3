@@ -9,5 +9,6 @@
 	<classpathentry kind="src" path="com.thelocalmarketplace.hardware_0.3.3/simulation"/>
 	<classpathentry kind="src" path="com.thelocalmarketplace.software.test/src"/>
 	<classpathentry kind="src" path="com.thelocalmarketplace.software/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
