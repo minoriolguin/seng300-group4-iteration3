@@ -378,7 +378,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	}
 
 
-	public void resolveBanknotesIssues(Banknote... banknotes) throws CashOverloadException {
+	public void resolveBanknotesIssues(Banknote... banknotes) throws CashOverloadException, DisabledException {
 		if (banknotes.length >= (MAXIMUM_BANKNOTES-currentBanknotes)) {
 			throw new RuntimeException("Process aborted: Quantity will overload the device.");
 		}
@@ -386,7 +386,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			if(banknote == null)
 				throw new NullPointerSimulationException("banknote instance");
 			else
-				software.banknoteDispenser.load(banknote);
+				software.banknoteDispenser.receive(banknote);
 		checkBanknotes(averageBanknotesUsagePerSession, banknoteStorageUnit);
 	}
 
