@@ -6,7 +6,8 @@ import java.util.List;
 
 import ca.ucalgary.seng300.simulation.InvalidStateSimulationException;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
-import powerutility.*;
+import powerutility.NoPowerException;
+import powerutility.PowerGrid;
 
 /**
  * The abstract base class for all devices from JJJW Electronics.
