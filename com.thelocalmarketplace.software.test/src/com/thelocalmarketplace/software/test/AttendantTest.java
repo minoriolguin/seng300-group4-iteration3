@@ -2,6 +2,7 @@ package com.thelocalmarketplace.software.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,4 +52,18 @@ public class AttendantTest {
         attendant.overRideWeightDiscrepancy();
         assertEquals(testMass, checkout.getExpectedTotalWeight());
     }
+    
+    @Test //excepted exception???
+    public void testDisableCustomerStationWhileSessionActive() {
+    	checkout.startSession();
+    	attendant.disableCustomerStation();
+    	assertTrue(checkout.isCustomerStationBlocked());
+    }
+    
+    @Test
+    public void testDisableCustomerStation() {
+    	attendant.disableCustomerStation();
+    	assertTrue(checkout.isCustomerStationBlocked());
+    }
+    
 }
