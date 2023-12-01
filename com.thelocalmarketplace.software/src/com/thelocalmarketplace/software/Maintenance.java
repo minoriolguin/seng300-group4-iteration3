@@ -202,7 +202,9 @@ public abstract class Maintenance implements ReceiptPrinterListener {
 			for (int i = 0; i < banknotesAdded.length; i++) {
 
 			}
+			closeBanknoteDispenser();
 
+			issues.remove("")
 		} catch (Exception e) {
 			issues.add("ERROR_MAINTAINING_BANKNOTES");
 		}
