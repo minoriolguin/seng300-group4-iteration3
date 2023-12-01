@@ -118,11 +118,6 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testNeedBanknotes() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testThePrinterIsOutOfPaper() {
 		fail("Not yet implemented");
 	}
@@ -165,6 +160,21 @@ public class MaintenanceTest {
 	@Test
 	public void testCoinsFullCoinStorageUnit() {
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testCheckBanknotes() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testPredictBanknotes() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void testResolveBanknotesIssues() {
+		fail("Not yet implemented"); 
 	}
 
 }
