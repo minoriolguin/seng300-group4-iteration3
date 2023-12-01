@@ -1,6 +1,5 @@
 package com.thelocalmarketplace.software;
 
-
 import com.jjjwelectronics.scanner.Barcode;
 
 public class MembershipScanner {
