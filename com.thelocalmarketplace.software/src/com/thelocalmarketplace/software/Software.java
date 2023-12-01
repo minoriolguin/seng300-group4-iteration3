@@ -168,7 +168,7 @@ public class Software {
 	}
 	
 	/**
-	 * Starts a new self-checkout session by enabling necessary hardware components.
+	 * Starts a new self-checkout session by enabling necessary hardware components and checking maintenance.
 	 * This method should be called at the beginning of each customer interaction session.
 	 * It enables handheld and main scanners, as well as the bagging area scale.
 	 */
@@ -186,10 +186,14 @@ public class Software {
         	maintenance.predictLowCoinsDispenser(denomination);
         	maintenance.predictCoinsFullDispenser(denomination);
         }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
+        }
 	}
 	
 	/**
-	 * Ends the current self-checkout session, clearing the order data and resetting the expected total weight.
+	 * Ends the current self-checkout session, clearing the order data, checking maintenance,
+	 * and resetting the expected total weight.
 	 * This method should be called at the end of each customer interaction session.
 	 */
 	public void endSession() {
@@ -200,6 +204,9 @@ public class Software {
         for (BigDecimal denomination : coinDispensers.keySet()) {
         	maintenance.predictLowCoinsDispenser(denomination);
         	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
         }
         
 		baggedProducts.clear();
@@ -471,5 +478,14 @@ public class Software {
 	 */
 	public CoinStorageUnit getCoinStorage() {
 		return station.getCoinStorage();
+	}
+	
+	/**
+	 * Notifcation method specifically for addressing maintenance issues
+	 * @param issues, Arraylist of string
+	 */
+	public void notifyMaintenance(ArrayList<String> issues) {
+		attendant.addressMaintenanceIssues(issues);
+		setNeedsAttentionToTrue(); // To be implemented by Misc team
 	}
 }

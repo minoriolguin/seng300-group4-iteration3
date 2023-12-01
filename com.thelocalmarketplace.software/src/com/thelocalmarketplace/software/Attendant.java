@@ -1,12 +1,27 @@
 package com.thelocalmarketplace.software;
+import java.util.ArrayList;
+
 import com.jjjwelectronics.Mass;
 
 public class Attendant implements WeightDiscrepancyListener {
 
     Software software;
+    ArrayList<String> notifs;
+    
     public Attendant(Software software){
         this.software = software;
     }
+	
+	/**
+	 * Adds messages to notifs list that requires the attendant's attention
+	 * @param issues, Arraylist of string
+	 */
+	public void addressMaintenanceIssues(ArrayList<String> issues) {
+		for (String s : issues) {
+			notifs.add(s);
+		}
+	}
+	
     public void notifySkipBagging(){
         software.unblockCustomer();
     }
