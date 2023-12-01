@@ -56,6 +56,7 @@ public class Software {
 	public final PayByCard payByCard;
 	public final UpdateCart updateCart;
 	public final Maintenance maintenance;
+	//public final PurchaseBags purchaseBags;
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;

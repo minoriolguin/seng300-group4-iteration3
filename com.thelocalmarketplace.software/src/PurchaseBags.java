@@ -30,9 +30,9 @@ public class PurchaseBags implements WeightDiscrepancyListener, ReusableBagDispe
 	}
 	public void AddBagToOrder() throws EmptyDevice {
 		if(OutOfBags == false) {
-			cart.addPLUProduct(ProductDatabases.PLU_PRODUCT_DATABASE.get(code));
-			addbag = true; 
+			cart.addPLUProduct(ProductDatabases.PLU_PRODUCT_DATABASE.get(code));; 
 			ReusableBagDispenser.dispense();
+			addbag = true;
 		}
 		else {
 			//doesn't specify what to do if out of bags
