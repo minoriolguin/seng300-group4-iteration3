@@ -79,9 +79,9 @@ public class Software {
 	private boolean needsAttention = false;
 
 	private AbstractSelfCheckoutStation station;
-	private SelfCheckoutStationBronze bronze;
-	private SelfCheckoutStationSilver silver;
-	private SelfCheckoutStationGold gold;
+//	private SelfCheckoutStationBronze bronze;
+//	private SelfCheckoutStationSilver silver;
+//	private SelfCheckoutStationGold gold;
 
 
 	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
@@ -145,54 +145,104 @@ public class Software {
 		initializeComponents();
 	}
 		
+//	public Software(SelfCheckoutStationBronze bronze) {
+//		this.station = this.bronze;
+//		this.baggingAreaScale = this.bronze.getBaggingArea();
+//		this.scannerScale = this.bronze.getScanningArea();
+//		this.handHeldScanner = this.bronze.getHandheldScanner();	
+//		this.mainScanner = this.bronze.getMainScanner();
+//		this.banknoteValidator = this.bronze.getBanknoteValidator();
+//		this.coinValidator = this.bronze.getCoinValidator();
+//		this.cardReader = this.bronze.getCardReader();
+//		this.banknoteDispenser = this.bronze.getBanknoteOutput();
+//		this.coinTray = this.bronze.getCoinTray();
+//		this.printer = this.bronze.getPrinter();
+//		this.coinDispensers = this.bronze.getCoinDispensers();				
+//		this.reusableBagDispenser = this.bronze.getReusableBagDispenser();
+//		initializeComponents();
+//	}
+//	public Software(SelfCheckoutStationSilver silver) {
+//		this.station = this.silver;
+//		this.baggingAreaScale = this.silver.getBaggingArea();
+//		this.scannerScale = this.silver.getScanningArea();
+//		this.handHeldScanner = this.silver.getHandheldScanner();
+//		this.mainScanner = this.silver.getMainScanner();
+//		this.banknoteValidator = this.silver.getBanknoteValidator();
+//		this.coinValidator = this.silver.getCoinValidator();
+//		this.cardReader = this.silver.getCardReader();
+//		this.banknoteDispenser = this.silver.getBanknoteOutput();
+//		this.coinTray = this.silver.getCoinTray();
+//		this.printer = this.silver.getPrinter();
+//		this.coinDispensers = this.silver.getCoinDispensers();
+//		this.reusableBagDispenser = this.silver.getReusableBagDispenser();
+//		initializeComponents();
+//	}	
+//				
+//	public Software(SelfCheckoutStationGold gold) {
+//		this.station = this.gold;
+//		this.baggingAreaScale = this.gold.getBaggingArea();
+//		this.scannerScale = this.gold.getScanningArea();
+//		this.handHeldScanner = this.gold.getHandheldScanner();
+//		this.mainScanner = this.gold.getMainScanner();
+//		this.banknoteValidator = this.gold.getBanknoteValidator();
+//		this.coinValidator = this.gold.getCoinValidator();
+//		this.cardReader = this.gold.getCardReader();
+//		this.banknoteDispenser = this.gold.getBanknoteOutput();
+//		this.coinTray = this.gold.getCoinTray();
+//		this.printer = this.gold.getPrinter();
+//		this.coinDispensers = this.gold.getCoinDispensers();
+//		this.reusableBagDispenser = this.gold.getReusableBagDispenser();
+//		initializeComponents();
+//	}
+	
 	public Software(SelfCheckoutStationBronze bronze) {
-		this.station = this.bronze;
-		this.baggingAreaScale = this.bronze.getBaggingArea();
-		this.scannerScale = this.bronze.getScanningArea();
-		this.handHeldScanner = this.bronze.getHandheldScanner();	
-		this.mainScanner = this.bronze.getMainScanner();
-		this.banknoteValidator = this.bronze.getBanknoteValidator();
-		this.coinValidator = this.bronze.getCoinValidator();
-		this.cardReader = this.bronze.getCardReader();
-		this.banknoteDispenser = this.bronze.getBanknoteOutput();
-		this.coinTray = this.bronze.getCoinTray();
-		this.printer = this.bronze.getPrinter();
-		this.coinDispensers = this.bronze.getCoinDispensers();				
-		this.reusableBagDispenser = this.bronze.getReusableBagDispenser();
+		this.station = bronze;
+		this.baggingAreaScale = bronze.getBaggingArea();
+		this.scannerScale = bronze.getScanningArea();
+		this.handHeldScanner = bronze.getHandheldScanner();	
+		this.mainScanner = bronze.getMainScanner();
+		this.banknoteValidator = bronze.getBanknoteValidator();
+		this.coinValidator = bronze.getCoinValidator();
+		this.cardReader = bronze.getCardReader();
+		this.banknoteDispenser = bronze.getBanknoteOutput();
+		this.coinTray = bronze.getCoinTray();
+		this.printer = bronze.getPrinter();
+		this.coinDispensers = bronze.getCoinDispensers();				
+		this.reusableBagDispenser = bronze.getReusableBagDispenser();
 		initializeComponents();
 	}
 			
 	public Software(SelfCheckoutStationSilver silver) {
-		this.station = this.silver;
-		this.baggingAreaScale = this.silver.getBaggingArea();
-		this.scannerScale = this.silver.getScanningArea();
-		this.handHeldScanner = this.silver.getHandheldScanner();
-		this.mainScanner = this.silver.getMainScanner();
-		this.banknoteValidator = this.silver.getBanknoteValidator();
-		this.coinValidator = this.silver.getCoinValidator();
-		this.cardReader = this.silver.getCardReader();
-		this.banknoteDispenser = this.silver.getBanknoteOutput();
-		this.coinTray = this.silver.getCoinTray();
-		this.printer = this.silver.getPrinter();
-		this.coinDispensers = this.silver.getCoinDispensers();
-		this.reusableBagDispenser = this.silver.getReusableBagDispenser();
+		this.station = silver;
+		this.baggingAreaScale = silver.getBaggingArea();
+		this.scannerScale = silver.getScanningArea();
+		this.handHeldScanner = silver.getHandheldScanner();
+		this.mainScanner = silver.getMainScanner();
+		this.banknoteValidator = silver.getBanknoteValidator();
+		this.coinValidator = silver.getCoinValidator();
+		this.cardReader = silver.getCardReader();
+		this.banknoteDispenser = silver.getBanknoteOutput();
+		this.coinTray = silver.getCoinTray();
+		this.printer = silver.getPrinter();
+		this.coinDispensers = silver.getCoinDispensers();
+		this.reusableBagDispenser = silver.getReusableBagDispenser();
 		initializeComponents();
 	}	
 				
 	public Software(SelfCheckoutStationGold gold) {
-		this.station = this.gold;
-		this.baggingAreaScale = this.gold.getBaggingArea();
-		this.scannerScale = this.gold.getScanningArea();
-		this.handHeldScanner = this.gold.getHandheldScanner();
-		this.mainScanner = this.gold.getMainScanner();
-		this.banknoteValidator = this.gold.getBanknoteValidator();
-		this.coinValidator = this.gold.getCoinValidator();
-		this.cardReader = this.gold.getCardReader();
-		this.banknoteDispenser = this.gold.getBanknoteOutput();
-		this.coinTray = this.gold.getCoinTray();
-		this.printer = this.gold.getPrinter();
-		this.coinDispensers = this.gold.getCoinDispensers();
-		this.reusableBagDispenser = this.gold.getReusableBagDispenser();
+		this.station = gold;
+		this.baggingAreaScale = gold.getBaggingArea();
+		this.scannerScale = gold.getScanningArea();
+		this.handHeldScanner = gold.getHandheldScanner();
+		this.mainScanner = gold.getMainScanner();
+		this.banknoteValidator = gold.getBanknoteValidator();
+		this.coinValidator = gold.getCoinValidator();
+		this.cardReader = gold.getCardReader();
+		this.banknoteDispenser = gold.getBanknoteOutput();
+		this.coinTray = gold.getCoinTray();
+		this.printer = gold.getPrinter();
+		this.coinDispensers = gold.getCoinDispensers();
+		this.reusableBagDispenser = gold.getReusableBagDispenser();
 		initializeComponents();
 	}
 				
