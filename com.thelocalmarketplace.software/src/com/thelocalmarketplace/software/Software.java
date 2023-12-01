@@ -495,6 +495,6 @@ public class Software {
 	 */
 	public void notifyMaintenance(ArrayList<String> issues) {
 		attendant.addressMaintenanceIssues(issues);
-		setNeedsAttentionToTrue(); // To be implemented by Misc team
+		//setNeedsAttentionToTrue(); // To be implemented by Misc team
 	}
 }
