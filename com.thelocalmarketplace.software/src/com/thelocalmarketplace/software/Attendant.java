@@ -8,6 +8,14 @@ public class Attendant implements WeightDiscrepancyListener {
     public Software software;
     public ArrayList<String> notifs;
     public boolean reusableBagsEmpty;
+    /**
+     * A boolean variable that keeps track of whether a customer has been attended to.
+     * 
+     * Is true if no customer has requested it.
+     * Becomes false when a customer requests for an attendant.
+     * Goes back to true after the customer has gotten their help.
+     **/
+    private boolean attended = true;
     
     public Attendant(Software software){
         this.software = software;
@@ -84,6 +92,32 @@ public class Attendant implements WeightDiscrepancyListener {
     public void bagsTooHeavy() {
         software.weightDiscrepancy.massOfOwnBags = Mass.ZERO;
     }
+    
+    /**
+     * Prompts the attendant to respond to the customer who signaled for help
+     * 
+     * For testing: while the respondent has not attended to the customer, the boolean
+     * "attended" remains false.
+     * 
+     * Unclear point: I am not sure attendant has their own touch screen or will be using
+     * a command line kind of interface. 
+     * For this code, I just used if attended == true until I have the concrete version
+     * of how the attendant will be interacted with.
+     **/
+    public void respondToCustomer() {
+    	notifs.add("A customer needs your help");    	
+    	System.out.println("\nHave you attended to them?\n");
+    	
+    	if (attended == true) {
+    		attended = true;
+    		software.setNeedsAttentionToFalse();
+    	}
+    }
+    
+    public void setAttendedToFalse() {
+    	attended = false;
+    }
+    
 	@Override
 	public void RemoveItemFromScale() {
 		// TODO Auto-generated method stub
