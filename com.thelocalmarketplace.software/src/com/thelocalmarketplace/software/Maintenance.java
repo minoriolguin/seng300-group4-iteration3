@@ -59,6 +59,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         // make predictions (check component statuses)
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
+		issues = new ArrayList<>();
     }
     
     /**

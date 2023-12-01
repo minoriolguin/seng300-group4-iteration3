@@ -80,7 +80,7 @@ public class BlackBoxTests {
         software.touchScreen.skip = false;
         software.startSession();
         //ensure the items from setup in Data Base
-        assertEquals(2,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
+        assertEquals(3,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
         //scan an item in the baggingArea scales range (over-sensitivity, less than max)
         hardware.getHandheldScanner().scan(inRange);
         //assert customer interaction disabled

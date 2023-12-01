@@ -5,13 +5,14 @@ import com.jjjwelectronics.Mass;
 
 public class Attendant implements WeightDiscrepancyListener {
 
-    Software software;
-    ArrayList<String> notifs;
+    public Software software;
+    public ArrayList<String> notifs;
     public boolean reusableBagsEmpty;
     
     public Attendant(Software software){
         this.software = software;
         reusableBagsEmpty = false;
+        notifs = new ArrayList<>();
     }
 	
 	/**

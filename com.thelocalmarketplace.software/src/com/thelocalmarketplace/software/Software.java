@@ -270,7 +270,6 @@ public class Software {
 		coinValidator.disable();
 		cardReader.disable();
 		banknoteDispenser.disable();
-		coinTray.disable();
 		printer.disable();
 		customerStationBlock = true;
 	}
@@ -288,7 +287,6 @@ public class Software {
 		coinValidator.enable();;
 		cardReader.enable();;
 		banknoteDispenser.enable();
-		coinTray.enable();
 		printer.enable();
 		customerStationBlock = false;
 	}
