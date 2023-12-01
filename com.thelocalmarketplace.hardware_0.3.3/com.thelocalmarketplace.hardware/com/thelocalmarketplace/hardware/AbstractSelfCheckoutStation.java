@@ -524,5 +524,4 @@ public abstract class AbstractSelfCheckoutStation implements ISelfCheckoutStatio
 		OneWayChannel<Coin> channel = new OneWayChannel<Coin>(tray);
 		((AbstractCoinDispenser)dispenser).sink = channel;
 	}
-
 }
