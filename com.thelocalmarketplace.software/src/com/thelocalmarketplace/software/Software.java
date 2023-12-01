@@ -72,6 +72,11 @@ public class Software {
 	public final BanknoteDispensationSlot banknoteDispenser;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
+	
+	/**
+     * A boolean variable that keeps track of whether a customer needs attention.
+     **/
+	private boolean needsAttention = false;
 
 
 	private AbstractSelfCheckoutStation station;
@@ -493,6 +498,32 @@ public class Software {
 	 */
 	public void notifyMaintenance(ArrayList<String> issues) {
 		attendant.addressMaintenanceIssues(issues);
-		//setNeedsAttentionToTrue(); // To be implemented by Misc team
+		setNeedsAttentionToTrue();
+	}
+	
+	/**
+	 * Notifies the attendant that they should attend to the customer
+	 **/
+	public void notifyAttendant() {
+	    if (needsAttention == true) {
+	    	attendant.setAttendedToFalse();
+	        attendant.respondToCustomer();
+	    } else {
+	        // Nothing should happen here since this should never happen
+	    }
+	}
+	
+	/**
+	 * Sets the needs attention field to true
+	 **/
+	public void setNeedsAttentionToTrue() {
+		needsAttention = true;
+	}
+	
+	/**
+	 * Sets need attention field to false
+	 **/
+	public void setNeedsAttentionToFalse() {
+		needsAttention = false;
 	}
 }
