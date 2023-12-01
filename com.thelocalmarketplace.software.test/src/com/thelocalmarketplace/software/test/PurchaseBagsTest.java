@@ -33,7 +33,6 @@ public class PurchaseBagsTest {
 
 	private Barcode reuseableBagBarcode;
 
-	private BarcodedProduct reusableBag;
 
 	@Before
 	public void setUp() throws OverloadedDevice {
@@ -46,23 +45,18 @@ public class PurchaseBagsTest {
 		this.ReusableBagDispenser = software.reusableBagDispenser;
 
 		// define a reusable Bag Barcode, Price and put it in the database
-		bag = new ReusableBag();
 		Numeral[] reuseableBagNumeral = new Numeral[3];
 		reuseableBagNumeral[0] = Numeral.nine;
 		reuseableBagNumeral[1] = Numeral.five;
 		reuseableBagNumeral[2] = Numeral.three;
 		reuseableBagBarcode = new Barcode(reuseableBagNumeral);
-		double expectedWeight = bag.getMass().inGrams().doubleValue();
-		String description = "Reusable Bag";
-		long price = 2;
-		reusableBag = new BarcodedProduct(reuseableBagBarcode, description, price, expectedWeight);
 
 	}
 	@Test
 	public void addReusableBag() throws EmptyDevice, OverloadedDevice {
 		software.purchaseBags.addBagsToDispenser(10);
 		software.purchaseBags.AddBagToOrder(1);
-		assertTrue(software.getBarcodedProductsInOrder().isEmpty());
+		assertTrue(software.getBarcodedProductsInOrder().contains(ProductDatabases.BARCODED_PRODUCT_DATABASE.get(reuseableBagBarcode)));
 	}
 
 
