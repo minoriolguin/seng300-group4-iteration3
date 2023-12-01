@@ -30,7 +30,6 @@ import ca.ucalgary.seng300.simulation.SimulationException;
  */
 public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
     private Software software;
-    private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
     private int averagePaperUsedPerSession;
 	private int averageInkUsagePerSession;
@@ -58,11 +57,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     public Maintenance(Software software){
         this.software = software;
         // make predictions (check component statuses)
-        this.notifyAttendant = false;
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
-        
-        checkInk(averageInkUsagePerSession);
     }
     
     /**
@@ -112,7 +108,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void predictLowInk() {
     	if (inkRemaining <= lowInkLevel+averageInkUsagePerSession) {
-    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowInkSoonMsg);
     		software.attendant.disableCustomerStation();
     	} else {
@@ -146,7 +141,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		
 		// if the coins in the dispenser is less than or equal to 25% of max capacity
 		if (coinsInDispenser <= twentyFivePer) {
-			// notifyAttendant
 			issues.add(lowCoinsSoonDisp);
 			software.blockCustomerStation();
 		} else {
@@ -288,7 +282,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void predictLowPaper() {
     	if (remainingPaper <= lowPaperLevel+averagePaperUsedPerSession) {
-    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowPaperSoonMsg);
     		software.attendant.disableCustomerStation();
     	} else {
@@ -343,7 +336,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterIsOutOfPaper() {
-		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
 		issues.add(outOfPaperMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -355,7 +347,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterIsOutOfInk() {
-		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
 		issues.add(outOfInkMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -367,7 +358,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowInk() {
-		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
 		issues.add(lowInkSoonMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -378,7 +368,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowPaper() {
-		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
 		issues.add(lowPaperSoonMsg);
 				
 		// remove these elements if exists in issues; does nothing otherwise
