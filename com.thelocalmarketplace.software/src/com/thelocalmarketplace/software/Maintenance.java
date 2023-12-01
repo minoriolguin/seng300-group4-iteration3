@@ -33,7 +33,7 @@ import ca.ucalgary.seng300.simulation.SimulationException;
 public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
     private Software software;
     private int inkRemaining;
-    private int averagePaperUsedPerSession;
+	private int averagePaperUsedPerSession;
 	private int averageInkUsagePerSession;
 	private int remainingPaper;
     
@@ -82,6 +82,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
 		issues = new ArrayList<>();
+		
     }
     
     /**
@@ -389,6 +390,10 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			else
 				software.banknoteDispenser.receive(banknote);
 		checkBanknotes(averageBanknotesUsagePerSession, banknoteStorageUnit);
+	}
+	
+    public int getInkRemaining() {
+		return inkRemaining;
 	}
 
 	@Override

@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.jjjwelectronics.printer.ReceiptPrinterBronze;
+import com.jjjwelectronics.printer.ReceiptPrinterSilver;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Software;
 
@@ -20,6 +22,7 @@ public class MaintenanceTest {
 	private Software gold_software;
 	private Software silver_software;
 
+	@SuppressWarnings("static-access")
 	@Before
 	public void setUp() throws Exception {
 		bronze_hardware.resetConfigurationToDefaults();
@@ -44,12 +47,25 @@ public class MaintenanceTest {
 		
 		PowerGrid.engageUninterruptiblePowerSource();
 		PowerGrid.instance().forcePowerRestore();
+		
+		bronze_software.maintenance.resolveInkIssue(1000);
+		bronze_software.maintenance.resolvePrinterPaperIssue(1000);
+		
+		silver_software.maintenance.resolveInkIssue(1000);
+		silver_software.maintenance.resolvePrinterPaperIssue(1000);
+		
+		gold_software.maintenance.resolveInkIssue(1000);
+		gold_software.maintenance.resolvePrinterPaperIssue(1000);
 
 	}
 
 	@Test
 	public void testMaintenance() {
-		fail("Not yet implemented");
+		if (silver_software.printer instanceof ReceiptPrinterSilver) {
+		fail("ink: "+gold_software.printer.inkRemaining());
+		} else {
+			assertTrue(true);
+		}
 	}
 
 	@Test
