@@ -177,6 +177,15 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		
+		// Check for maintenance and predict issues
+		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
 	}
 	
 	/**
@@ -184,6 +193,15 @@ public class Software {
 	 * This method should be called at the end of each customer interaction session.
 	 */
 	public void endSession() {
+		// Check for maintenance and predict issues
+		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        
 		baggedProducts.clear();
 		barcodedProductsInOrder.clear();
 		expectedTotalWeight = Mass.ZERO;
