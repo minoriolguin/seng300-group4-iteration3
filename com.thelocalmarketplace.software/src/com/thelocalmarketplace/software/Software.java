@@ -40,10 +40,10 @@ public class Software {
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
 	private boolean customerStationBlock = false;
-	private final HashMap<Product,Mass> productsInOrder;
-	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
-	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
-	private final HashMap<Product,Mass> baggedProducts;
+	private HashMap<Product,Mass> productsInOrder;
+	private ArrayList<BarcodedProduct> barcodedProductsInOrder;
+	private ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
+	private HashMap<Product,Mass> baggedProducts;
 	private MembershipNumberValidator membershipValidator;
 	private MembershipDatabase membershipDatabase;
 
@@ -57,16 +57,16 @@ public class Software {
 	public final IReceiptPrinter printer;
 	public final IReusableBagDispenser reusableBagDispenser;
 	// add instances of your class here then initialize below
-	public final WeightDiscrepancy weightDiscrepancy;
+	public WeightDiscrepancy weightDiscrepancy;
 	public TouchScreen touchScreen;
-	public final Attendant attendant;
-	public final PayByBanknote payByBanknote;
-	public final PayByCoin payByCoin;
-	public final PrintReceipt printReceipt;
-	public final PayByCard payByCard;
-	public final UpdateCart updateCart;
-	public final Maintenance maintenance;
-	public final PurchaseBags purchaseBags;
+	public Attendant attendant;
+	public PayByBanknote payByBanknote;
+	public PayByCoin payByCoin;
+	public PrintReceipt printReceipt;
+	public PayByCard payByCard;
+	public UpdateCart updateCart;
+	public Maintenance maintenance;
+	public PurchaseBags purchaseBags;
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
@@ -78,74 +78,17 @@ public class Software {
      **/
 	private boolean needsAttention = false;
 
-
 	private AbstractSelfCheckoutStation station;
+	private SelfCheckoutStationBronze bronze;
+	private SelfCheckoutStationSilver silver;
+	private SelfCheckoutStationGold gold;
+
+//
+//	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
+//		return new Software(hardware);
+//	}
 	
-	public static Software getInstance(AbstractSelfCheckoutStation hardware) {
-		return new Software(hardware);
-	}
-
-	/*Constructor for SelfCheckout
-	 *  
-	 */
-	public Software(AbstractSelfCheckoutStation hardware) {
-		if (hardware instanceof SelfCheckoutStationBronze bronze) {
-			this.station = bronze;
-			this.baggingAreaScale = bronze.getBaggingArea();
-			this.scannerScale = bronze.getScanningArea();
-			this.handHeldScanner = bronze.getHandheldScanner();
-			this.mainScanner = bronze.getMainScanner();
-			this.banknoteValidator = bronze.getBanknoteValidator();
-			this.coinValidator = bronze.getCoinValidator();
-			this.cardReader = bronze.getCardReader();
-			this.banknoteDispenser = bronze.getBanknoteOutput();
-			this.coinTray = bronze.getCoinTray();
-			this.printer = bronze.getPrinter();
-			this.coinDispensers = bronze.getCoinDispensers();
-			this.reusableBagDispenser = bronze.getReusableBagDispenser();
-		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
-			this.station = silver;
-			this.baggingAreaScale = silver.getBaggingArea();
-			this.scannerScale = silver.getScanningArea();
-			this.handHeldScanner = silver.getHandheldScanner();
-			this.mainScanner = silver.getMainScanner();
-			this.banknoteValidator = silver.getBanknoteValidator();
-			this.coinValidator = silver.getCoinValidator();
-			this.cardReader = silver.getCardReader();
-			this.banknoteDispenser = silver.getBanknoteOutput();
-			this.coinTray = silver.getCoinTray();
-			this.printer = silver.getPrinter();
-			this.coinDispensers = silver.getCoinDispensers();
-			this.reusableBagDispenser = silver.getReusableBagDispenser();
-		} else if (hardware instanceof SelfCheckoutStationGold gold) {
-			this.station = gold;
-			this.baggingAreaScale = gold.getBaggingArea();
-			this.scannerScale = gold.getScanningArea();
-			this.handHeldScanner = gold.getHandheldScanner();
-			this.mainScanner = gold.getMainScanner();
-			this.banknoteValidator = gold.getBanknoteValidator();
-			this.coinValidator = gold.getCoinValidator();
-			this.cardReader = gold.getCardReader();
-			this.banknoteDispenser = gold.getBanknoteOutput();
-			this.coinTray = gold.getCoinTray();
-			this.printer = gold.getPrinter();
-			this.coinDispensers = gold.getCoinDispensers();
-			this.reusableBagDispenser = gold.getReusableBagDispenser();
-		} else {
-			this.baggingAreaScale = hardware.getBaggingArea();
-			this.scannerScale = hardware.getScanningArea();
-			this.handHeldScanner = hardware.getHandheldScanner();
-			this.mainScanner = hardware.getMainScanner();
-			this.banknoteValidator = hardware.getBanknoteValidator();
-			this.coinValidator = hardware.getCoinValidator();
-			this.cardReader = hardware.getCardReader();
-			this.banknoteDispenser = hardware.getBanknoteOutput();
-			this.coinTray = hardware.getCoinTray();
-			this.printer = hardware.getPrinter();
-			this.coinDispensers = hardware.getCoinDispensers();
-			this.reusableBagDispenser = hardware.getReusableBagDispenser();
-		}
-
+	public void initializeComponents() {
 		expectedTotalWeight = Mass.ZERO;
 		orderTotal = BigDecimal.ZERO;
 
@@ -161,7 +104,6 @@ public class Software {
 		maintenance = new Maintenance(this);
 		purchaseBags = new PurchaseBags(this);
 
-
 		//Initialize Product Lists and Weight Limit
 		productsInOrder = new HashMap<>();
 		barcodedProductsInOrder = new ArrayList<>();
@@ -171,6 +113,77 @@ public class Software {
 		this.membershipDatabase = new MembershipDatabase();
 	    this.membershipValidator = new MembershipNumberValidator(this.membershipDatabase);
 	}
+	
+	/*Constructor for SelfCheckout
+	 *  
+	 */
+	public Software(AbstractSelfCheckoutStation hardware) {
+		this.baggingAreaScale = hardware.getBaggingArea();
+		this.scannerScale = hardware.getScanningArea();
+		this.handHeldScanner = hardware.getHandheldScanner();
+		this.mainScanner = hardware.getMainScanner();
+		this.banknoteValidator = hardware.getBanknoteValidator();
+		this.coinValidator = hardware.getCoinValidator();
+		this.cardReader = hardware.getCardReader();
+		this.banknoteDispenser = hardware.getBanknoteOutput();
+		this.coinTray = hardware.getCoinTray();
+		this.printer = hardware.getPrinter();
+		this.coinDispensers = hardware.getCoinDispensers();
+		this.reusableBagDispenser = hardware.getReusableBagDispenser();
+		initializeComponents();
+	}
+		
+	public Software(SelfCheckoutStationBronze bronze) {
+		this.station = this.bronze;
+		this.baggingAreaScale = this.bronze.getBaggingArea();
+		this.scannerScale = bronze.getScanningArea();
+		this.handHeldScanner = bronze.getHandheldScanner();	
+		this.mainScanner = bronze.getMainScanner();
+		this.banknoteValidator = bronze.getBanknoteValidator();
+		this.coinValidator = bronze.getCoinValidator();
+		this.cardReader = bronze.getCardReader();
+		this.banknoteDispenser = bronze.getBanknoteOutput();
+		this.coinTray = bronze.getCoinTray();
+		this.printer = bronze.getPrinter();
+		this.coinDispensers = bronze.getCoinDispensers();				
+		this.reusableBagDispenser = bronze.getReusableBagDispenser();
+		initializeComponents();
+	}
+			
+	public Software(SelfCheckoutStationSilver silver) {
+		this.station = silver;
+		this.baggingAreaScale = silver.getBaggingArea();
+		this.scannerScale = silver.getScanningArea();
+		this.handHeldScanner = silver.getHandheldScanner();
+		this.mainScanner = silver.getMainScanner();
+		this.banknoteValidator = silver.getBanknoteValidator();
+		this.coinValidator = silver.getCoinValidator();
+		this.cardReader = silver.getCardReader();
+		this.banknoteDispenser = silver.getBanknoteOutput();
+		this.coinTray = silver.getCoinTray();
+		this.printer = silver.getPrinter();
+		this.coinDispensers = silver.getCoinDispensers();
+		this.reusableBagDispenser = silver.getReusableBagDispenser();
+		initializeComponents();
+	}	
+				
+	public Software(SelfCheckoutStationGold gold) {
+		this.station = gold;
+		this.baggingAreaScale = gold.getBaggingArea();
+		this.scannerScale = gold.getScanningArea();
+		this.handHeldScanner = gold.getHandheldScanner();
+		this.mainScanner = gold.getMainScanner();
+		this.banknoteValidator = gold.getBanknoteValidator();
+		this.coinValidator = gold.getCoinValidator();
+		this.cardReader = gold.getCardReader();
+		this.banknoteDispenser = gold.getBanknoteOutput();
+		this.coinTray = gold.getCoinTray();
+		this.printer = gold.getPrinter();
+		this.coinDispensers = gold.getCoinDispensers();
+		this.reusableBagDispenser = gold.getReusableBagDispenser();
+		initializeComponents();
+	}
+				
 	/**
 	 * Turns on the self-checkout system by plugging it into the power grid and activating the hardware components.
 	 * This method must be called before starting a session or conducting any self-checkout operations.
