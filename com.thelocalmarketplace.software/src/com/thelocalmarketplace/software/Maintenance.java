@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
@@ -183,7 +184,11 @@ public abstract class Maintenance implements ReceiptPrinterListener {
 			this.software.banknoteDispenser.dispense();
 
 			//this.notifyAttendant = true; --- communicate w Miscellaneous team
-
+			issues.add("ERROR_DISPENSING_BANKNOTES");
+			BigDecimal[] banknotesAdded = software.getBanknoteDenominations();
+			for (int i = 0; i < banknotesAdded.length; i++) {
+				software.banknoteDispenser.addBanknotes(banknotesAdded[i], 1);
+			}
 		} catch (Exception e) {
 			issues.add("ERROR_MAINTAINING_BANKNOTES");
 		}
