@@ -77,10 +77,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		return issues;
 	}
 
-    // needs to be implemented and tested
-    // should be called after every printed receipt, start up?
-    // notify attendant
-    // may need different return type
+    /**
+     * Checks ink level (empty,low,low soon) of printer and notifies Attended as needed.
+     * 
+     * @param averagePrintedChars, estimated average chars printed by printer
+     */
     public void checkInk(int averagePrintedChars){
     	
     	this.averageInkUsagePerSession = averagePrintedChars;
@@ -119,7 +120,12 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	}
     }
     
-    
+    /**
+     * Enables adding ink to the printer. Checks ink level after.
+     * 
+     * @param quantity of ink that user wants to add
+     * @throws OverloadedDevice if quantity added causes ink level to be more than allowable
+     */
     public void resolveInkIssue(int quantity) throws OverloadedDevice {
     	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
