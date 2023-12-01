@@ -25,6 +25,10 @@ public class Attendant implements WeightDiscrepancyListener {
 		}
 	}
 	
+    public void reusableBagsEmpty(){
+        reusableBagsEmpty = true;
+    }
+    
 	/**
 	 * Method for getting notifications for Attendant
 	 * @return Arraylist of strings
@@ -48,16 +52,16 @@ public class Attendant implements WeightDiscrepancyListener {
         software.weightDiscrepancy.isWeightDiscrepancy(software.getExpectedTotalWeight());
     }
     
+    
     public void disableCustomerStation() {
     	software.blockCustomerStation();
     	
     }
-    public void reusableBagsEmpty(){
-        reusableBagsEmpty = true;
-    }
     
-    //Enables the customer station software and hardware after being blocked
-    //Precondition: Customer station must be blocked
+    /**
+     *  Enables the customer station software and hardware after being blocked
+     *  Precondition: Customer station must be blocked
+     **/
     public void enableCustomerStation() {
     	if (software.isCustomerStationBlocked()) {
     		software.unblockCustomerStation();
@@ -65,12 +69,6 @@ public class Attendant implements WeightDiscrepancyListener {
     	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
     }
 
-    public void removeItemFromScale() {
-    }
-
-    public void addItemToScale() {
-
-    }
 
     @Override
     public void weightOverLimit() {
