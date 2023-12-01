@@ -92,11 +92,11 @@ public class Software {
 		return new Software(bronze);
 	}
 	
-	public static Software getInstance(SelfCheckoutStationSilver silver) {
+	public static Software getSilverInstance(SelfCheckoutStationSilver silver) {
 		return new Software(silver);
 	}
 	
-	public static Software getInstance(SelfCheckoutStationGold gold) {
+	public static Software getGoldInstance(SelfCheckoutStationGold gold) {
 		return new Software(gold);
 	}
 	
