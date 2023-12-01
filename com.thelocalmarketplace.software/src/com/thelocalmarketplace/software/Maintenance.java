@@ -30,7 +30,6 @@ import ca.ucalgary.seng300.simulation.SimulationException;
  */
 public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
     private Software software;
-    private boolean notifyAttendant; // have to discuss with GUI and Misc teams
     private int inkRemaining;
     private int averagePaperUsedPerSession;
 	private int averageInkUsagePerSession;
@@ -58,11 +57,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     public Maintenance(Software software){
         this.software = software;
         // make predictions (check component statuses)
-        this.notifyAttendant = false;
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
-        
-        checkInk(averageInkUsagePerSession);
     }
     
     /**
@@ -77,10 +73,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		return issues;
 	}
 
-    // needs to be implemented and tested
-    // should be called after every printed receipt, start up?
-    // notify attendant
-    // may need different return type
+    /**
+     * Checks ink level (empty,low,low soon) of printer and notifies Attended as needed.
+     * 
+     * @param averagePrintedChars, estimated average chars printed by printer
+     */
     public void checkInk(int averagePrintedChars){
     	
     	this.averageInkUsagePerSession = averagePrintedChars;
@@ -111,7 +108,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void predictLowInk() {
     	if (inkRemaining <= lowInkLevel+averageInkUsagePerSession) {
-    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowInkSoonMsg);
     		software.attendant.disableCustomerStation();
     	} else {
@@ -119,7 +115,12 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	}
     }
     
-    
+    /**
+     * Enables adding ink to the printer. Checks ink level after.
+     * 
+     * @param quantity of ink that user wants to add
+     * @throws OverloadedDevice if quantity added causes ink level to be more than allowable
+     */
     public void resolveInkIssue(int quantity) throws OverloadedDevice {
     	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
@@ -140,7 +141,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		
 		// if the coins in the dispenser is less than or equal to 25% of max capacity
 		if (coinsInDispenser <= twentyFivePer) {
-			// notifyAttendant
 			issues.add(lowCoinsSoonDisp);
 			software.blockCustomerStation();
 		} else {
@@ -282,7 +282,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void predictLowPaper() {
     	if (remainingPaper <= lowPaperLevel+averagePaperUsedPerSession) {
-    		//this.notifyAttendant = true; --- communicate w Miscellaneous team
     		issues.add(lowPaperSoonMsg);
     		software.attendant.disableCustomerStation();
     	} else {
@@ -337,7 +336,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterIsOutOfPaper() {
-		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
 		issues.add(outOfPaperMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -349,7 +347,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterIsOutOfInk() {
-		//this.notifyAttendant  = true; --- communicate w Miscellaneous team
 		issues.add(outOfInkMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -361,7 +358,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowInk() {
-		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
 		issues.add(lowInkSoonMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
@@ -372,7 +368,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowPaper() {
-		//this.notifyAttendant = true;  --- communicate w Miscellaneous team
 		issues.add(lowPaperSoonMsg);
 				
 		// remove these elements if exists in issues; does nothing otherwise
