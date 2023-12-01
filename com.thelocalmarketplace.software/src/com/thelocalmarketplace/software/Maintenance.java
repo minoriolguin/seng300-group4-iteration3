@@ -1,6 +1,7 @@
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
+import java.nio.channels.ConnectionPendingException;
 import java.util.ArrayList;
 
 import com.jjjwelectronics.IDevice;
@@ -41,7 +42,7 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
     
     
-    public Maintenance(){
+    public Maintenance() throws InterruptedException {
         this.software = software;
         // make predictions (check component statuses)
         this.notifyAttendant = false;
@@ -66,7 +67,7 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     // should be called after every printed receipt, start up?
     // notify attendant
     // may need different return type
-    public void checkInk(int averagePrintedChars){
+    public void checkInk(int averagePrintedChars) throws InterruptedException {
     	
     	this.averageInkUsagePerSession = averagePrintedChars;
    
@@ -78,9 +79,8 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     	
     	if (inkRemaining == 0) {
     		thePrinterIsOutOfInk();
-    	} else if (inkRemaining <= lowInkLevel) {
-    		thePrinterHasLowInk();
-    	} else { // If no issues or prior issues has been resolved
+    	} else if (inkRemaining <= lowInkLevel) thePrinterHasLowInk();
+		else { // If no issues or prior issues has been resolved
     		// Remove if exists in issues arraylist; does nothing otherwise
     		issues.remove(lowInkMsg);
     		issues.remove(outOfInkMsg);
@@ -105,7 +105,7 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     }
     
     
-    public void resolveInkIssue(int quantity) throws OverloadedDevice {
+    public void resolveInkIssue(int quantity) throws OverloadedDevice, InterruptedException {
     	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
     	}
@@ -180,13 +180,15 @@ public abstract class Maintenance implements ReceiptPrinterListener {
     // notify attendant
     // may need different return type
     public void maintainBanknotes() throws  OverloadedDevice{
+		this.notifyAttendant = false;
 		try {
+			//this.notifyAttendant = true; --- communicate w Miscellaneous team
 			this.software.banknoteDispenser.dispense();
 
 			//this.notifyAttendant = true; --- communicate w Miscellaneous team
 			issues.add("ERROR_DISPENSING_BANKNOTES");
 			BigDecimal[] banknotesAdded = software.getBanknoteDenominations();
-			int banknotesRemoved = software.
+			int banknotesRemoved = software.getBanknotesRemoved();
 
 			adjustBanknoteDenominations(banknotesAdded, banknotesRemoved);
 			boolean changesMade = software.detectBanknoteDenominationChanges();
@@ -200,16 +202,27 @@ public abstract class Maintenance implements ReceiptPrinterListener {
 
 
 			for (int i = 0; i < banknotesAdded.length; i++) {
+				if (banknotesAdded[i].compareTo(BigDecimal.ZERO) < 0) {
+					//this.notifyAttendant = true; --- communicate w Miscellaneous team
+					issues.add("ERROR_BANKNOTE_ADJUSTMENT_NOT_DETECTED");
+					break;
+				}
 
 			}
-			closeBanknoteDispenser();
+			//this.notifyAttendant = true; --- communicate w Miscellaneous team
 
-			issues.remove("")
+
+			issues.remove("ERROR_BANKNOTE_ADJUSTMENT_NOT_DETECTED");
+			issues.remove("ERROR_BANKNOTE_ADJUSTMENT");
+			issues.remove("ERROR_MAINTAINING_BANKNOTES");
+
 		} catch (Exception e) {
 			issues.add("ERROR_MAINTAINING_BANKNOTES");
 		}
 	}
-
+	public void adjustBanknoteDenominations(BigDecimal[] banknotesAdded, int banknotesRemoved) {
+		software.banknoteDispenser.adjustBanknoteDenominations(banknotesAdded, banknotesRemoved);
+	}
 	@Override
 	public void aDeviceHasBeenEnabled(IDevice<? extends IDeviceListener> device) {
 		// TODO Auto-generated method stub

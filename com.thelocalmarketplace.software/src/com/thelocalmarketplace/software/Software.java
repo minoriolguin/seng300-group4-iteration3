@@ -400,11 +400,15 @@ public class Software {
 	}
 
 	public int adjustBanknoteDenominations(BigDecimal[] banknotesAdded, int banknotesRemoved) {
-		return station.adjustBanknoteDenominations(banknotesAdded, banknotesRemoved);
+		return station.configureBanknoteDenominations(banknotesAdded, banknotesRemoved);
 
 	}
 
 	public boolean detectBanknoteDenominationChanges() {
-		return station.detectBanknoteDenominationChanges();
+		return station.configureBanknoteDenominations(banknotesAdded, banknotesRemoved);
+	}
+
+	public int getBanknotesRemoved() {
+		return station.getBanknotesRemoved();
 	}
 }
