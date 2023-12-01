@@ -78,8 +78,8 @@ public class PrintReceipt {
         printedChars = 0;
         paperUsed = 0;
         totalPrice = BigDecimal.ZERO;
-        software.maintenance.checkInk(averagePrintedChars);
-        software.maintenance.checkPaper(averagePaperUsed); 
+        //software.maintenance.checkInk(averagePrintedChars);
+        //software.maintenance.checkPaper(averagePaperUsed);
 
     }
 

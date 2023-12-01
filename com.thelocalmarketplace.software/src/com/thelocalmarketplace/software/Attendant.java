@@ -36,6 +36,10 @@ public class Attendant implements WeightDiscrepancyListener {
     	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
     }
 
+    public void reusableBagsEmpty() {
+
+    }
+
     public void removeItemFromScale() {
     }
 
