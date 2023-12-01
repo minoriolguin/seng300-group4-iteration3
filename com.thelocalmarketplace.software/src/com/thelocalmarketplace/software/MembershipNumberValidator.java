@@ -1,4 +1,4 @@
-
+package com.thelocalmarketplace.software;
 
 public class MembershipNumberValidator {
     private static final int EXPECTED_LENGTH = 8;

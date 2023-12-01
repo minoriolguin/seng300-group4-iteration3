@@ -1,3 +1,4 @@
+package com.thelocalmarketplace.software;
 
 
 import com.jjjwelectronics.scanner.Barcode;
