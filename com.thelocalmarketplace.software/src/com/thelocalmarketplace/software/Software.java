@@ -80,7 +80,7 @@ public class Software {
 	/*Constructor for SelfCheckout
 	 *  
 	 */
-	private Software(AbstractSelfCheckoutStation hardware) {
+	public Software(AbstractSelfCheckoutStation hardware) {
 		if (hardware instanceof SelfCheckoutStationBronze bronze) {
 			this.station = bronze;
 			this.baggingAreaScale = bronze.getBaggingArea();
