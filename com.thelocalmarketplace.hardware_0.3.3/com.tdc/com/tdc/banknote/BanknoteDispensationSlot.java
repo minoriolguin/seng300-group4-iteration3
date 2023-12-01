@@ -136,4 +136,5 @@ public final class BanknoteDispensationSlot extends AbstractComponent<BanknoteDi
 		for(BanknoteDispensationSlotObserver observer : observers)
 			observer.banknotesRemoved(this);
 	}
+
 }
