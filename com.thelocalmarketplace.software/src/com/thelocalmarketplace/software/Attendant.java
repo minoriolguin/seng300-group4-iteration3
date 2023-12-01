@@ -22,7 +22,15 @@ public class Attendant implements WeightDiscrepancyListener {
 		}
 	}
 	
-    public void notifySkipBagging(){
+	/**
+	 * Method for getting notifications for Attendant
+	 * @return Arraylist of strings
+	 */
+    public ArrayList<String> getNotifs() {
+		return notifs;
+	}
+
+	public void notifySkipBagging(){
         software.unblockCustomer();
     }
 
