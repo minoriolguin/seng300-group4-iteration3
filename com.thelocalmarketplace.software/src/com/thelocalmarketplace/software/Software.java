@@ -39,6 +39,7 @@ public class Software {
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
 	private boolean customerStationBlock = false;
+	private boolean pendingMaintenance = false;
 	private final HashMap<Product,Mass> productsInOrder;
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
@@ -173,6 +174,11 @@ public class Software {
 	 * It enables handheld and main scanners, as well as the bagging area scale.
 	 */
 	public void startSession() {
+        if (pendingMaintenance) {
+            System.out.println("Cannot start session: Maintenance is pending.");
+            return;
+        }
+        
 		endSession();
 		handHeldScanner.enable();
 		mainScanner.enable();
@@ -188,6 +194,12 @@ public class Software {
 		barcodedProductsInOrder.clear();
 		expectedTotalWeight = Mass.ZERO;
 		orderTotal = BigDecimal.ZERO;
+		
+        if (pendingMaintenance) {
+            blockCustomerStation();
+            pendingMaintenance = false;
+            System.out.println("Session ended. Maintenance pending: Station disabled.");
+        }
 	}
 
 	/**
@@ -454,4 +466,17 @@ public class Software {
 	public CoinStorageUnit getCoinStorage() {
 		return station.getCoinStorage();
 	}
+	
+    public void setPendingMaintenance(boolean pending) {
+        this.pendingMaintenance = pending;
+    }
+    
+    public boolean isPendingMaintenance() {
+        return this.pendingMaintenance;
+    }
+    
+    public boolean isSessionActive() {
+        return orderTotal.compareTo(BigDecimal.ZERO) > 0;
+    }
+
 }
