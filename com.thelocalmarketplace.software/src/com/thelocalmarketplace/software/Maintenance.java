@@ -186,9 +186,23 @@ public abstract class Maintenance implements ReceiptPrinterListener {
 			//this.notifyAttendant = true; --- communicate w Miscellaneous team
 			issues.add("ERROR_DISPENSING_BANKNOTES");
 			BigDecimal[] banknotesAdded = software.getBanknoteDenominations();
-			for (int i = 0; i < banknotesAdded.length; i++) {
-				software.banknoteDispenser.addBanknotes(banknotesAdded[i], 1);
+			int banknotesRemoved = software.
+
+			adjustBanknoteDenominations(banknotesAdded, banknotesRemoved);
+			boolean changesMade = software.detectBanknoteDenominationChanges();
+
+			//this.notifyAttendant = true; --- communicate w Miscellaneous team
+			issues.add("ERROR_DETECTING_BANKNOTE_CHANGES");
+			if (changesMade) {
+				//this.notifyAttendant = true; --- communicate w Miscellaneous team
+				issues.add("ERROR_BANKNOTE_CHANGES");
 			}
+
+
+			for (int i = 0; i < banknotesAdded.length; i++) {
+
+			}
+
 		} catch (Exception e) {
 			issues.add("ERROR_MAINTAINING_BANKNOTES");
 		}

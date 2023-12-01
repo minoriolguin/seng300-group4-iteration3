@@ -398,5 +398,13 @@ public class Software {
 	public void setTestTouchScreen (TouchScreen touchScreen) {
 		this.touchScreen = touchScreen;
 	}
-	
+
+	public int adjustBanknoteDenominations(BigDecimal[] banknotesAdded, int banknotesRemoved) {
+		return station.adjustBanknoteDenominations(banknotesAdded, banknotesRemoved);
+
+	}
+
+	public boolean detectBanknoteDenominationChanges() {
+		return station.detectBanknoteDenominationChanges();
+	}
 }
