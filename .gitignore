@@ -12,3 +12,4 @@ local.properties
 .classpath
 .settings
 /bin/
+*.icloud
