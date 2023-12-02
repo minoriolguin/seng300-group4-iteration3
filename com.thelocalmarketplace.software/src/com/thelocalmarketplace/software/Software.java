@@ -73,6 +73,7 @@ public class Software {
 	public final BanknoteDispensationSlot banknoteDispenser;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
+	public final CoinStorageUnit coinStorage;
 	
 	/**
      * A boolean variable that keeps track of whether a customer needs attention.
@@ -104,6 +105,7 @@ public class Software {
 			this.printer = bronze.getPrinter();
 			this.coinDispensers = bronze.getCoinDispensers();
 			this.reusableBagDispenser = bronze.getReusableBagDispenser();
+			this.coinStorage = bronze.getCoinStorage();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -118,6 +120,7 @@ public class Software {
 			this.printer = silver.getPrinter();
 			this.coinDispensers = silver.getCoinDispensers();
 			this.reusableBagDispenser = silver.getReusableBagDispenser();
+			this.coinStorage = silver.getCoinStorage();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -132,6 +135,7 @@ public class Software {
 			this.printer = gold.getPrinter();
 			this.coinDispensers = gold.getCoinDispensers();
 			this.reusableBagDispenser = gold.getReusableBagDispenser();
+			this.coinStorage = gold.getCoinStorage();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -145,6 +149,7 @@ public class Software {
 			this.printer = hardware.getPrinter();
 			this.coinDispensers = hardware.getCoinDispensers();
 			this.reusableBagDispenser = hardware.getReusableBagDispenser();
+			this.coinStorage = hardware.getCoinStorage();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -306,7 +311,6 @@ public class Software {
             coinValidator.disable();
             cardReader.disable();
             banknoteDispenser.disable();
-            coinTray.disable();
             printer.disable();
             customerStationBlock = true;
             System.out.println("Station disabled for maintenance. 'Out of order'");
@@ -523,7 +527,7 @@ public class Software {
 	 * @return The coin storage unit.
 	 */
 	public CoinStorageUnit getCoinStorage() {
-		return station.getCoinStorage();
+		return coinStorage;
 	}
 	
     public void setPendingMaintenance(boolean pending) {
