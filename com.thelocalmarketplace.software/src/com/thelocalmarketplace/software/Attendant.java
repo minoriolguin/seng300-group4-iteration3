@@ -5,13 +5,22 @@ import com.jjjwelectronics.Mass;
 
 public class Attendant implements WeightDiscrepancyListener {
 
-    Software software;
-    ArrayList<String> notifs;
+    public Software software;
+    public ArrayList<String> notifs;
     public boolean reusableBagsEmpty;
+    /**
+     * A boolean variable that keeps track of whether a customer has been attended to.
+     * 
+     * Is true if no customer has requested it.
+     * Becomes false when a customer requests for an attendant.
+     * Goes back to true after the customer has gotten their help.
+     **/
+    private boolean attended = true;
     
     public Attendant(Software software){
         this.software = software;
         reusableBagsEmpty = false;
+        notifs = new ArrayList<>();
     }
 	
 	/**
@@ -24,6 +33,10 @@ public class Attendant implements WeightDiscrepancyListener {
 		}
 	}
 	
+    public void reusableBagsEmpty(){
+        reusableBagsEmpty = true;
+    }
+    
 	/**
 	 * Method for getting notifications for Attendant
 	 * @return Arraylist of strings
@@ -47,16 +60,21 @@ public class Attendant implements WeightDiscrepancyListener {
         software.weightDiscrepancy.isWeightDiscrepancy(software.getExpectedTotalWeight());
     }
     
+    
     public void disableCustomerStation() {
     	software.blockCustomerStation();
-    	
-    }
-    public void reusableBagsEmpty(){
-        reusableBagsEmpty = true;
+        // Handle the scenario when disabling is immediate or pending
+        if (software.isPendingMaintenance()) {
+            System.out.println("Disabling is set to pending until the current session ends.");
+        } else {
+            System.out.println("Station is disabled for maintenance.");
+        }
     }
     
-    //Enables the customer station software and hardware after being blocked
-    //Precondition: Customer station must be blocked
+    /**
+     *  Enables the customer station software and hardware after being blocked
+     *  Precondition: Customer station must be blocked
+     **/
     public void enableCustomerStation() {
     	if (software.isCustomerStationBlocked()) {
     		software.unblockCustomerStation();
@@ -64,12 +82,6 @@ public class Attendant implements WeightDiscrepancyListener {
     	else { System.out.println("\nCustomer station is not currently blocked.\n"); }
     }
 
-    public void removeItemFromScale() {
-    }
-
-    public void addItemToScale() {
-
-    }
 
     @Override
     public void weightOverLimit() {
@@ -85,6 +97,32 @@ public class Attendant implements WeightDiscrepancyListener {
     public void bagsTooHeavy() {
         software.weightDiscrepancy.massOfOwnBags = Mass.ZERO;
     }
+    
+    /**
+     * Prompts the attendant to respond to the customer who signaled for help
+     * 
+     * For testing: while the respondent has not attended to the customer, the boolean
+     * "attended" remains false.
+     * 
+     * Unclear point: I am not sure attendant has their own touch screen or will be using
+     * a command line kind of interface. 
+     * For this code, I just used if attended == true until I have the concrete version
+     * of how the attendant will be interacted with.
+     **/
+    public void respondToCustomer() {
+    	notifs.add("A customer needs your help");    	
+    	System.out.println("\nHave you attended to them?\n");
+    	
+    	if (attended == true) {
+    		attended = true;
+    		software.setNeedsAttentionToFalse();
+    	}
+    }
+    
+    public void setAttendedToFalse() {
+    	attended = false;
+    }
+    
 	@Override
 	public void RemoveItemFromScale() {
 		// TODO Auto-generated method stub

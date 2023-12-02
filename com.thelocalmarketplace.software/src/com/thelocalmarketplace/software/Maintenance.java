@@ -51,7 +51,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	private int averageBanknotesUsagePerSession;
 
 	private int currentBanknotes;
-    
+	
     ArrayList<String> issues;
 
 	// String messages that simulate maintenance codes
@@ -78,9 +78,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     
     public Maintenance(Software software){
         this.software = software;
+        
         // make predictions (check component statuses)
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
+		issues = new ArrayList<>();
     }
     
     /**

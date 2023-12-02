@@ -170,6 +170,14 @@ public class TouchScreen implements WeightDiscrepancyListener {
         // Implementation to be done in Iteration 3
     }
     
+    /**
+     * Initiates the process of a customer asking for an attendant's help.
+     **/
+    public void signalForAttendant() {
+    	software.setNeedsAttentionToTrue();
+    	software.notifyAttendant();
+    }
+    
     
     //Listeners Below 
     
