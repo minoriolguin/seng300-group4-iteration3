@@ -37,7 +37,7 @@ public class AttendantFrame {
     public AttendantFrame() {
         attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
-        attend_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         attend_frame.setLocation(1000, 0); // Adjust the coordinates as needed
 
         // Top Panel (Text: Meow)
