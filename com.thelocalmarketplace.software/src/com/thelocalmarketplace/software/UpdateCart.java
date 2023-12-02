@@ -171,25 +171,26 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     		throw new NullPointerSimulationException();
     	}
 
-    	String description = "";
     	ArrayList<Product> productMatches = new ArrayList<>();
-
-    	for(Product product : software.getProductsInOrder().keySet())
+   
+    	//iterate through barcoded products
+    	for(BarcodedProduct product : ProductDatabases.BARCODED_PRODUCT_DATABASE.values())
     	{
-    		if(product instanceof BarcodedProduct)
-    		{
-    			description = ((BarcodedProduct) product).getDescription().toLowerCase();
-    		}
-    		else if(product instanceof PLUCodedProduct)
-    		{
-    			description = ((PLUCodedProduct) product).getDescription().toLowerCase();
-    		}
-    		
-    		if(description.contains(searchStr.toLowerCase()))
-    		{
-    			productMatches.add(product);
-    		}
+			if(product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
     	}
+    	
+    	//iterate through PLUCoded products
+    	for(PLUCodedProduct product : ProductDatabases.PLU_PRODUCT_DATABASE.values())
+    	{
+			if(product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
+    	}
+    	
 
 		return productMatches;
     }
