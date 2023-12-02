@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.banknote.Banknote;
+import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Software;
