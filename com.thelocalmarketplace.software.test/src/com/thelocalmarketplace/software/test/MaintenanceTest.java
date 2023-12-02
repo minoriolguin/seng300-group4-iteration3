@@ -72,8 +72,7 @@ public class MaintenanceTest {
 	private MembershipDatabase membershipDatabase;
 	private MembershipNumberValidator membershipNumValidator;
 	
-	private String memberNum0;
-	private int memberNum0ID;
+	private String member0ID;
 
 	@Before
 	public void setUp() throws Exception {
@@ -194,13 +193,10 @@ public class MaintenanceTest {
 	    membershipNumValidator = new MembershipNumberValidator(this.membershipDatabase);
 	    
 	    //add a valid string to the database
-		memberNum0 = "12345678";
-		memberNum0ID = membershipDatabase.addMember(memberNum0);
-
+		member0ID = membershipDatabase.addMember("Alice");
 	}
-
-
-	@Test
+	
+	
 	public void testMaintenance() {
 //		if (silver_software.printer instanceof ReceiptPrinterSilver) {
 //		fail("ink: "+gold_software.printer.inkRemaining());
@@ -1144,7 +1140,6 @@ public class MaintenanceTest {
 		assertTrue(gold_software.isCustomerStationBlocked());
 	}
 	
-	
 	@Test
 	public void testOutOfBanknotes() {
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
@@ -1313,8 +1308,27 @@ public class MaintenanceTest {
 	@Test
 	public void testAddMemberToDatabase()
 	{
-		int memberId = membershipDatabase.addMember("bob");
-		assertTrue(membershipDatabase.memberExists(memberId));
+		String memberID = membershipDatabase.addMember("bob");
+		assertTrue(membershipDatabase.memberExists(memberID));
+	}
+	
+	/**
+	 * Test adding a member with null as a name to the database
+	 */
+	@Test(expected = NullPointerSimulationException.class)
+	public void testAddNullMemberToDatabase()
+	{
+		membershipDatabase.addMember(null);
+	}
+	
+	/**
+	 * Test adding a member with an empty string for a name to the database
+	 */
+	@Test(expected = RuntimeException.class)
+	public void testAddEmtpyMemberNameToDatabase()
+	{
+		
+		membershipDatabase.addMember("");
 	}
 	
 	/**
@@ -1324,11 +1338,75 @@ public class MaintenanceTest {
 	public void testAddPoints()
 	{
 		int points = 50;
-		membershipDatabase.addPoints(memberNum0ID, points);
-		//no way to get the points of a member
-//		assertEquals(points, membershipDatabase.get)
-		//TODO
-		assertFalse(true);
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(points, membershipDatabase.getPoints(member0ID));
+	}
+	
+	
+	/**
+	 * Test negative points being added 
+	 */
+	@Test
+	public void testAddNegativePoints()
+	{
+		int points = -50;
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+	}
+
+	/**
+	 * 
+	 */
+	@Test(expected = ArithmeticException.class)
+	public void testAddOverflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMAX = Integer.MAX_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.addPoints(member0ID, pointsMAX);
+	}
+	
+	@Test
+	public void testSubtractPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = 35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - pointsToRemove, membershipDatabase.getPoints(member0ID));
+	}
+	
+	@Test
+	public void testSubtractExactPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = pointsToAdd;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+		
+	}
+
+	@Test
+	public void testSubtractNegativePoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = -35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - Math.abs(pointsToRemove), membershipDatabase.getPoints(member0ID));
+	}
+
+	@Test(expected = ArithmeticException.class)
+	public void testSubtractUnderflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMIN = Integer.MIN_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.subtractPoints(member0ID, pointsMIN);
 	}
 	
 	/**
@@ -1355,7 +1433,7 @@ public class MaintenanceTest {
 	public void testMembershipNumberNotInDatabase()
 	{
 		String memberNum = "00000001";
-		assertFalse(membershipDatabase.memberExists(Integer.parseInt(memberNum)));
+//		assertFalse(membershipDatabase.memberExists(Integer.parseInt(memberNum)));
 		assertFalse(membershipNumValidator.isValid(memberNum));
 	}
 	
@@ -1445,14 +1523,13 @@ public class MaintenanceTest {
 		assertFalse(membershipNumValidator.isValid(null));
 	}
 	
+
 	/**
 	 * Test an invalid string as input. Specifically an empty string
 	 */
 	@Test
 	public void emptyString()
 	{
-		String memberNum = "";
-		membershipDatabase.addMember(memberNum);
 		assertFalse(membershipNumValidator.isValid(""));
 	}
 

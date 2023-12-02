@@ -14,8 +14,7 @@ public class MembershipNumberValidator {
         }
 
         // Check if the number exists in the database
-        int memberId = Integer.parseInt(number);
-        if (!database.memberExists(memberId)) {
+        if (!database.memberExists(number)) {
             System.out.println("Error: Membership number not found.");
             return false;
         }
