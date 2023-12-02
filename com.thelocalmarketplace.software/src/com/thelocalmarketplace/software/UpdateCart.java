@@ -32,6 +32,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         this.software = software;
         this.weightDiscrepancy = software.weightDiscrepancy;
         this.membershipScanner = new MembershipScanner(software);
+        this.currentMassOnScanner = Mass.ZERO;
 
         // register both scanners, Both are automatically dealt with
         software.handHeldScanner.register(this);
