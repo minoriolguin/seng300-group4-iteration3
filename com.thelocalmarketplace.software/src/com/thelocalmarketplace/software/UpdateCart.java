@@ -13,6 +13,7 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /* The UpdateCart class handles the addition and removal of items from the self-checkout cart.
 * It also manages bulky items, blocking and unblocking customer interactions, and updates the expected weight and total cost.
@@ -149,6 +150,60 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         }
         else
             software.attendant.verifyItemRemovedFromOrder();
+    }
+    
+    /**
+     * Perform a text search for a product description
+     * 
+     * @param str - the string/substring to search for a product's description with 
+     * @return - An array list containing all of the products with matching descriptions. This Array list
+     * 			 will be empty if there are no matches
+     */
+    public ArrayList<Product> textSearch(String searchStr)
+    {
+    	String description = "";
+    	ArrayList<Product> productMatches = new ArrayList<>();
+
+    	for(Product product : software.getProductsInOrder().keySet())
+    	{
+    		if(product instanceof BarcodedProduct)
+    		{
+    			description = ((BarcodedProduct) product).getDescription();
+    		}
+    		else if(product instanceof PLUCodedProduct)
+    		{
+    			description = ((PLUCodedProduct) product).getDescription();
+    		}
+    		
+    		if(description.contains(searchStr))
+    		{
+    			productMatches.add(product);
+    		}
+    	}
+
+		return productMatches;
+    }
+    
+    /**
+     * Add a generalized product type
+     * 
+     * @param product - generalized product to add
+     */
+    public void addProduct(Product product)
+    {
+    		if(product instanceof BarcodedProduct)
+    		{
+    			this.addScannedItem(((BarcodedProduct) product).getBarcode());
+    		}
+    		else if(product instanceof PLUCodedProduct)
+    		{
+    			this.addPLUProduct((PLUCodedProduct) product);
+    		}
+    		else
+    		{
+    			//TODO
+    			//throw some sort of product not found error here
+    		}
     }
 
     /**
