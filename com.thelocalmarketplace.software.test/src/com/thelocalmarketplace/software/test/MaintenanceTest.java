@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.banknote.Banknote;
+import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Software;
@@ -77,17 +78,13 @@ public class MaintenanceTest {
                 new BigDecimal("20.00"),
                 new BigDecimal("50.00"),
                 new BigDecimal("100.00")};
-        BigDecimal[] coinDenom = { new BigDecimal("0.01"),
-                new BigDecimal("0.05"),
-                new BigDecimal("0.1"),
-                new BigDecimal("0.25"),
-                new BigDecimal("1"),
-                new BigDecimal("2") };
         
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         AbstractSelfCheckoutStation.configureCurrency(c);
         AbstractSelfCheckoutStation.configureBanknoteDenominations(billDenom);
-        AbstractSelfCheckoutStation.configureCoinDenominations(coinDenom);
+        AbstractSelfCheckoutStation.configureCoinDenominations(coindenominations.toArray(
+                new BigDecimal[coindenominations.size()]));
+        Coin.DEFAULT_CURRENCY = CAD;
 		
 		bronze_hardware = new SelfCheckoutStationBronze();
 		gold_hardware = new SelfCheckoutStationGold();
@@ -119,9 +116,9 @@ public class MaintenanceTest {
 		gold_software.maintenance.resolveInkIssue((int)(gold_software.maintenance.MAXIMUM_INK * 0.5));
 		gold_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
 		
-		bronze_cDispensers = bronze_software.coinDispensers;
-		silver_cDispensers = silver_software.coinDispensers;
-		gold_cDispensers = gold_software.coinDispensers;
+		bronze_cDispensers = bronze_software.getCoinDispensers();
+		silver_cDispensers = silver_software.getCoinDispensers();
+		gold_cDispensers = gold_software.getCoinDispensers();
 		
 		for (BigDecimal cd : coindenominations) {
 			bronze_software.maintenance.addCoinsInDispenser(bronze_cDispensers.get(cd),cd,10);
