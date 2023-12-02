@@ -33,8 +33,9 @@ import ca.ucalgary.seng300.simulation.SimulationException;
 public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
     private Software software;
     private int inkRemaining;
-    private int averagePaperUsedPerSession;
+	private int averagePaperUsedPerSession;
 	private int averageInkUsagePerSession;
+
 	private int remainingPaper;
     
     // Specs
@@ -96,6 +97,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
 		issues = new ArrayList<>();
+		
     }
     
     /**
@@ -133,6 +135,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		// Remove if exists in issues arraylist; does nothing otherwise
     		issues.remove(lowInkMsg);
     		issues.remove(outOfInkMsg);
+    		software.attendant.enableCustomerStation();
     		// Estimate when low ink might occur
     		predictLowInk();
     	}
@@ -159,10 +162,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @throws OverloadedDevice if quantity added causes ink level to be more than allowable
      */
     public void resolveInkIssue(int quantity) throws OverloadedDevice {
-    	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
+    	if (quantity > (MAXIMUM_INK-inkRemaining)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
     	}
     	software.printer.addInk(quantity);
+    	this.inkRemaining += quantity;
     	checkInk(averageInkUsagePerSession);	
     }
     
@@ -182,6 +186,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			software.attendant.disableCustomerStation();
 		} else {
 			issues.remove(lowCoinsSoonDisp);
+			software.attendant.enableCustomerStation();
 		}	
     }
     
@@ -201,6 +206,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(dispAlmostFull);
+    		software.attendant.enableCustomerStation();
     	}
     }
     
@@ -219,6 +225,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(storAlmostFull);
+    		software.attendant.enableCustomerStation();
     	}
     }
     
@@ -307,6 +314,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		// Remove if exists in issues arraylist; does nothing otherwise
     		issues.remove(lowPaperMsg);
     		issues.remove(outOfPaperMsg);
+    		software.attendant.enableCustomerStation();
     		// Estimate when low paper might occur
     		predictLowPaper();
     	}				 
@@ -331,10 +339,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @throws OverloadedDevice
      */
 	public void resolvePrinterPaperIssue(int amount) throws OverloadedDevice {
-		if (amount >= (MAXIMUM_PAPER-remainingPaper)) {
+		if (amount > (MAXIMUM_PAPER-remainingPaper)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
     	}
     	software.printer.addPaper(amount);
+    	this.remainingPaper += amount;
     	checkPaper(averagePaperUsedPerSession);	
     }
 
@@ -377,6 +386,8 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			issues.remove(outOfBanknotesMsg);
 			issues.remove(bankNotesFullMsg);
 			issues.remove(lowBanknotesSoonMsg);
+			
+			software.attendant.enableCustomerStation();
 
 			predictLowBanknotes();
 		}
@@ -403,6 +414,22 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			else
 				software.banknoteDispenser.receive(banknote);
 		checkBanknotes(averageBanknotesUsagePerSession, banknoteStorageUnit);
+	}
+	
+    public int getInkRemaining() {
+		return inkRemaining;
+	}
+    
+    public void setInkRemaining(int amount) {
+		inkRemaining = amount;
+	}
+    
+	public int getAverageInkUsagePerSession() {
+		return averageInkUsagePerSession;
+	}
+
+	public void setAverageInkUsagePerSession(int averageInkUsagePerSession) {
+		this.averageInkUsagePerSession = averageInkUsagePerSession;
 	}
 
 	@Override
@@ -453,7 +480,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowInk() {
-		issues.add(lowInkSoonMsg);
+		issues.add(lowInkMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowInkSoonMsg);
@@ -463,7 +490,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowPaper() {
-		issues.add(lowPaperSoonMsg);
+		issues.add(lowPaperMsg);
 				
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowPaperSoonMsg);
