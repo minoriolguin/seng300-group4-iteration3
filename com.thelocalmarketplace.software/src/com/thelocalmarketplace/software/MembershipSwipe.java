@@ -1,5 +1,4 @@
 package com.thelocalmarketplace.software;
-
 import com.jjjwelectronics.card.*;
 
 public class MembershipSwipe {
