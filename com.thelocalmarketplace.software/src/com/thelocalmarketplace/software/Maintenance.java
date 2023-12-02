@@ -452,7 +452,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			throw new RuntimeException("Process aborted: Quantity will be lower than minimum.");
 		}
 		
-		List<Banknote> unloaded  = banknoteStorageUnit.unload();
+		List<Banknote> unloaded = new ArrayList<>(banknoteStorageUnit.unload());
 		
 		while(currentBanknotes>highbanknoteslevel) {
 			unloaded.remove(unloaded.size()-1);
