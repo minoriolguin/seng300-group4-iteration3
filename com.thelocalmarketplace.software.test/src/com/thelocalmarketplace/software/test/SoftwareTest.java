@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 
 public class SoftwareTest {
-    private SelfCheckoutStationBronze station_bronze;
+    private SelfCheckoutStationBronze station;
     private SelfCheckoutStationSilver station_silver;
     private SelfCheckoutStationGold station_gold;
     private AbstractSelfCheckoutStation station_abstract;
@@ -129,13 +129,15 @@ public class SoftwareTest {
         AbstractSelfCheckoutStation.configureCurrency(c);
         AbstractSelfCheckoutStation.configureBanknoteDenominations(billDenom);
         AbstractSelfCheckoutStation.configureCoinDenominations(coinDenom);
-        software = new Software(station_abstract);
-        checkout_gold = Software.getGoldInstance(station_gold);
-        checkout_silver = Software.getSilverInstance(station_silver);
-        checkout_bronze = Software.getBronzeInstance(station_bronze);
-        PowerGrid.engageUninterruptiblePowerSource();;
-        station.plugIn(PowerGrid.instance());
+        station = new SelfCheckoutStationBronze();
+        software = new Software(station);
+        station_silver = new SelfCheckoutStationSilver();
+        checkout_silver = Software.getInstance(station_silver);
+		PowerGrid.engageUninterruptiblePowerSource();
+		station_silver.plugIn(PowerGrid.instance());
 
+        software.turnOn();
+//        software = Software.getInstance(station);
 
         //Constructor
         this.baggingAreaScale = station.getBaggingArea();
@@ -167,7 +169,8 @@ public class SoftwareTest {
     public void SetUpToTestSilver() {
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         station_silver = new SelfCheckoutStationSilver();
-        checkout_silver = Software.getSilverInstance(station_silver);
+        software = new Software(station_silver);
+        checkout_silver = Software.getInstance(station_silver);
 
         //constructor
 		this.baggingAreaScale = station_silver.getBaggingArea();
@@ -183,7 +186,7 @@ public class SoftwareTest {
     public void SetUpToTestGold() {
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         station_gold = new SelfCheckoutStationGold();
-        checkout_gold = Software.getGoldInstance(station_gold);
+        checkout_gold = Software.getInstance(station_gold);
 
         //constructor
 		this.baggingAreaScale = station_gold.getBaggingArea();
