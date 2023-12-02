@@ -12,7 +12,11 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /* The UpdateCart class handles the addition and removal of items from the self-checkout cart.
 * It also manages bulky items, blocking and unblocking customer interactions, and updates the expected weight and total cost.
@@ -149,6 +153,68 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         }
         else
             software.attendant.verifyItemRemovedFromOrder();
+    }
+    
+    /**
+     * Perform a text search for a product description
+     * 
+     * case insensitive
+     * 
+     * @param str - the string/substring to search for a product's description with 
+     * @return - An array list containing all of the products with matching descriptions. This Array list
+     * 			 will be empty if there are no matches
+     */
+    public ArrayList<Product> textSearch(String searchStr)
+    {
+    	if(searchStr == null)
+    	{
+    		throw new NullPointerSimulationException();
+    	}
+
+    	ArrayList<Product> productMatches = new ArrayList<>();
+   
+    	//iterate through barcoded products
+    	for(BarcodedProduct product : ProductDatabases.BARCODED_PRODUCT_DATABASE.values())
+    	{
+			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
+    	}
+    	
+    	//iterate through PLUCoded products
+    	for(PLUCodedProduct product : ProductDatabases.PLU_PRODUCT_DATABASE.values())
+    	{
+			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
+    	}
+    	
+
+		return productMatches;
+    }
+    
+    /**
+     * Add a generalized product type
+     * 
+     * @param product - generalized product to add
+     */
+    public void addProduct(Product product)
+    {
+    		if(product instanceof BarcodedProduct)
+    		{
+    			this.addScannedItem(((BarcodedProduct) product).getBarcode());
+    		}
+    		else if(product instanceof PLUCodedProduct)
+    		{
+    			this.addPLUProduct((PLUCodedProduct) product);
+    		}
+    		else
+    		{
+    			//TODO
+    			//throw some sort of product not found error here
+    		}
     }
 
     /**

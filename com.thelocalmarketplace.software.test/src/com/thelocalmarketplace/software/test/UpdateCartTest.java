@@ -18,6 +18,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Attendant;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -73,18 +75,18 @@ public class UpdateCartTest {
         testBarcode[2] = Numeral.eight;
         testBarcode[3] = Numeral.eight;
         barcode = new Barcode(testBarcode);
-        barcodedProduct1 = new BarcodedProduct(barcode, "test", 5, 100);
+        barcodedProduct1 = new BarcodedProduct(barcode, "lamp", 5, 100);
 
         Numeral[] testBarcode2 = new Numeral[2];
         testBarcode2[0] = Numeral.zero;
         testBarcode2[1] = Numeral.one;
         barcode2 = new Barcode(testBarcode2);
-        barcodedProduct2 = new BarcodedProduct(barcode2, "test2", 100, 10);
+        barcodedProduct2 = new BarcodedProduct(barcode2, "batteries", 100, 10);
         Numeral[] testBarcode3 = new Numeral[2];
         testBarcode3[0] = Numeral.nine;
         testBarcode3[1] = Numeral.one;
         barcode3 = new Barcode(testBarcode3);
-        barcodedProduct3 = new BarcodedProduct(barcode3, "lightTest", 100, 0.01);
+        barcodedProduct3 = new BarcodedProduct(barcode3, "sticky notes", 100, 0.01);
         
         //add barcoded products to the barcoded product database
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct1);
@@ -126,6 +128,40 @@ public class UpdateCartTest {
         
         //Check the the software got unblocked (no weight discrepancy)
         assertFalse(software.isBlocked());
+    }
+    
+    @Test
+    public void testAddGeneralProductWithBarcodedProduct()
+    {
+    	updateCart.addProduct(barcodedProduct1);
+    	
+    	assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+    }
+
+    @Test
+    public void testAddGeneralProductWithPLUProduct()
+    {
+    	updateCart.addProduct(PLUProduct1);
+
+        assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+    }
+    
+    @Test
+    public void testAddGeneralProducts()
+    {
+    	Product bProd = barcodedProduct1;
+    	Product pluProd = PLUProduct1;
+    	updateCart.addProduct(pluProd);
+    	updateCart.addProduct(bProd);
+    	
+    	assertTrue(software.getProductsInOrder().containsKey(bProd));
+        assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void testAddGeneralNullProduct()
+    {
+    	updateCart.addProduct(null);
     }
 
     
@@ -216,18 +252,6 @@ public class UpdateCartTest {
     	updateCart.addPLUProduct(product);
     }
     
-    /**
-     * Test the case where a PLU item without a description is added to the cart
-     * 
-     * description might be optional??
-     */
-//    @Test
-//    public void testAddPLUWithEmptyDescription()
-//    {
-//        PriceLookUpCode PLUCode = new PriceLookUpCode("4139");
-//    	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "", 123);
-//    	updateCart.addPLUProduct(product);
-//    }
     
     /**
      * Test removing a valid PLU product from the order
@@ -406,10 +430,60 @@ public class UpdateCartTest {
         updateCart.aBarcodeHasBeenScanned(station.getHandheldScanner(), barcode);
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
     }
+    
+    @Test
+    public void testTextSearchForBarcodedProduct()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("batteries");
+    	assertTrue(matches.size() == 1);
+    	assertEquals(matches.get(0), barcodedProduct2);
+    }
 
+    @Test
+    public void testTextSearchForPLUProduct()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("coffee");
+    	assertTrue(matches.size() == 1);
+    	assertEquals(matches.get(0), PLUProduct3);
+    }
+
+    @Test
+    public void testTextSearchForPLUAndBarcodedProduct()
+    {
+    	//create products that both have coffee in the name 
+        Numeral[] testBarcode = new Numeral[4];
+        testBarcode[0] = Numeral.six;
+        testBarcode[1] = Numeral.two;
+        testBarcode[2] = Numeral.two;
+        testBarcode[3] = Numeral.two;
+        barcode = new Barcode(testBarcode);
+        BarcodedProduct bP1 = new BarcodedProduct(barcode, "bundle of apples", 30, 100);
+
+        PriceLookUpCode PLUCode = new PriceLookUpCode("9028");
+        PLUCodedProduct PLUP1 = new PLUCodedProduct(PLUCode, "singluar wrapped apple", 26);
+        
+        //add barcodedProduct and PLUCodedProduct to the database
+        ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode, PLUP1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, bP1);
+
+
+    	ArrayList<Product> matches = updateCart.textSearch("apple");
+    	assertTrue(matches.size() == 2);
+    	assertTrue(matches.get(0) != matches.get(1));
+    	assertTrue((matches.get(0) == PLUP1) || matches.get(0) == bP1);
+    	assertTrue((matches.get(1) == PLUP1) || matches.get(1) == bP1);
+    }
+    
+    @Test
+    public void testTexSearchWithNoMatches()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("corn");
+    	assertTrue(matches.size() == 0);
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void testTextSearchWithNullStr()
+    {
+    	updateCart.textSearch(null);
+    }
 }
-
-
-
-
-
