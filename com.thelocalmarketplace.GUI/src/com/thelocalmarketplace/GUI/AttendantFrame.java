@@ -33,15 +33,15 @@ public class AttendantFrame {
 	
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
-	
-    public void AttendantFrame() {
-        JFrame attend_frame = new JFrame("Attendant Screen");
+	private JFrame attend_frame;
+    public AttendantFrame() {
+        attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
-        attend_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         attend_frame.setLocation(1000, 0); // Adjust the coordinates as needed
 
         // Top Panel (Text: Meow)
-        JPanel topPanel = createLabelPanel("Meow", 450, 150); 
+        JPanel topPanel = createLabelPanel("Attendant", 450, 150); 
         attend_frame.add(topPanel, BorderLayout.NORTH);
 
         // Middle Panel (Single Button)
@@ -54,14 +54,14 @@ public class AttendantFrame {
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new GridLayout(5, 2));
         // Array of button titles
-        String[] buttonTitles = {"Button 1", 
-        						 "Button 2", 
-        						 "Button 3", 
-        						 "Button 4", 
-        						 "Button 5", 
-                                 "Button 6", 
-                                 "Button 7", 
-                                 "Button 8", 
+        String[] buttonTitles = {"Lookup Product",
+        						"Remove Product",
+        						"Refill Coins", 
+        						 "Empty Coins", 
+        						 "Refill Banknotes", 
+        						 "Empty Banknotes", 
+        						 "Add Reciept Paper", 
+                                 "Add Reciept Ink",  
                                  "Button 9", 
                                  "Button 10"};
 
@@ -150,5 +150,9 @@ public class AttendantFrame {
         label.setFont(new Font("Arial", Font.BOLD, 18));
         panel.add(label, gbc);
         return panel;
+    }
+    
+    public void show() {
+    	attend_frame.setVisible(true);
     }
 }

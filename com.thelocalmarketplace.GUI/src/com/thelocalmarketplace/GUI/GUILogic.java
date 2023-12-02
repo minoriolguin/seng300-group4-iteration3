@@ -51,6 +51,8 @@ public class GUILogic {
 	public void buttonR3_CustomerCallsAttendant() {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
+        AttendantFrame attendant_frame = new AttendantFrame();
+        attendant_frame.show();
 	}
 	
 	public void buttonR4_CustomerAddsOwnBag() {
