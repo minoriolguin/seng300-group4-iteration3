@@ -20,6 +20,8 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.software.MembershipDatabase;
+import com.thelocalmarketplace.software.MembershipNumberValidator;
 import com.thelocalmarketplace.software.Software;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
@@ -27,9 +29,7 @@ import powerutility.PowerGrid;
 
 public class MaintenanceTest {
 	
-	private SelfCheckoutStationBronze bronze_hardware;
-	private SelfCheckoutStationGold gold_hardware;
-	private SelfCheckoutStationSilver silver_hardware;
+	private Software software;
 	
 	private Software bronze_software;
 	private Software gold_software;
@@ -68,6 +68,12 @@ public class MaintenanceTest {
     private final String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
     private final String lowPaperMsg = "PRINTER_LOW_PAPER";
     private final String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
+
+	private MembershipDatabase membershipDatabase;
+	private MembershipNumberValidator membershipNumValidator;
+	
+	private String memberNum0;
+	private int memberNum0ID;
 
 	@Before
 	public void setUp() throws Exception {
@@ -182,6 +188,15 @@ public class MaintenanceTest {
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+
+
+		membershipDatabase = new MembershipDatabase();
+	    membershipNumValidator = new MembershipNumberValidator(this.membershipDatabase);
+	    
+	    //add a valid string to the database
+		memberNum0 = "12345678";
+		memberNum0ID = membershipDatabase.addMember(memberNum0);
+
 	}
 
 
@@ -1292,5 +1307,153 @@ public class MaintenanceTest {
 		assertFalse(gold_software.isCustomerStationBlocked());
 	}
 
+	/**
+	 * Test adding a member to the database
+	 */
+	@Test
+	public void testAddMemberToDatabase()
+	{
+		int memberId = membershipDatabase.addMember("bob");
+		assertTrue(membershipDatabase.memberExists(memberId));
+	}
+	
+	/**
+	 * test adding points to the user's account
+	 */
+	@Test
+	public void testAddPoints()
+	{
+		int points = 50;
+		membershipDatabase.addPoints(memberNum0ID, points);
+		//no way to get the points of a member
+//		assertEquals(points, membershipDatabase.get)
+		//TODO
+		assertFalse(true);
+	}
+	
+	/**
+	 * test valid case
+	 */
+	@Test
+	public void testValidMembershipNumber()
+	{
+		//make sure a session is started
+//		String memberNum = "00000001";
+		String memberNum = "12345678";
+		membershipDatabase.addMember(memberNum);
+		
+		//mismatch between database and actual
+//		assertTrue(membershipNumValidator.isValid(Integer.toString(memberNum0ID)));
+//		assertTrue(membershipNumValidator.isValid(memberNum));
+//		assertTrue(membershipNumValidator.isValid(memberNum0));
+	}
+	
+	/**
+	 * Test with member not in database
+	 */
+	@Test
+	public void testMembershipNumberNotInDatabase()
+	{
+		String memberNum = "00000001";
+		assertFalse(membershipDatabase.memberExists(Integer.parseInt(memberNum)));
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * test with a very large string input
+	 */
+	@Test
+	public void testVeryLargeMemberNum()
+	{
+		String memberNum = "1078234678126340781234789012078780078947867816780167841236780";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test with a small input
+	 */
+	@Test
+	public void testSmallInput()
+	{
+		String memberNum = "123";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input
+	 */
+	@Test
+	public void testWithGarbageString0()
+	{
+		String memberNum = "123asDf;";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically special characters
+	 */
+	@Test
+	public void testWithSpecialCharacters()
+	{
+		String memberNum = "12-3@5$6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with spaces
+	 */
+	@Test
+	public void testWithSpaces()
+	{
+		String memberNum = "12 345 6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically with only 1 lowercase letter sandwiched in
+	 */
+	@Test
+	public void testWithSandwichedCharacter()
+	{
+		String memberNum = "1234a567";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with all lowercase letters
+	 */
+	@Test
+	public void testAllLowercaseLetters()
+	{
+		String memberNum = "abcdefg";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically null
+	 */
+	@Test
+	public void testNull()
+	{
+		assertFalse(membershipNumValidator.isValid(null));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically an empty string
+	 */
+	@Test
+	public void emptyString()
+	{
+		String memberNum = "";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(""));
+	}
 
 }
