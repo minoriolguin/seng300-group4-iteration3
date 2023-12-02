@@ -234,7 +234,8 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
             	guiLogicInstance.buttonR4_CustomerAddsOwnBag();
-            	// PROJ3: Customer Adds Bags to Scale
+            	AddOwnBagGUI addOwnBagPanel = new AddOwnBagGUI();
+            	addOverlayPanel(addOwnBagPanel);
             }
         });
         
@@ -254,7 +255,7 @@ public class RunGUI extends JFrame implements logicObserver {
         button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	guiLogicInstance.buttonR6_BLANK();
+            	guiLogicInstance.buttonR6_CustomerSelectsLanguage();
             	SelectLanguage languagesPanel = new SelectLanguage();
               	addOverlayPanel(languagesPanel);
             }

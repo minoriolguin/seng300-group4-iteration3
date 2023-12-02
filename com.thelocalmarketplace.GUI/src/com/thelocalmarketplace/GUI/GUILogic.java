@@ -15,8 +15,18 @@ package com.thelocalmarketplace.GUI;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
+import com.thelocalmarketplace.software.AbstractPayByCash;
+import com.thelocalmarketplace.software.MembershipDatabase;
+import com.thelocalmarketplace.software.MembershipNumberValidator;
+import com.thelocalmarketplace.software.MembershipScanner;
+import com.thelocalmarketplace.software.Software;
+import com.thelocalmarketplace.software.PayByCard;
+import com.thelocalmarketplace.software.PayByBanknote;
+import com.thelocalmarketplace.software.PayByCoin;
+import com.thelocalmarketplace.software.PrintReceipt;
+import com.thelocalmarketplace.software.PurchaseBags;
+import com.thelocalmarketplace.software.UpdateCart;
+import com.thelocalmarketplace.software.WeightDiscrepancy;
 
 
 /*
@@ -63,8 +73,8 @@ public class GUILogic {
         //Logic Here
 	}
 	
-	public void buttonR6_BLANK() {
-        System.out.println("buttonR6_BLANK");       
+	public void buttonR6_CustomerSelectsLanguage() {
+        System.out.println("buttonR6_CustomerSelectsLanguage");       
         //Logic Here
 	}
 	
