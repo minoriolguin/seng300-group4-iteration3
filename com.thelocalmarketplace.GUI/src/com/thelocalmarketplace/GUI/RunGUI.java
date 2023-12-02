@@ -17,10 +17,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import com.thelocalmarketplace.software.PayByCard;
+import com.jjjwelectronics.card.Card;
 
 public class RunGUI extends JFrame implements logicObserver {
+	private PayByCard payByCard;
+	private Card card;
     // for receipt building on GUI 
 	private List<JLabel> labelList = new ArrayList<>();
 	// Paneling on GUI
@@ -537,6 +542,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel");
+                payByCard.aCardHasBeenSwiped();
             }
         });
         JButton payment_button2 = new JButton("DEBIT (Tap)");
@@ -544,6 +550,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel"); 
+                payByCard.aCardHasBeenTapped();
             }
         });
         JButton payment_button3 = new JButton("DEBIT (Insert Card)");
@@ -551,6 +558,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel");
+                payByCard.aCardHasBeenInserted();
             }
         });
         JButton payment_button4 = new JButton("CREDIT (Swipe)");
@@ -558,6 +566,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel");
+                payByCard.aCardHasBeenSwiped();
             }
         });
         JButton payment_button5 = new JButton("CREDIT (Tap)");
@@ -565,6 +574,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel");
+                payByCard.aCardHasBeenTapped();
             }
         });
         JButton payment_button6 = new JButton("CREDIT (Insert Card)");
@@ -572,6 +582,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switchPanels("thankYouPanel");
+                payByCard.aCardHasBeenInserted();
             }
         });
         JButton payment_button7 = new JButton("Cash (Bills)");

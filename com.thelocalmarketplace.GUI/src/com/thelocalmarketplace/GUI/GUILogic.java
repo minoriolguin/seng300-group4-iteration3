@@ -27,6 +27,7 @@ import com.thelocalmarketplace.software.PrintReceipt;
 import com.thelocalmarketplace.software.PurchaseBags;
 import com.thelocalmarketplace.software.UpdateCart;
 import com.thelocalmarketplace.software.WeightDiscrepancy;
+import com.jjjwelectronics.card.Card.CardData;
 
 
 /*
@@ -35,6 +36,8 @@ import com.thelocalmarketplace.software.WeightDiscrepancy;
  * GUI code) and Panels
  */
 public class GUILogic {
+	private Software software;
+	private CardData data;
 	
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -103,7 +106,7 @@ public class GUILogic {
 	// This will switch to the Payment Panel
 	public void buttonR9_CustomerWantsToPay() {
         System.out.println("buttonR9_CustomerWantsToPay!");
-        //Logic Here
+        
 	}
 	
 //----------------------------------------------------------------
