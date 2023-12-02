@@ -48,24 +48,25 @@ public class UpdateCartTest {
     private PLUCodedProduct PLUProduct1;
     private PLUCodedProduct PLUProduct2;
     private PLUCodedProduct PLUProduct3;
-    private TouchScreen touchScreen;
     private UpdateCart updateCart;
-    private WeightDiscrepancy weightDiscrepancy;
-    private Attendant attendant;
+//    private WeightDiscrepancy weightDiscrepancy;
+//    private Attendant attendant;
 
 
     @Before
     public void setUp() {
+    	//initial setup variables
         PowerGrid.engageUninterruptiblePowerSource();
         SelfCheckoutStationGold.resetConfigurationToDefaults();
         station = new SelfCheckoutStationGold();
         software = Software.getInstance(station);
         software.turnOn();
-        attendant = new Attendant(software);
-        touchScreen = new TouchScreen(software);
         updateCart = new UpdateCart(software);
-        weightDiscrepancy = software.weightDiscrepancy;
-
+        this.updateCart = software.updateCart;
+//        attendant = new Attendant(software);
+//        weightDiscrepancy = software.weightDiscrepancy;
+        
+        //create dummy barcodedProducts
         Numeral[] testBarcode = new Numeral[4];
         testBarcode[0] = Numeral.nine;
         testBarcode[1] = Numeral.five;
@@ -85,7 +86,12 @@ public class UpdateCartTest {
         barcode3 = new Barcode(testBarcode3);
         barcodedProduct3 = new BarcodedProduct(barcode3, "lightTest", 100, 0.01);
         
-//	public PLUCodedProduct(PriceLookUpCode pluCode, String description, long price) {
+        //add barcoded products to the barcoded product database
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodedProduct2);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode3, barcodedProduct3);
+
+        //create dummy PLUProduts
         PriceLookUpCode PLUCode1 = new PriceLookUpCode("7162");
         PLUProduct1 = new PLUCodedProduct(PLUCode1, "chocolate", 21);
 
@@ -95,74 +101,114 @@ public class UpdateCartTest {
         PriceLookUpCode PLUCode3 = new PriceLookUpCode("5168");
         PLUProduct3 = new PLUCodedProduct(PLUCode3, "coffee", 4);
         
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct1);
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodedProduct2);
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode3, barcodedProduct3);
-        
+        //add PLUProducts to the PLU product database
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode1, PLUProduct1);
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode2, PLUProduct2);
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode3, PLUProduct3);
     }
-
+    
+    /**
+     * Test adding a scanned barcode product
+     * 
+     * Check if it gets added to the order, and that the expected weight is correct
+     */
     @Test
-    public void testAddScannedItem() {
+    public void testAddScannedProduct() 
+    {
         updateCart.addScannedItem(barcode);
 
-        // Verify that the product was added to the cart
-        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-
-        // Verify that the expected total weight is updated
-        assertEquals(new Mass(barcodedProduct1.getExpectedWeight()),
-                software.getExpectedTotalWeight());
-
-        // Verify that the scanned item was added to the cart
-        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-        
         //products in order and barcodedProductsInOrder
         assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
 
+        // Verify that the expected total weight is updated
+        Mass expectedMass = new Mass(barcodedProduct1.getExpectedWeight());
+        assertEquals(expectedMass, software.getExpectedTotalWeight());
+        
+        //Check the the software got unblocked (no weight discrepancy)
+        assertFalse(software.isBlocked());
     }
 
-    /* Potential test cases:
-     		PLUCodedLookUpPrice - null
-     		Empty string as description / null description
-     		///// negative price (maybe 0 as well) / null price -> handled in hardware
-    */
     
+    /**
+     * Adding a PLU product to the order
+     */
     @Test
     public void testAddPLUProduct()
     {
+    	//add item to cart
     	updateCart.addPLUProduct(PLUProduct1);
 
-//    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+    	//Check that the item got added to the order
         assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
         
-        
-//        // Verify that the expected total weight is updated
-//        assertEquals(new Mass(product.getExpectedWeight()),
-//                software.getExpectedTotalWeight());
-
-//        // Verify that the scanned item was added to the cart
-//        assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
-
+        //Check the the software got unblocked (no weight discrepancy)
+        assertFalse(software.isBlocked());
     }
     
     //expect this to fail because it can't get the product from the database
-    @Test
+    /**
+     * Add a PLU item that is not in the database
+     */
+    // @TODO: change the exception to be more specific to the case
+    @Test(expected = NullPointerSimulationException.class)
     public void testAddPLUNotInDatabase()
     {
+    	//create PLU product, but don't add it to the database
         PriceLookUpCode PLUCode = new PriceLookUpCode("6704");
     	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "keyboard", 519);
+    	
+    	//add the PLU product to the cart
     	updateCart.addPLUProduct(product);
     }
     
+    /**
+     * Test the case where a null barcode is called
+     */
+    @Test(expected = NullPointerSimulationException.class)
+    public void testAddNullBarcode()
+    {
+    	Barcode barcode = null;
+    	updateCart.addScannedItem(barcode);
+    }
+
+
+    /**
+     * Test the case where a barcode is mapped to a null plu product
+     */
+    @Test(expected = NullPointerSimulationException.class)
+    public void testAddNullScannedProduct()
+    {
+
+        //create dummy barcodedProducts
+        Numeral[] numBarcode = new Numeral[4];
+        numBarcode[0] = Numeral.two;
+        numBarcode[1] = Numeral.two;
+        numBarcode[2] = Numeral.eight;
+        numBarcode[3] = Numeral.six;
+        barcode = new Barcode(numBarcode);
+        BarcodedProduct barcodedProduct = null;
+        
+        //map the valid barcode to a null barcoded product
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct);
+        
+
+    	updateCart.addScannedItem(barcode);
+    }
+    
+    
+    /**
+     * Test the case where a null PLU product is added to the cart
+     */
     @Test(expected = NullPointerSimulationException.class)
     public void testAddNullPLUProduct()
     {
     	PLUCodedProduct product = null;
     	updateCart.addPLUProduct(product);
     }
-
+    
+    /**
+     * Test the case where a product with a null PLU code is added to the cart
+     */
     @Test(expected = NullPointerSimulationException.class)
     public void testAddPLUWithNullLookUpCode()
     {
@@ -170,16 +216,24 @@ public class UpdateCartTest {
     	updateCart.addPLUProduct(product);
     }
     
-    //don't know what to expect for error
-    @Test
-    public void testAddPLUWithEmptyDescription()
-    {
-        PriceLookUpCode PLUCode = new PriceLookUpCode("4139");
-    	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "", 123);
-    	updateCart.addPLUProduct(product);
-    }
+    /**
+     * Test the case where a PLU item without a description is added to the cart
+     * 
+     * description might be optional??
+     */
+//    @Test
+//    public void testAddPLUWithEmptyDescription()
+//    {
+//        PriceLookUpCode PLUCode = new PriceLookUpCode("4139");
+//    	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "", 123);
+//    	updateCart.addPLUProduct(product);
+//    }
     
-    //relies on addPLUProduct to work
+    /**
+     * Test removing a valid PLU product from the order
+     * 
+     * relies on addPLUProduct to work correctly
+     */
     @Test
     public void testRemovePLUProduct()
     {
@@ -190,9 +244,15 @@ public class UpdateCartTest {
         assertFalse(software.getProductsInOrder().containsKey(PLUProduct1));
     	
     }
-
+    
+    /**
+     * Test removing a valid barcoded product from the order
+     *
+     * relies on addScannedItem to work correctly
+     */
     @Test
-    public void testRemoveItem() {
+    public void testRemoveScannedProduct() 
+    {
         // Add an item first
         updateCart.addScannedItem(barcode);
         // Then remove it
@@ -203,33 +263,49 @@ public class UpdateCartTest {
     }
     
     
-
+    /**
+     * Test that the order was updated correctly for a scanned product
+     */
     @Test
-    public void testOrderTotalUpdate() {
+    public void testOrderTotalUpdateWithScanned() 
+    {
         updateCart.addScannedItem(barcode);
-        BigDecimal expectedTotal = new BigDecimal(5);
+        BigDecimal expectedTotal = new BigDecimal(barcodedProduct1.getPrice());
+
         // Verify that the order total has been changed correctly
         assertEquals(expectedTotal, software.getOrderTotal());
     }
-
+    
+    /*
+     * Test that the order was updated correctly for a PLU product
+     */
     @Test
-    public void testOrderTotalUpdateWithPLU() {
+    public void testOrderTotalUpdateWithPLU() 
+    {
     	updateCart.addPLUProduct(PLUProduct1);
-        BigDecimal expectedTotal = new BigDecimal(21);
+        BigDecimal expectedTotal = new BigDecimal(PLUProduct1.getPrice());
+
         // Verify that the order total has been changed correctly
         assertEquals(expectedTotal, software.getOrderTotal());
     }
-
-
+    
+    /**
+     * Test removing a scanned product that is not in the cart
+     */
     @Test
-    public void testRemoveNonExistentItem() {
+    public void testRemoveScannedProductNotInCart() 
+    {
         updateCart.removeItem(barcodedProduct1);
         // Verify the cart remains unchanged
         assertTrue(software.getBarcodedProductsInOrder().isEmpty());
     }
-
+    
+    /**
+     * Test adding the same scanned product 3 times
+     */
     @Test
-    public void testAddSameItemMultipleTimes() {
+    public void testAddSameScannedProuductMultipleTimes() 
+    {
         int quantity = 3;
         for (int i = 0; i < quantity; i++) {
             updateCart.addScannedItem(barcode);
@@ -237,15 +313,17 @@ public class UpdateCartTest {
         BigDecimal expectedTotal = new BigDecimal(15);
 
         assertEquals(expectedTotal, software.getOrderTotal());
-        assertEquals(new Mass(barcodedProduct1.getExpectedWeight() * 3),
-                software.getExpectedTotalWeight());
+        assertEquals(new Mass(barcodedProduct1.getExpectedWeight() * 3), software.getExpectedTotalWeight());
+
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-
-
     }
-
+    
+    /**
+     * Test adding 
+     */
     @Test
-    public void testAddMultipleDifferentItems() {
+    public void testAddMultipleDifferentScannedProducts() 
+    {
         // Add multiple different items
         updateCart.addScannedItem(barcode); // First item
         updateCart.addScannedItem(barcode2); // Second item
@@ -256,49 +334,79 @@ public class UpdateCartTest {
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct2));
     }
-
+    
     @Test
-    public void testSkipBaggingItem() {
-        MockTouchScreen mockTouchScreen = new MockTouchScreen(software);
-        software.setTestTouchScreen(mockTouchScreen);
+    public void testAddingPLUAndScannedProducts()
+    {
+    	updateCart.addPLUProduct(PLUProduct1);
+    	updateCart.addScannedItem(barcode);
+
+//    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+    	
+    	//Check that the item got added to the order
+        assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+    }
+    
+    @Test
+    public void testRemovingPLUAndScannedProducts()
+    {
+    	updateCart.addPLUProduct(PLUProduct1);
+    	updateCart.addScannedItem(barcode);
+    	updateCart.removeItem(PLUProduct1);
+    	updateCart.removeItem(barcodedProduct1);
+
+//    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+    	
+    	//Check that the item got added to the order
+        assertFalse(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertFalse(software.getProductsInOrder().containsKey(barcodedProduct1));
+    
+    }
+    
+    /**
+     * Test custom skipping bagging for scanned product
+     */
+    @Test
+    public void testSkipBaggingForScannedProduct() 
+    {
+    	software.touchScreen.selectAddOwnBags();
         updateCart.addScannedItem(barcode);
         assertFalse(software.isBlocked());
 
     }
     
+    /**
+     * Test customer skipping bagging for PLU product
+     */
     @Test 
-    public void testSkipBaggingWithPLU()
+    public void testSkipBaggingForPLUProduct()
     {
-        MockTouchScreen mockTouchScreen = new MockTouchScreen(software);
-        software.setTestTouchScreen(mockTouchScreen);
+    	software.touchScreen.selectAddOwnBags();
         updateCart.addPLUProduct(PLUProduct1);        
         assertFalse(software.isBlocked());
     }
-
+    
+    /**
+     * Test customer adding a light item to their order
+     */
     @Test
-    public void testLightItems() {
+    public void testLightItems() 
+    {
         updateCart.addScannedItem(barcode3);
         assertFalse(software.isBlocked());
     }
-
+    
+    /**
+     * Test barcode listener when a barcoded has been scanned
+     */
     @Test
-    public void testBarcodeScanEvent() {
+    public void testBarcodeScanEvent() 
+    {
         updateCart.aBarcodeHasBeenScanned(station.getHandheldScanner(), barcode);
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
     }
 
-
-    private static class MockTouchScreen extends TouchScreen {
-
-        public MockTouchScreen(Software checkout) {
-            super(checkout);
-        }
-
-        @Override
-        public boolean skipBaggingItem() {
-            return true;
-        }
-    }
 }
 
 
