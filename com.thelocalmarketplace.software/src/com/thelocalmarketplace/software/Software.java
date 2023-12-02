@@ -182,6 +182,7 @@ public class Software {
 	 * This method must be called before starting a session or conducting any self-checkout operations.
 	 */
 	public void turnOn() {
+		PowerGrid.engageUninterruptiblePowerSource();
 		PowerGrid grid = PowerGrid.instance();
 		station.plugIn(grid);
 		station.turnOn();
