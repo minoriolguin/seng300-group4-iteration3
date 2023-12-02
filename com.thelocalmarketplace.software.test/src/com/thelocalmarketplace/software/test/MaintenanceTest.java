@@ -168,12 +168,22 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testPredictBanknotes() {
+	public void testPredictLowBanknotes() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testPredictBanknotesFull() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testResolveBanknotesIssues() {
+	public void testResolveBanknotesLow() {
+		fail("Not yet implemented"); 
+	}
+	
+	@Test
+	public void testResolveBanknotesFull() {
 		fail("Not yet implemented"); 
 	}
 
