@@ -14,12 +14,21 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 import powerutility.PowerGrid;
 
+/**
+ * This class contains test cases for the PurchaseBags class in the com.thelocalmarketplace.software package.
+ *@author Elizabeth Szentmiklossy
+ *@CoAuthor Shawn Hanlon
+ */
 public class PurchaseBagsTest {
 	private Software software;
 	private AbstractSelfCheckoutStation hardware;
 	private ReusableBag bag;
 	private Barcode reuseableBagBarcode;
-
+	   /**
+     * Sets up the test environment before each test case.
+     *
+     * @throws OverloadedDevice Thrown if the device is overloaded during setup.
+     */
 
 	@Before
 	public void setUp() throws OverloadedDevice {
@@ -31,7 +40,7 @@ public class PurchaseBagsTest {
 		software.turnOn();
 
 
-		// define a reusable Bag Barcode, Price and put it in the database
+		// Define a reusable Bag Barcode, Price and put it in the database
 		Numeral[] reuseableBagNumeral = new Numeral[3];
 		reuseableBagNumeral[0] = Numeral.nine;
 		reuseableBagNumeral[1] = Numeral.five;
@@ -39,12 +48,24 @@ public class PurchaseBagsTest {
 		reuseableBagBarcode = new Barcode(reuseableBagNumeral);
 
 	}
-
+	
+	/**
+     * Tests the addBagsToDispenser method in the PurchaseBags class.
+     *
+     * @throws OverloadedDevice Thrown if the dispenser is overloaded during the test.
+     */
 	@Test
 	public void addBagsToTheDispenser() throws OverloadedDevice {
 		software.purchaseBags.addBagsToDispenser(10);
 		assertEquals(10, software.reusableBagDispenser.getQuantityRemaining());
 	}
+	
+    /**
+     * Tests the addReusableBag method in the PurchaseBags class.
+     *
+     * @throws EmptyDevice      Thrown if the dispenser is empty during the test.
+     * @throws OverloadedDevice Thrown if the dispenser is overloaded during the test.
+     */
 	@Test
 	public void addReusableBag() throws EmptyDevice, OverloadedDevice {
 		software.purchaseBags.addBagsToDispenser(10);
@@ -52,7 +73,12 @@ public class PurchaseBagsTest {
 		assertTrue(software.getBarcodedProductsInOrder().contains(ProductDatabases.BARCODED_PRODUCT_DATABASE.get(reuseableBagBarcode)));
 		assertEquals(9,software.reusableBagDispenser.getQuantityRemaining());
 	}
-	//if no bags were ever added then we would get Empty device exception, but when it goes empty we handle it
+    /**
+     * Tests the addReusableBag method in the PurchaseBags class when the dispenser is empty.
+     *
+     * @throws EmptyDevice      Thrown if the dispenser is empty during the test.
+     * @throws OverloadedDevice Thrown if the dispenser is overloaded during the test.
+     */
 	@Test
 	public void addReusableBagWhenDispenserEmpty() throws EmptyDevice, OverloadedDevice {
 		software.purchaseBags.addBagsToDispenser(1);
