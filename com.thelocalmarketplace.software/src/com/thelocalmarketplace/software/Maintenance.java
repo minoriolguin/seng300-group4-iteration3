@@ -51,13 +51,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	private int averageBanknotesUsagePerSession;
 
 	private int currentBanknotes;
-    
-	 private BigDecimal nickel = new BigDecimal("0.05");
-	 private BigDecimal dime = new BigDecimal("0.10");
-	 private BigDecimal quarter = new BigDecimal("0.25");
-	 private BigDecimal loonie = new BigDecimal("1.00");
-	 private BigDecimal toonie = new BigDecimal("2.00");
-	    
+	
     ArrayList<String> issues;
 
 	// String messages that simulate maintenance codes
@@ -84,13 +78,6 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     
     public Maintenance(Software software){
         this.software = software;
-        
-        this.software.getCoinDispensers().get(nickel).attach(this);
-        this.software.getCoinDispensers().get(dime).attach(this);
-        this.software.getCoinDispensers().get(quarter).attach(this);
-        this.software.getCoinDispensers().get(loonie).attach(this);
-        this.software.getCoinDispensers().get(toonie).attach(this);
-        this.software.getCoinStorage().attach(this);
         
         // make predictions (check component statuses)
         this.inkRemaining = 0;
