@@ -63,7 +63,12 @@ public class Attendant implements WeightDiscrepancyListener {
     
     public void disableCustomerStation() {
     	software.blockCustomerStation();
-    	
+        // Handle the scenario when disabling is immediate or pending
+        if (software.isPendingMaintenance()) {
+            System.out.println("Disabling is set to pending until the current session ends.");
+        } else {
+            System.out.println("Station is disabled for maintenance.");
+        }
     }
     
     /**

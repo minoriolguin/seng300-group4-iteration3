@@ -40,6 +40,7 @@ public class Software {
 	private Mass expectedTotalWeight;
 	private boolean blocked = false;
 	private boolean customerStationBlock = false;
+	private boolean pendingMaintenance = false;
 	private final HashMap<Product,Mass> productsInOrder;
 	private final ArrayList<BarcodedProduct> barcodedProductsInOrder;
 	private final ArrayList<PLUCodedProduct> pluCodedProductsInOrder;
@@ -187,6 +188,11 @@ public class Software {
 	 * It enables handheld and main scanners, as well as the bagging area scale.
 	 */
 	public void startSession() {
+        if (pendingMaintenance) {
+            System.out.println("Cannot start session: Maintenance is pending.");
+            return;
+        }
+        
 		endSession();
 		handHeldScanner.enable();
 		mainScanner.enable();
@@ -210,9 +216,9 @@ public class Software {
 	 * and resetting the expected total weight.
 	 * This method should be called at the end of each customer interaction session.
 	 */
-	public void endSession() {
-		// Check for maintenance and predict issues
-		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+    public void endSession() {
+	  	  // Check for maintenance and predict issues
+	  	  maintenance.checkInk(printReceipt.getAveragePrintedChars());
         maintenance.checkPaper(printReceipt.getAveragePaperUsed());
         maintenance.predictCoinsFullStorage();
         for (BigDecimal denomination : coinDispensers.keySet()) {
@@ -223,11 +229,30 @@ public class Software {
         	notifyMaintenance(maintenance.getIssues());
         }
         
-		baggedProducts.clear();
-		barcodedProductsInOrder.clear();
-		expectedTotalWeight = Mass.ZERO;
-		orderTotal = BigDecimal.ZERO;
-	}
+		    baggedProducts.clear();
+	  	  barcodedProductsInOrder.clear();
+	  	  expectedTotalWeight = Mass.ZERO;
+	    	orderTotal = BigDecimal.ZERO;
+
+        // Disable any enabled devices
+        handHeldScanner.disable();
+        mainScanner.disable();
+        baggingAreaScale.disable();
+        scannerScale.disable();
+        banknoteValidator.disable();
+        coinValidator.disable();
+        cardReader.disable();
+       
+        // Check for pending maintenance and disable the station if needed
+        if (isPendingMaintenance()) {
+            blockCustomerStation(); // This will now immediately disable the station
+            setPendingMaintenance(false);
+            System.out.println("Session ended. Pending maintenance: Station disabled.");
+        } else {
+            System.out.println("Session ended. No pending maintenance.");
+        }
+    }
+
 
 	/**
 	 * Blocks customer interactions by disabling various hardware components.
@@ -266,18 +291,27 @@ public class Software {
 	 * This method is used to prevent unwanted interactions during maintenance or when
 	 * the hardware or software is out of order.
 	 */
-	public void blockCustomerStation() {
-		baggingAreaScale.disable();
-		scannerScale.disable();
-		handHeldScanner.disable();
-		mainScanner.disable();
-		banknoteValidator.disable();
-		coinValidator.disable();
-		cardReader.disable();
-		banknoteDispenser.disable();
-		printer.disable();
-		customerStationBlock = true;
-	}
+    public void blockCustomerStation() {
+    	
+        if (isSessionActive()) {
+            setPendingMaintenance(true);
+            System.out.println("Disabling pending: Session is currently active.");
+        } else {
+            
+            baggingAreaScale.disable();
+            scannerScale.disable();
+            handHeldScanner.disable();
+            mainScanner.disable();
+            banknoteValidator.disable();
+            coinValidator.disable();
+            cardReader.disable();
+            banknoteDispenser.disable();
+            coinTray.disable();
+            printer.disable();
+            customerStationBlock = true;
+            System.out.println("Station disabled for maintenance. 'Out of order'");
+        }
+    }
 
 	/**
 	 * Unblocks customer interactions by enabling necessary hardware and software components.
@@ -492,6 +526,18 @@ public class Software {
 		return station.getCoinStorage();
 	}
 	
+    public void setPendingMaintenance(boolean pending) {
+        this.pendingMaintenance = pending;
+    }
+    
+    public boolean isPendingMaintenance() {
+        return this.pendingMaintenance;
+    }
+    
+    public boolean isSessionActive() {
+        return orderTotal.compareTo(BigDecimal.ZERO) > 0;
+    }
+
 	/**
 	 * Notifcation method specifically for addressing maintenance issues
 	 * @param issues, Arraylist of string
