@@ -311,7 +311,6 @@ public class Software {
             coinValidator.disable();
             cardReader.disable();
             banknoteDispenser.disable();
-            coinTray.disable();
             printer.disable();
             customerStationBlock = true;
             System.out.println("Station disabled for maintenance. 'Out of order'");
