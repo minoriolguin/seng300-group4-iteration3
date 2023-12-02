@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.banknote.Banknote;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Software;
@@ -32,11 +33,17 @@ public class MaintenanceTest {
 	private Map<BigDecimal, ICoinDispenser> silver_cDispensers;
 	private Map<BigDecimal, ICoinDispenser> gold_cDispensers;
 	
+	private BanknoteStorageUnit bronze_bStorageUnit;
+	private BanknoteStorageUnit silver_bStorageUnit;
+	private BanknoteStorageUnit gold_bStorageUnit;
+	
 	
     private ArrayList<BigDecimal> coindenominations;
     private ArrayList<Banknote> banknotes;
     private Currency CAD;
     private BigDecimal[] billDenominations;
+    
+   
     
     private static final Currency CAD_Currency = Currency.getInstance("CAD");
     private static final BigDecimal value_toonie = new BigDecimal("2.00");
@@ -70,6 +77,8 @@ public class MaintenanceTest {
         billDenominations[2] = new BigDecimal("20.00");
         billDenominations[3] = new BigDecimal("50.00");
         billDenominations[4] = new BigDecimal("100.00");
+        
+        ArrayList<Banknote> banknotes = new ArrayList<Banknote>();
 
         Currency c = Currency.getInstance("CAD");
         BigDecimal[] billDenom = { new BigDecimal("5.00"),
@@ -123,21 +132,39 @@ public class MaintenanceTest {
 		silver_cDispensers = silver_software.coinDispensers;
 		gold_cDispensers = gold_software.coinDispensers;
 		
-		for (BigDecimal cd : coindenominations) {
-			bronze_software.maintenance.addCoinsInDispenser(bronze_cDispensers.get(cd),cd,10);
-			silver_software.maintenance.addCoinsInDispenser(silver_cDispensers.get(cd),cd,10);
-			gold_software.maintenance.addCoinsInDispenser(gold_cDispensers.get(cd),cd,10);
-		}
+		bronze_bStorageUnit = bronze_software.banknoteStorageUnit;
+		silver_bStorageUnit = silver_software.banknoteStorageUnit;
+		gold_bStorageUnit = gold_software.banknoteStorageUnit;
 		
-		for (BigDecimal bd : billDenominations) {
+//		for (BigDecimal cd : coindenominations) {
+//			bronze_software.maintenance.addCoinsInDispenser(bronze_cDispensers.get(cd),cd,10);
+//			silver_software.maintenance.addCoinsInDispenser(silver_cDispensers.get(cd),cd,10);
+//			gold_software.maintenance.addCoinsInDispenser(gold_cDispensers.get(cd),cd,10);
+//		}
+		
+		System.out.println("this is the capacity of the banknote storage unit: " + bronze_software.banknoteStorageUnit.getCapacity());
+		
+		for(BigDecimal bd:billDenominations) {
 			banknotes.add(new Banknote(CAD,bd));		
 		}
 		
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);	
+		
 		for (Banknote b : banknotes) {
-			bronze_software.maintenance.resolveBanknotesIssues(b);
-			silver_software.maintenance.resolveBanknotesIssues(b);
-			gold_software.maintenance.resolveBanknotesIssues(b);	
+			
+			bronze_software.maintenance.resolveBanknotesLow(bronze_bStorageUnit,b);
+			silver_software.maintenance.resolveBanknotesLow(silver_bStorageUnit,b);
+			gold_software.maintenance.resolveBanknotesLow(gold_bStorageUnit,b);	
 		}
+		
+		
+		
+			bronze_software.maintenance.resolveBanknotesFull(bronze_bStorageUnit);
+			silver_software.maintenance.resolveBanknotesFull(silver_bStorageUnit);
+			gold_software.maintenance.resolveBanknotesFull(gold_bStorageUnit);	
+		
 	}
 
 
@@ -476,7 +503,9 @@ public class MaintenanceTest {
 	
 	@Test
 	public void testCheckBanknotes() {
-		fail("Not yet implemented");
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		
+		bronze_software.maintenance.getIssues();
 	}
 
 	@Test
