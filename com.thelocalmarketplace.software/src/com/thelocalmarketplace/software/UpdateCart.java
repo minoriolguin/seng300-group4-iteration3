@@ -12,6 +12,9 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
@@ -155,12 +158,19 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     /**
      * Perform a text search for a product description
      * 
+     * case insensitive
+     * 
      * @param str - the string/substring to search for a product's description with 
      * @return - An array list containing all of the products with matching descriptions. This Array list
      * 			 will be empty if there are no matches
      */
     public ArrayList<Product> textSearch(String searchStr)
     {
+    	if(searchStr == null)
+    	{
+    		throw new NullPointerSimulationException();
+    	}
+
     	String description = "";
     	ArrayList<Product> productMatches = new ArrayList<>();
 
@@ -168,14 +178,14 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	{
     		if(product instanceof BarcodedProduct)
     		{
-    			description = ((BarcodedProduct) product).getDescription();
+    			description = ((BarcodedProduct) product).getDescription().toLowerCase();
     		}
     		else if(product instanceof PLUCodedProduct)
     		{
-    			description = ((PLUCodedProduct) product).getDescription();
+    			description = ((PLUCodedProduct) product).getDescription().toLowerCase();
     		}
     		
-    		if(description.contains(searchStr))
+    		if(description.contains(searchStr.toLowerCase()))
     		{
     			productMatches.add(product);
     		}

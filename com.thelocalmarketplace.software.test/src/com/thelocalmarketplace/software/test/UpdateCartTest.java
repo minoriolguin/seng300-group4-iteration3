@@ -18,6 +18,7 @@ import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Attendant;
@@ -33,6 +34,7 @@ import org.junit.Test;
 import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -127,6 +129,42 @@ public class UpdateCartTest {
         //Check the the software got unblocked (no weight discrepancy)
         assertFalse(software.isBlocked());
     }
+    
+    @Test
+    public void testAddGeneralProductWithBarcodedProduct()
+    {
+    	updateCart.addProduct(barcodedProduct1);
+    	
+    	assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+    }
+
+    @Test
+    public void testAddGeneralProductWithPLUProduct()
+    {
+    	//TODO: change to PLU barcodedProduct1
+//    	Product prod = barcodedProduct1;
+//    	updateCart.addProduct(prod);
+//    	
+//    	assertTrue(software.getProductsInOrder().containsKey(prod));
+    }
+    
+    @Test
+    public void testAddGeneralProducts()
+    {
+    	//TODO: add PLUProduct as well
+    	Product bProd = barcodedProduct1;
+    	//Product PLUProd = PLUProduct
+    	updateCart.addProduct(bProd);
+    	
+    	assertTrue(software.getProductsInOrder().containsKey(bProd));
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void testAddGeneralNullProduct()
+    {
+    	updateCart.addProduct(null);
+    }
+    
 
     
     /**
@@ -406,10 +444,48 @@ public class UpdateCartTest {
         updateCart.aBarcodeHasBeenScanned(station.getHandheldScanner(), barcode);
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
     }
+    
+    @Test
+    public void testTextSearchWithBarcodedProduct()
+    {
+    	updateCart.addScannedItem(barcode2);
+    	ArrayList<Product> matches = updateCart.textSearch("test2");
+    	assertTrue(matches.size() == 1);
+    	assertEquals(matches.get(0), barcodedProduct2);
+    }
 
+    @Test
+    public void testTextSearchWithPLUProduct()
+    {
+    	//TODO: change to PLU
+//    	updateCart.addScannedItem(barcode2);
+//    	ArrayList<Product> matches = updateCart.textSearch("test2");
+//    	assertTrue(matches.size() == 1);
+//    	assertEquals(matches.get(0), barcodedProduct2);
+    }
+
+    @Test
+    public void testTextSearchWithPLUAndBarcodedProduct()
+    {
+    	//TODO: add PLU
+    	updateCart.addScannedItem(barcode2);
+//    	updateCart.addScannedItem(barcode2);
+    	ArrayList<Product> matches = updateCart.textSearch("test2");
+    	assertTrue(matches.size() == 2);
+    	assertEquals(matches.get(0), barcodedProduct2);
+//    	assertEquals(matches.get(0), barcodedProduct2);
+    }
+    
+    @Test
+    public void testTexSearchWithNoMatches()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("");
+    	assertTrue(matches.size() == 0);
+    }
+    
+    @Test(expected = NullPointerSimulationException.class)
+    public void testTextSearchWithNullStr()
+    {
+    	updateCart.textSearch(null);
+    }
 }
-
-
-
-
-
