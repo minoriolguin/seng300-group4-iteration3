@@ -1,7 +1,12 @@
 package com.thelocalmarketplace.software;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 
 import com.jjjwelectronics.Mass;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
+import com.tdc.banknote.Banknote;
 
 public class Attendant implements WeightDiscrepancyListener {
 
@@ -133,9 +138,31 @@ public class Attendant implements WeightDiscrepancyListener {
 		// TODO Auto-generated method stub
 		
 	}
+	/** 
+	 * Method for attendant to refill bank notes till full capacity
+	 * **/
 	public void refillBankNotes() {
+//		while(software.getBankNoteStorage().hasSpace()) {
+//			
+//		}
+		Banknote banknote = new Banknote(Currency.getInstance("CAD"),new BigDecimal("5.00"));
+		System.out.println(software.getBankNoteStorage().getCapacity());;
 		while(software.getBankNoteStorage().hasSpace()) {
-			//
+			try {
+				software.getBankNoteStorage().receive(banknote);
+			} catch (DisabledException | CashOverloadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		System.out.println(software.getBankNoteStorage().getBanknoteCount());
+		
+	}
+	/** 
+	 * Method for attendant to empty all bank notes in the station storage
+	 * **/
+	public void emptyBankNotes() {
+		software.getBankNoteStorage().unload();
 	}
 }
