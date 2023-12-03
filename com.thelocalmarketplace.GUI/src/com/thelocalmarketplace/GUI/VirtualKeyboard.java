@@ -14,13 +14,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Software;
 
 public class VirtualKeyboard {
     private JTextArea inputArea;
-    private JPanel resultArea= new JPanel(new GridLayout(4,5));
+    private JPanel resultArea= new JPanel(new GridLayout(4,5,20,20));
     private Software software;
 
     
@@ -102,11 +103,17 @@ public class VirtualKeyboard {
             	if (!item.isPerUnit()) {
             		PLUCodedProduct product = (PLUCodedProduct)item;
             		 JButton button = new JButton(product.getDescription());
-            		
             		 resultArea.add(button);
             		 resultArea.revalidate();
             		 resultArea.repaint();
             	}
+            	else {
+            		BarcodedProduct product = (BarcodedProduct)item;
+	           		 JButton button = new JButton(product.getDescription());
+	           		 resultArea.add(button);
+	           		 resultArea.revalidate();
+	           		 resultArea.repaint();
+	            	}
             }
         }
 
