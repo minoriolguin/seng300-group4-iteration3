@@ -46,9 +46,18 @@ public class PrintReceipt {
      */
     public PrintReceipt(Software software){
         this.software = software;
+        this.pluInCart = software.getPluCodedProductsInOrder();
+        this.barcodedProductsInCart = software.getBarcodedProductsInOrder();
         printer = software.printer;
         averagePaperUsed = 0;
         averagePrintedChars = 0;
+
+    }
+    public void setPluInCart(ArrayList<PLUCodedProduct> products){
+        this.pluInCart = products;
+    }
+    public void setBarcodedProductsInCart(ArrayList<BarcodedProduct> products){
+        this.barcodedProductsInCart = products;
     }
 
     /**
@@ -65,8 +74,6 @@ public class PrintReceipt {
      */
     public void print(){
 
-        pluInCart = software.getPluCodedProductsInOrder();
-        barcodedProductsInCart = software.getBarcodedProductsInOrder();
         // print the start template
         printLine(startString);
         // print a line for each item in the cart

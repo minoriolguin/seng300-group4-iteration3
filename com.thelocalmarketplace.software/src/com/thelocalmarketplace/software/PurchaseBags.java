@@ -57,7 +57,7 @@ public class PurchaseBags implements ReusableBagDispenserListener{
 		for (int i = amount; i>0; i--) {
 			if (!OutOfBags) {
 				reusableBagDispenser.dispense();
-				software.updateCart.addScannedItem(reuseableBagBarcode);
+				software.updateCart.addScannedProduct(reuseableBagBarcode);
 			}
 		}
 		if(OutOfBags)

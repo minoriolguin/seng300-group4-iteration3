@@ -120,6 +120,8 @@ public class PrintReceiptTest{
         pluInCart = new ArrayList<>();
         
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         assertEquals(1, attendantStub.outOfPaperCounter);
     }
@@ -140,6 +142,8 @@ public class PrintReceiptTest{
         printerBronze.register(attendantStub);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         assertEquals(1, attendantStub.outOfInkCounter);
     }
@@ -149,6 +153,8 @@ public class PrintReceiptTest{
         barcodeInCart = new ArrayList<>();
         pluInCart = new ArrayList<>();        
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
                     
@@ -170,11 +176,14 @@ public class PrintReceiptTest{
         barcodeInCart.add(barcodeProduct);
         pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
                     Hello
-                         product                                      $1.00
-                                                               Total: $1.00
+                         Barcoded product                             $1.00
+                         PLU product                                  $1.50
+                                                               Total: $2.50
                     world!
                     """;
         assertEquals(expected, printerBronze.removeReceipt());
@@ -209,10 +218,13 @@ public class PrintReceiptTest{
         barcodeInCart.add(barcodeProduct);
         pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
-                     product                                      $1.00
-                                                           Total: $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                                                           Total: $2.50
                 """;
         assertEquals(expected, printerBronze.removeReceipt());
     }
@@ -226,10 +238,16 @@ public class PrintReceiptTest{
         barcodeInCart.add(barcodeProduct);
         pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerSilver);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
+
         r.print();
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         String expected = """
-                     product                                      $1.00
-                                                           Total: $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                                                           Total: $2.50
                 """;
         assertEquals(expected, printerSilver.removeReceipt());
     }
@@ -243,10 +261,13 @@ public class PrintReceiptTest{
         barcodeInCart.add(barcodeProduct);
         pluInCart.add(pluProduct);
         PrintReceipt r = new PrintReceipt(printerGold);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
-                     product                                      $1.00
-                                                           Total: $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                                                           Total: $2.50
                 """;
         assertEquals(expected, printerGold.removeReceipt());
     }
@@ -262,12 +283,13 @@ public class PrintReceiptTest{
         barcodeInCart = new ArrayList<>();
         pluInCart = new ArrayList<>();
         barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
-                     product                                      $2.51
+                     Barcoded product                             $2.51
                                                            Total: $2.51
                 """;
         assertEquals(expected, printerBronze.removeReceipt());
@@ -287,6 +309,8 @@ public class PrintReceiptTest{
         barcodeInCart.add(barcodeProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
                      -----------------------------------...       $1.00
@@ -308,13 +332,15 @@ public class PrintReceiptTest{
         pluInCart.add(pluProduct);
 
         PrintReceipt r = new PrintReceipt(printerBronze);
+        r.setBarcodedProductsInCart(barcodeInCart);
+        r.setPluInCart(pluInCart);
         r.print();
         String expected = """
-                     product                                      $1.00
-                     product                                      $1.00
-                     product                                      $1.00
-                     product                                      $1.00
-                                                           Total: $4.00
+                     Barcoded product                             $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                     PLU product                                  $1.50
+                                                           Total: $5.00
                 """; // one new line included automatically
         assertEquals(expected, printerBronze.removeReceipt());
     }

@@ -72,6 +72,7 @@ public class Software {
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
+	public final BanknoteStorageUnit banknoteStorageUnit;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 	public final CoinStorageUnit coinStorage;
@@ -103,6 +104,7 @@ public class Software {
 			this.coinValidator = bronze.getCoinValidator();
 			this.cardReader = bronze.getCardReader();
 			this.banknoteDispenser = bronze.getBanknoteOutput();
+			this.banknoteStorageUnit = bronze.getBanknoteStorage();
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
 			this.coinDispensers = bronze.getCoinDispensers();
@@ -119,6 +121,7 @@ public class Software {
 			this.coinValidator = silver.getCoinValidator();
 			this.cardReader = silver.getCardReader();
 			this.banknoteDispenser = silver.getBanknoteOutput();
+			this.banknoteStorageUnit = silver.getBanknoteStorage();
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
 			this.coinDispensers = silver.getCoinDispensers();
@@ -135,6 +138,7 @@ public class Software {
 			this.coinValidator = gold.getCoinValidator();
 			this.cardReader = gold.getCardReader();
 			this.banknoteDispenser = gold.getBanknoteOutput();
+			this.banknoteStorageUnit = gold.getBanknoteStorage();
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
 			this.coinDispensers = gold.getCoinDispensers();
@@ -150,6 +154,7 @@ public class Software {
 			this.coinValidator = hardware.getCoinValidator();
 			this.cardReader = hardware.getCardReader();
 			this.banknoteDispenser = hardware.getBanknoteOutput();
+			this.banknoteStorageUnit = hardware.getBanknoteStorage();
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
 			this.coinDispensers = hardware.getCoinDispensers();
@@ -188,6 +193,7 @@ public class Software {
 	 * This method must be called before starting a session or conducting any self-checkout operations.
 	 */
 	public void turnOn() {
+		PowerGrid.engageUninterruptiblePowerSource();
 		PowerGrid grid = PowerGrid.instance();
 		station.plugIn(grid);
 		station.turnOn();
@@ -208,6 +214,7 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		scannerScale.enable();
 		
 		// Check for maintenance and predict issues
 		maintenance.checkInk(printReceipt.getAveragePrintedChars());
@@ -285,6 +292,7 @@ public class Software {
 	public void unblockCustomer() {
 		handHeldScanner.enable();
 		mainScanner.enable();
+		scannerScale.enable();
 		blocked = false;
 	}
 	

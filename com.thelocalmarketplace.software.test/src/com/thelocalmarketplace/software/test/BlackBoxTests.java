@@ -2,11 +2,12 @@ package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
+import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.scanner.Barcode;
 import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
+import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Software;
 
@@ -17,11 +18,9 @@ import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
 
-// Because we rely on a Bronze Scanner, some tests fail when scan fails.  They do pass most of the time.
-
 public class BlackBoxTests {
 
-    private SelfCheckoutStationBronze hardware;
+    private SelfCheckoutStationGold hardware;
     private Software software;
     private BarcodedItem inRange;
     private BarcodedProduct inRangeProduct;
@@ -29,11 +28,11 @@ public class BlackBoxTests {
     private BarcodedProduct LessThanSensitivityProduct;
 
     @Before
-    public void Setup() {
+    public void Setup() throws OverloadedDevice {
 
         //Attach Station to software
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-        hardware = new SelfCheckoutStationBronze();
+        hardware = new SelfCheckoutStationGold();
         software = Software.getInstance(hardware);
 
         //create barcoded products to test with
@@ -69,6 +68,8 @@ public class BlackBoxTests {
 
         //fire it up!
         software.turnOn();
+        software.maintenance.resolvePrinterPaperIssue(1000);
+        software.maintenance.resolveInkIssue(1000);
 
     }
 
@@ -82,6 +83,7 @@ public class BlackBoxTests {
         //ensure the items from setup in Data Base
         assertEquals(3,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
         //scan an item in the baggingArea scales range (over-sensitivity, less than max)
+        assertFalse(hardware.getHandheldScanner().isDisabled());
         hardware.getHandheldScanner().scan(inRange);
         //assert customer interaction disabled
         assertTrue(hardware.getHandheldScanner().isDisabled());
@@ -139,7 +141,7 @@ public class BlackBoxTests {
         software.touchScreen.skip = true;
         hardware.getHandheldScanner().scan(inRange);
         //know product adds from test case above, now remove and ensure its gone
-        software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
+        software.touchScreen.removeProduct(inRangeProduct);
         //assert it's removed from order
         assertTrue(software.getBarcodedProductsInOrder().isEmpty());
         assertEquals(BigDecimal.ZERO, software.getOrderTotal());
@@ -157,7 +159,7 @@ public class BlackBoxTests {
         hardware.getHandheldScanner().scan(inRange);
         hardware.getBaggingArea().addAnItem(inRange);
         //remove item
-        software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
+        software.touchScreen.removeProduct(inRangeProduct);
         //assert customer disabled
         assertTrue(hardware.getHandheldScanner().isDisabled());
         assertTrue(hardware.getMainScanner().isDisabled());
@@ -190,7 +192,7 @@ public class BlackBoxTests {
         assertEquals(inRange.getMass(),software.weightDiscrepancy.massOfOwnBags);
         //make sure expected weight in software updated
         assertEquals(inRange.getMass(),software.getExpectedTotalWeight());
-        software.touchScreen.bagsAdded();
+        software.touchScreen.selectBagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
         assertFalse(hardware.getHandheldScanner().isDisabled());
@@ -216,7 +218,7 @@ public class BlackBoxTests {
         assertTrue(hardware.getHandheldScanner().isDisabled());
         assertTrue(hardware.getMainScanner().isDisabled());
         //say they are done
-        software.touchScreen.bagsAdded();
+        software.touchScreen.selectBagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
         assertFalse(hardware.getHandheldScanner().isDisabled());

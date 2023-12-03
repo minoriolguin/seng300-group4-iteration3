@@ -1,12 +1,9 @@
 package com.thelocalmarketplace.software;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Scanner;
 
 import com.jjjwelectronics.Mass;
-import com.tdc.CashOverloadException;
-import com.tdc.DisabledException;
-import com.tdc.banknote.Banknote;
 
 public class Attendant implements WeightDiscrepancyListener {
 
@@ -52,6 +49,7 @@ public class Attendant implements WeightDiscrepancyListener {
 
 	public void notifySkipBagging(){
         software.unblockCustomer();
+        software.touchScreen.skip = false;
     }
 
     public void verifyItemInBaggingArea(){
@@ -113,15 +111,30 @@ public class Attendant implements WeightDiscrepancyListener {
      * a command line kind of interface. 
      * For this code, I just used if attended == true until I have the concrete version
      * of how the attendant will be interacted with.
+     * 
+     * Update: After seeing the message from the GUI Team, I have updated the code and
+     * added a scanner.
      **/
     public void respondToCustomer() {
+    	Scanner scanner = new Scanner(System.in);
     	notifs.add("A customer needs your help");    	
-    	System.out.println("\nHave you attended to them?\n");
     	
-    	if (attended == true) {
-    		attended = true;
-    		software.setNeedsAttentionToFalse();
-    	}
+    	
+    	while (true) {
+    		System.out.println("\nHave you attended to them?\n");
+            String response = scanner.nextLine();
+
+            if (response.equalsIgnoreCase("Yes")) {
+            	attended = true;
+        		software.setNeedsAttentionToFalse();
+        		break;
+            } else if (response.equalsIgnoreCase("No")) {
+            	System.out.println("Please attend to the customer and "
+            			+ "then enter 'Yes' to continue.");
+            } else {
+                System.out.println("Invalid response. Please enter Yes or No.");
+            }
+        }
     }
     
     public void setAttendedToFalse() {
