@@ -62,9 +62,11 @@ public class EnterMembershipNumber extends JPanel {
 		});
 	}
 	
+	//called after a number is entered
 	private void confirm() {
 		panel2.setVisible(true);
-    	System.out.println("conf");
+    	//maybe needs to send the membership number entered to another class in the software to be stored?
+		//unclear what the system must do with the membership number
 	}
 	
 	private JPanel createNumberPadPanel() {
@@ -95,7 +97,6 @@ public class EnterMembershipNumber extends JPanel {
             if (buttonText.equals("Clear")) {
                 textField.setText("");
             } else if (buttonText.equals("Enter")) {
-            	System.out.println("1");
             	confirm();
             } else {
             	textField.setText(textField.getText() + buttonText);
