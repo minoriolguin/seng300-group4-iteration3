@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
 
 
@@ -29,8 +30,10 @@ import com.thelocalmarketplace.software.TouchScreen;
  */
 public class GUILogic {
 	public TouchScreen screen;
+	private Attendant attendant;
 	public GUILogic(TouchScreen t) {
 		this.screen = t;
+		attendant = new Attendant(t.getSoftware());
 	}
 	
 //----------------------------------------------------------------
@@ -68,9 +71,11 @@ public class GUILogic {
         //Logic Here
 	}
 	
+	//signal for attendant to help the customer and set attended to false--> attendant window opens
 	public void buttonR5_CustomerWantstoRemoveItem() {
         System.out.println("buttonR5_CustomerWantstoRemoveItem"); 
-        //Logic Here
+        screen.signalForAttendant();
+        attendant.setAttendedToFalse();
 	}
 	
 	public void buttonR6_BLANK() {

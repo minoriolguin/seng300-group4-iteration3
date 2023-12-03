@@ -37,6 +37,7 @@ public class AttendantFrame {
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
+	private boolean attended;
 	private Attendant attendant;
 	public TouchScreen screen;
     public AttendantFrame(TouchScreen s) {
@@ -62,7 +63,7 @@ public class AttendantFrame {
         JPanel bottomPanel = new JPanel(new GridLayout(5, 2));
         // Array of button titles
         String[] buttonTitles = {"Lookup Product",
-        						"Remove Product",
+        						"Remove Item",
         						"Refill Coins", 
         						 "Empty Coins", 
         						 "Refill Banknotes", 
@@ -106,11 +107,20 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
-                System.out.println("Meow");
+                System.out.println("LookUp Product");
                 //insert logic
                 break;
             case 2:
-                System.out.println("Button Clicked");
+                System.out.println("Remove Item");
+                attendant.setAttendedToFalse();
+                attendant.disableCustomerStation();
+                screen.RemoveItemFromScale();
+                attendant.verifyItemRemovedFromOrder();
+
+                attended = true;
+                attendant.respondToCustomer();
+                attendant.enableCustomerStation();
+               
                 //insert Logic
                 break;
             case 3:
