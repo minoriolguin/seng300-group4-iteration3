@@ -510,4 +510,14 @@ public class SoftwareTest {
         BigDecimal after_value = software.getOrderTotal();
         assertEquals(after_value, add_value);
     }
+    
+    //Test for unblockCustomerStation
+    @Test
+    public void testUnblockCustomerStation() {
+    	software.turnOn();
+    	software.blockCustomerStation();
+    	software.unblockCustomerStation();
+    	boolean flag = !software.baggingAreaScale.isDisabled() && !software.scannerScale.isDisabled() && !software.handHeldScanner.isDisabled() && !software.mainScanner.isDisabled() && !software.coinValidator.isDisabled() && !software.cardReader.isDisabled() && !software.banknoteDispenser.isDisabled() && !software.printer.isDisabled();
+    	assertTrue(flag);
+    }
 }
