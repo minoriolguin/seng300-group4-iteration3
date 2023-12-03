@@ -123,7 +123,6 @@ public class AttendantFrame {
                 break;
             case 5:
                 System.out.println("Refill Banknotes");
-                
                 break;
             case 6:
                 System.out.println("Empty Banknotes");

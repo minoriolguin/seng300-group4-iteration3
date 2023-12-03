@@ -14,6 +14,7 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
@@ -74,6 +75,7 @@ public class Software {
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 	public final CoinStorageUnit coinStorage;
+	public final  BanknoteStorageUnit bankNoteStorage;
 	
 	/**
      * A boolean variable that keeps track of whether a customer needs attention.
@@ -106,6 +108,7 @@ public class Software {
 			this.coinDispensers = bronze.getCoinDispensers();
 			this.reusableBagDispenser = bronze.getReusableBagDispenser();
 			this.coinStorage = bronze.getCoinStorage();
+			this.bankNoteStorage = bronze.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -121,6 +124,7 @@ public class Software {
 			this.coinDispensers = silver.getCoinDispensers();
 			this.reusableBagDispenser = silver.getReusableBagDispenser();
 			this.coinStorage = silver.getCoinStorage();
+			this.bankNoteStorage = silver.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -136,6 +140,7 @@ public class Software {
 			this.coinDispensers = gold.getCoinDispensers();
 			this.reusableBagDispenser = gold.getReusableBagDispenser();
 			this.coinStorage = gold.getCoinStorage();
+			this.bankNoteStorage = gold.getBanknoteStorage();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -150,6 +155,7 @@ public class Software {
 			this.coinDispensers = hardware.getCoinDispensers();
 			this.reusableBagDispenser = hardware.getReusableBagDispenser();
 			this.coinStorage = hardware.getCoinStorage();
+			this.bankNoteStorage = hardware.getBanknoteStorage();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -458,7 +464,9 @@ public class Software {
 	public BanknoteDispensationSlot getBanknoteDispenser() {
 		return banknoteDispenser;
 	}
-
+	public BanknoteStorageUnit getBankNoteStorage() {
+		return bankNoteStorage;
+	}
 	/**
 	 * Retrieves the coin tray of the self-checkout station.
 	 *

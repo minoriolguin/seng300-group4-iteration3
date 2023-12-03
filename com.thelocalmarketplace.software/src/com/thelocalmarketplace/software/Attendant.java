@@ -133,4 +133,9 @@ public class Attendant implements WeightDiscrepancyListener {
 		// TODO Auto-generated method stub
 		
 	}
+	public void refillBankNotes() {
+		while(software.getBankNoteStorage().hasSpace()) {
+			//
+		}
+	}
 }
