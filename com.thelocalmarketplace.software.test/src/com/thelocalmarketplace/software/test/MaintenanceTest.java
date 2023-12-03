@@ -112,13 +112,13 @@ public class MaintenanceTest {
 		
 		
 		bronze_software.maintenance.resolveInkIssue((int)(bronze_software.maintenance.MAXIMUM_INK * 0.5));
-		bronze_software.maintenance.resolvePrinterPaperIssue(bronze_software.maintenance.MAXIMUM_PAPER);
+		bronze_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		silver_software.maintenance.resolveInkIssue((int)(silver_software.maintenance.MAXIMUM_INK * 0.5));
-		silver_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		gold_software.maintenance.resolveInkIssue((int)(gold_software.maintenance.MAXIMUM_INK * 0.5));
-		gold_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		bronze_cDispensers = bronze_software.getCoinDispensers();
 		silver_cDispensers = silver_software.getCoinDispensers();
@@ -542,9 +542,31 @@ public class MaintenanceTest {
 		assertTrue(flag);
 	}
 
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadBronzeStation() throws OverloadedDevice {
+		bronze_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
 	@Test
-	public void testResolvePrinterPaperIssue() {
-		fail("Not yet implemented");
+	public void testResolvePrinterPaperIssueSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.7), silver_software.maintenance.getPaperRemaining());
+	}
+	
+	@Test
+	public void testResolvePrinterPaperIssueGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.7), gold_software.maintenance.getPaperRemaining());
 	}
 
 	@Test
