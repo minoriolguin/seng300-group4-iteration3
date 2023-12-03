@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
 	PrintReceiptTest.class,
 //	SoftwareTest.class,
 	UpdateCartTest.class,
+	SignalAttendantTest.class,
 	WeightDiscrepancyTest.class,
 })
 public class TestSuiteMain {}
