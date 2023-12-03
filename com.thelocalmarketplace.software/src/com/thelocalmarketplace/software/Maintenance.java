@@ -237,7 +237,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {
@@ -263,7 +263,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void removeCoinsInDispenser(ICoinDispenser dispenser, int amount) throws CashOverloadException, NoCashAvailableException, DisabledException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {
