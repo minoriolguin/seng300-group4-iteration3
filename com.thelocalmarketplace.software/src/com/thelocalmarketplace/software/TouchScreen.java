@@ -129,18 +129,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Item on GUI clicked and calls this method passing in a Product param
      */
     public void visualProductClicked(Product itemClicked) {
-    	//Is PLU coded Product
-    	if (!itemClicked.isPerUnit()) {
-    		// CAST TYPE: Unsure if this works
-    		software.updateCart.addPLUProduct((PLUCodedProduct) itemClicked);
-    	}
-    	else{
-    	// Is a barcoded product
-    	// Need barcode
-    	BarcodedProduct convertItemClicked = (BarcodedProduct)itemClicked;
-    	Barcode barcode = convertItemClicked.getBarcode();
-    	software.updateCart.addScannedProduct(barcode);
-    	}
+        software.updateCart.addProduct(itemClicked);
     }
     /**
      * Displays a prompt for adding an item.
