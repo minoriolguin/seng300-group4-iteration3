@@ -558,6 +558,7 @@ public class Software {
 	    if (needsAttention == true) {
 	    	attendant.setAttendedToFalse();
 	        attendant.respondToCustomer();
+	        
 	    } else {
 	        // Nothing should happen here since this should never happen
 	    }
