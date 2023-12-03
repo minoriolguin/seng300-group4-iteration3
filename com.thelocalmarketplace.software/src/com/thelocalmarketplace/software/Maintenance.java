@@ -235,7 +235,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @param denomination - the type of denomination for that dispenser
      * @param amount - the amount of coins to be placed in the dispenser 
      */
-    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
+    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException, DisabledException {
     	if (dispenser == null) {
     		throw new NullPointerSimulationException("dispenser");   		
     	}

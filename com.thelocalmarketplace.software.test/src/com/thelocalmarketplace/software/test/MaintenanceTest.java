@@ -156,15 +156,15 @@ public class MaintenanceTest {
 		gold_software.attendant.enableCustomerStation();
 		
 		
-	//	for (BigDecimal bd : billDenominations) {
-	//		banknotes.add(new Banknote(CAD,bd));		
-	//	}
+		for (BigDecimal bd : billDenominations) {
+			banknotes.add(new Banknote(CAD,bd));		
+		}
 		
-	//	for (Banknote b : banknotes) {
-	//		bronze_software.maintenance.resolveBanknotesIssues(b);
-	//		silver_software.maintenance.resolveBanknotesIssues(b);
-	//		gold_software.maintenance.resolveBanknotesIssues(b);	
-	//	}
+		for (Banknote b : banknotes) {
+			bronze_software.maintenance.resolveBanknotesIssues(b);
+			silver_software.maintenance.resolveBanknotesIssues(b);
+			gold_software.maintenance.resolveBanknotesIssues(b);	
+		}
 	}
 
 
