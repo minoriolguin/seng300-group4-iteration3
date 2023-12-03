@@ -13,13 +13,14 @@ import org.junit.Test;
 import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+
 import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.software.Software;
-
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
 import powerutility.PowerGrid;
@@ -38,11 +39,17 @@ public class MaintenanceTest {
 	private Map<BigDecimal, ICoinDispenser> silver_cDispensers;
 	private Map<BigDecimal, ICoinDispenser> gold_cDispensers;
 	
+	private BanknoteStorageUnit bronze_bStorageUnit;
+	private BanknoteStorageUnit silver_bStorageUnit;
+	private BanknoteStorageUnit gold_bStorageUnit;
+	
 	
     private ArrayList<BigDecimal> coindenominations;
     private ArrayList<Banknote> banknotes;
     private Currency CAD;
     private BigDecimal[] billDenominations;
+    
+   
     
     private static final Currency CAD_Currency = Currency.getInstance("CAD");
     private static final BigDecimal value_toonie = new BigDecimal("2.00");
@@ -68,12 +75,16 @@ public class MaintenanceTest {
         coindenominations.add(value_dime);
         coindenominations.add(value_nickel);
 
-        billDenominations = new BigDecimal[5];
+        billDenominations = new BigDecimal[7];
         billDenominations[0] = new BigDecimal("5.00");
         billDenominations[1] = new BigDecimal("10.00");
         billDenominations[2] = new BigDecimal("20.00");
         billDenominations[3] = new BigDecimal("50.00");
         billDenominations[4] = new BigDecimal("100.00");
+        billDenominations[5] = new BigDecimal("100.00");
+        billDenominations[6] = new BigDecimal("100.00");
+        
+        banknotes = new ArrayList<Banknote>();
 
         Currency c = Currency.getInstance("CAD");
         BigDecimal[] billDenom = { new BigDecimal("5.00"),
@@ -126,6 +137,10 @@ public class MaintenanceTest {
 		silver_cDispensers = silver_software.getCoinDispensers();
 		gold_cDispensers = gold_software.getCoinDispensers();
 		
+		bronze_bStorageUnit = bronze_software.banknoteStorageUnit;
+		silver_bStorageUnit = silver_software.banknoteStorageUnit;
+		gold_bStorageUnit = gold_software.banknoteStorageUnit;
+
 		// disable stations to add initial coins
 		bronze_software.attendant.disableCustomerStation();
 		silver_software.attendant.disableCustomerStation();
@@ -138,7 +153,7 @@ public class MaintenanceTest {
 			gold_software.maintenance.addCoinsInDispenser(gold_cDispensers.get(cd),cd,10);
 		
 		}
-		
+
 		// load 10 coins in the coin storage unit
 		Coin nickel = new Coin(value_nickel);
 		Coin dime = new Coin(value_dime);
@@ -160,12 +175,11 @@ public class MaintenanceTest {
 			banknotes.add(new Banknote(CAD,bd));		
 		}
 		
-		for (Banknote b : banknotes) {
-			bronze_software.maintenance.resolveBanknotesIssues(b);
-			silver_software.maintenance.resolveBanknotesIssues(b);
-			gold_software.maintenance.resolveBanknotesIssues(b);	
-		}
-	}
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);	}
+		
+		
 
 
 	@Test
@@ -781,11 +795,6 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testNeedBanknotes() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testThePrinterIsOutOfPaper() {
 		fail("Not yet implemented");
 	}
@@ -965,5 +974,168 @@ public class MaintenanceTest {
 		assertTrue(gold_software.isCustomerStationBlocked());
 	}
 	
+	
+	@Test
+	public void testOutOfBanknotes() {
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		silver_software.maintenance.checkBanknotes(5, silver_bStorageUnit);
+		gold_software.maintenance.checkBanknotes(5, gold_bStorageUnit);
+		
+		assertTrue(bronze_software.maintenance.getIssues().contains("OUT_OF_BANKNOTES"));
+		assertTrue(silver_software.maintenance.getIssues().contains("OUT_OF_BANKNOTES"));
+		assertTrue(gold_software.maintenance.getIssues().contains("OUT_OF_BANKNOTES"));
+		
+		assertTrue(bronze_software.isCustomerStationBlocked());
+		assertTrue(silver_software.isCustomerStationBlocked());
+		assertTrue(gold_software.isCustomerStationBlocked());
+	}
+	
+	@Test
+	public void testLowBanknotes() throws SimulationException, CashOverloadException {
+		
+		bronze_software.maintenance.setCurrentBanknotes(5);
+		silver_software.maintenance.setCurrentBanknotes(5);
+		gold_software.maintenance.setCurrentBanknotes(5);
+		
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		silver_software.maintenance.checkBanknotes(5, silver_bStorageUnit);
+		gold_software.maintenance.checkBanknotes(5, gold_bStorageUnit);
+		
+		assertTrue(bronze_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		assertTrue(silver_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		assertTrue(gold_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		
+		assertTrue(bronze_software.isCustomerStationBlocked());
+		assertTrue(silver_software.isCustomerStationBlocked());
+		assertTrue(gold_software.isCustomerStationBlocked());
+	}
+	
+	@Test
+	public void testBanknotesFull() throws SimulationException, CashOverloadException {
+		
+		bronze_software.maintenance.setCurrentBanknotes(1000);
+		silver_software.maintenance.setCurrentBanknotes(1000);
+		gold_software.maintenance.setCurrentBanknotes(1000);
+		
+		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+		silver_software.maintenance.checkBanknotes(5, silver_bStorageUnit);
+		gold_software.maintenance.checkBanknotes(5, gold_bStorageUnit);
+		
+		assertTrue(bronze_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		assertTrue(silver_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		assertTrue(gold_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		
+		assertTrue(bronze_software.isCustomerStationBlocked());
+		assertTrue(silver_software.isCustomerStationBlocked());
+		assertTrue(gold_software.isCustomerStationBlocked());
+	}
+
+	@Test
+	public void testPredictLowBanknotes() {
+		bronze_software.maintenance.setCurrentBanknotes(5);
+		silver_software.maintenance.setCurrentBanknotes(5);
+		gold_software.maintenance.setCurrentBanknotes(5);
+		
+		bronze_software.maintenance.predictLowBanknotes(bronze_bStorageUnit);
+		silver_software.maintenance.predictLowBanknotes(silver_bStorageUnit);
+		gold_software.maintenance.predictLowBanknotes(gold_bStorageUnit);
+		
+		assertTrue(bronze_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		assertTrue(silver_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		assertTrue(gold_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		
+		assertTrue(bronze_software.isCustomerStationBlocked());
+		assertTrue(silver_software.isCustomerStationBlocked());
+		assertTrue(gold_software.isCustomerStationBlocked());
+	}
+	
+	@Test
+	public void testPredictBanknotesFull() {
+		bronze_software.maintenance.setCurrentBanknotes(750);
+		silver_software.maintenance.setCurrentBanknotes(750);
+		gold_software.maintenance.setCurrentBanknotes(750);
+		
+		bronze_software.maintenance.predictBanknotesFull(bronze_bStorageUnit);
+		silver_software.maintenance.predictBanknotesFull(silver_bStorageUnit);
+		gold_software.maintenance.predictBanknotesFull(gold_bStorageUnit);
+		
+		assertTrue(bronze_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		assertTrue(silver_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		assertTrue(gold_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		
+		assertTrue(bronze_software.isCustomerStationBlocked());
+		assertTrue(silver_software.isCustomerStationBlocked());
+		assertTrue(gold_software.isCustomerStationBlocked());
+	}
+
+	@Test
+	public void testResolveBanknotesLow() throws CashOverloadException, DisabledException {
+		
+		bronze_software.maintenance.setCurrentBanknotes(0);
+		silver_software.maintenance.setCurrentBanknotes(0);
+		gold_software.maintenance.setCurrentBanknotes(0);
+		
+		bronze_software.maintenance.setMAXIMUM_BANKNOTES(12);
+		silver_software.maintenance.setMAXIMUM_BANKNOTES(12);
+		gold_software.maintenance.setMAXIMUM_BANKNOTES(12);
+	
+		bronze_software.maintenance.resolveBanknotesLow(bronze_bStorageUnit, banknotes);
+		silver_software.maintenance.resolveBanknotesLow(silver_bStorageUnit, banknotes);
+		gold_software.maintenance.resolveBanknotesLow(gold_bStorageUnit, banknotes);
+		
+		assertFalse(bronze_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		assertFalse(silver_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		assertFalse(gold_software.maintenance.getIssues().contains("LOW_BANKNOTES"));
+		
+		assertFalse(bronze_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		assertFalse(silver_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		assertFalse(gold_software.maintenance.getIssues().contains("LOW_BANKNOTES_SOON"));
+		
+		assertFalse(bronze_software.isCustomerStationBlocked());
+		assertFalse(silver_software.isCustomerStationBlocked());
+		assertFalse(gold_software.isCustomerStationBlocked());
+	}
+	
+	@Test
+	public void testResolveBanknotesFull() throws SimulationException, CashOverloadException, DisabledException {
+		
+		for(BigDecimal bd:billDenominations) {
+			bronze_bStorageUnit.load(new Banknote(CAD,bd));
+			silver_bStorageUnit.load(new Banknote(CAD,bd));	
+			gold_bStorageUnit.load(new Banknote(CAD,bd));	
+		}
+		for(BigDecimal bd:billDenominations) {
+			bronze_bStorageUnit.load(new Banknote(CAD,bd));
+			silver_bStorageUnit.load(new Banknote(CAD,bd));	
+			gold_bStorageUnit.load(new Banknote(CAD,bd));	
+		}
+		for(BigDecimal bd:billDenominations) {
+			bronze_bStorageUnit.load(new Banknote(CAD,bd));
+			silver_bStorageUnit.load(new Banknote(CAD,bd));	
+			gold_bStorageUnit.load(new Banknote(CAD,bd));	
+		}
+		
+		bronze_software.maintenance.setMAXIMUM_BANKNOTES(16);
+		silver_software.maintenance.setMAXIMUM_BANKNOTES(16);
+		gold_software.maintenance.setMAXIMUM_BANKNOTES(16);
+		
+		
+		bronze_software.maintenance.resolveBanknotesFull(silver_bStorageUnit);
+		silver_software.maintenance.resolveBanknotesFull(silver_bStorageUnit);
+		gold_software.maintenance.resolveBanknotesFull(gold_bStorageUnit);
+		
+		assertFalse(bronze_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		assertFalse(silver_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		assertFalse(gold_software.maintenance.getIssues().contains("BANKNOTES_FULL"));
+		
+		assertFalse(bronze_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		assertFalse(silver_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		assertFalse(gold_software.maintenance.getIssues().contains("BANKNOTES_ALMOST_FULL"));
+		
+		assertFalse(bronze_software.isCustomerStationBlocked());
+		assertFalse(silver_software.isCustomerStationBlocked());
+		assertFalse(gold_software.isCustomerStationBlocked());
+	}
+
 
 }
