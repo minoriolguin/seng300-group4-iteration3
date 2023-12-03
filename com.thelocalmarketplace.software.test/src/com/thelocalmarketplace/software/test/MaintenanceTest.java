@@ -53,6 +53,10 @@ public class MaintenanceTest {
 //    private Coin coin_dime = new Coin(CAD_Currency,value_dime);
 //    private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
 //    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
+    
+    private final String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
+    private final String lowPaperMsg = "PRINTER_LOW_PAPER";
+    private final String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
 
 	@Before
 	public void setUp() throws Exception {
@@ -126,15 +130,15 @@ public class MaintenanceTest {
 			gold_software.maintenance.addCoinsInDispenser(gold_cDispensers.get(cd),cd,10);
 		}
 		
-		for (BigDecimal bd : billDenominations) {
-			banknotes.add(new Banknote(CAD,bd));		
-		}
+//		for (BigDecimal bd : billDenominations) {
+//			banknotes.add(new Banknote(CAD,bd));		
+//		}
 		
-		for (Banknote b : banknotes) {
-			bronze_software.maintenance.resolveBanknotesIssues(b);
-			silver_software.maintenance.resolveBanknotesIssues(b);
-			gold_software.maintenance.resolveBanknotesIssues(b);	
-		}
+//		for (Banknote b : banknotes) {
+//			bronze_software.maintenance.resolveBanknotesIssues(b);
+//			silver_software.maintenance.resolveBanknotesIssues(b);
+//			gold_software.maintenance.resolveBanknotesIssues(b);	
+//		}
 	}
 
 
@@ -384,8 +388,104 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testCheckPaper() {
-		fail("Not yet implemented");
+	public void testCheckPaperBronzeStation() {
+		bronze_software.maintenance.checkPaper(100);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroSilverStation() {
+		silver_software.maintenance.setPaperRemaining(0);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.outOfPaperMsg) && (silver_software.maintenance.getIssues().size() == 1);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroGoldStation() {
+		gold_software.maintenance.setPaperRemaining(0);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.outOfPaperMsg) && (gold_software.maintenance.getIssues().size() == 1);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg) && (silver_software.maintenance.getIssues().size() == 1);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg) && (gold_software.maintenance.getIssues().size() == 1);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.checkPaper(50);
+		boolean flag = (bronze_software.maintenance.getIssues().size() == 0) && (!bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.checkPaper(50);
+		boolean flag = (silver_software.maintenance.getIssues().size() == 0) && (!silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.checkPaper(50);
+		boolean flag = (gold_software.maintenance.getIssues().size() == 0) && (!gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1);
+		bronze_software.maintenance.checkPaper(50);
+		boolean flag = bronze_software.maintenance.getIssues().contains(this.lowPaperMsg) && (bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(50);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg) && (silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(50);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg) && (gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
 	}
 
 	@Test
