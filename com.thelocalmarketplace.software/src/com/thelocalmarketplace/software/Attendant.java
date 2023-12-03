@@ -142,11 +142,7 @@ public class Attendant implements WeightDiscrepancyListener {
 	 * Method for attendant to refill bank notes till full capacity
 	 * **/
 	public void refillBankNotes() {
-//		while(software.getBankNoteStorage().hasSpace()) {
-//			
-//		}
 		Banknote banknote = new Banknote(Currency.getInstance("CAD"),new BigDecimal("5.00"));
-		System.out.println(software.getBankNoteStorage().getCapacity());;
 		while(software.getBankNoteStorage().hasSpace()) {
 			try {
 				software.getBankNoteStorage().receive(banknote);
@@ -155,9 +151,6 @@ public class Attendant implements WeightDiscrepancyListener {
 				e.printStackTrace();
 			}
 		}
-		
-		System.out.println(software.getBankNoteStorage().getBanknoteCount());
-		
 	}
 	/** 
 	 * Method for attendant to empty all bank notes in the station storage
