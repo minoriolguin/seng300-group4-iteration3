@@ -178,7 +178,12 @@ public class TouchScreen implements WeightDiscrepancyListener {
     	software.notifyAttendant();
     }
     
-    
+    /**
+     * get software associated with touchscreen, need for gui
+     */
+    public Software getSoftware() {
+    	return this.software;
+    }
     //Listeners Below 
     
     @Override
@@ -204,4 +209,5 @@ public class TouchScreen implements WeightDiscrepancyListener {
     @Override
     public void bagsTooHeavy() {
     }
+    
 }
