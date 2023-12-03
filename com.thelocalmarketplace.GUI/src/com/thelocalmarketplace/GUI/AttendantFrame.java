@@ -106,8 +106,11 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
-                System.out.println("LookUp Product");
+            	
+                System.out.println("Lookup Product");
                 //insert logic
+                VirtualKeyboard keyboard = new VirtualKeyboard();
+                keyboard.run(screen.getSoftware());
                 break;
             case 2:
             	//still need to attend to customer
