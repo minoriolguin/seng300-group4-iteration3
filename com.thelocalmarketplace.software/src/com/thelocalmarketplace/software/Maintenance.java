@@ -240,9 +240,9 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @param denomination - the type of denomination for that dispenser
      * @param amount - the amount of coins to be placed in the dispenser 
      */
-    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
+    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException, DisabledException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {
@@ -250,14 +250,10 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	} else {
     		int i;
     		Coin coin = new Coin(denomination);
-    		Coin[] coins = new Coin[amount];
     		
     		for (i = 0; i <= amount - 1; i++ ) {
-    			coins[i] = coin;
-    		}
-    		
-    		dispenser.load(coins);
-    		
+    			dispenser.receive(coin);
+    		}  		
     	}
    	}
     	    
@@ -268,7 +264,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void removeCoinsInDispenser(ICoinDispenser dispenser, int amount) throws CashOverloadException, NoCashAvailableException, DisabledException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {

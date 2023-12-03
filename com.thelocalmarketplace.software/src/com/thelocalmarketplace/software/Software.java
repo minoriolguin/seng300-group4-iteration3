@@ -188,6 +188,7 @@ public class Software {
 	 * This method must be called before starting a session or conducting any self-checkout operations.
 	 */
 	public void turnOn() {
+		PowerGrid.engageUninterruptiblePowerSource();
 		PowerGrid grid = PowerGrid.instance();
 		station.plugIn(grid);
 		station.turnOn();
@@ -208,6 +209,7 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		scannerScale.enable();
 		
 		// Check for maintenance and predict issues
 		maintenance.checkInk(printReceipt.getAveragePrintedChars());
@@ -285,6 +287,7 @@ public class Software {
 	public void unblockCustomer() {
 		handHeldScanner.enable();
 		mainScanner.enable();
+		scannerScale.enable();
 		blocked = false;
 	}
 	

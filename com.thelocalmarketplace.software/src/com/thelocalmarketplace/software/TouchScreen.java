@@ -139,7 +139,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
     	// Need barcode
     	BarcodedProduct convertItemClicked = (BarcodedProduct)itemClicked;
     	Barcode barcode = convertItemClicked.getBarcode();
-    	software.updateCart.addScannedItem(barcode);
+    	software.updateCart.addScannedProduct(barcode);
     	}
     }
     /**
@@ -188,6 +188,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
 
     @Override
     public void AddItemToScale() {
+        software.blockCustomer();
         displayAddItem();
     }
 
