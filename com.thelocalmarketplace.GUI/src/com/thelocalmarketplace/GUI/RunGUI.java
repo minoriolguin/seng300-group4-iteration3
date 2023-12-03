@@ -97,19 +97,21 @@ public class RunGUI extends JFrame implements logicObserver {
 //    }
 
     // Customer Screen 1 
-    private JPanel StartSessionPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+    private JButton StartSessionPanel() {
+        JButton panel = new JButton();
+        panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
+        panel.setBackground(Color.WHITE);
 
-        JLabel welcomeLabel = new JLabel("Welcome to the SENG 300 Checkout!");
+        JLabel welcomeLabel = new JLabel("Welcome to Self Checkout!");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 26));
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(welcomeLabel, gbc);
         
-        JButton nextButton = new JButton("Start Session");
-        nextButton.addActionListener(new ActionListener() {
+        JLabel label = new JLabel("Press Anywhere to Start");
+        panel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	guiLogicInstance.StartSessionButtonPressed();
@@ -118,7 +120,7 @@ public class RunGUI extends JFrame implements logicObserver {
         });
         gbc.gridx = 0;
         gbc.gridy = 1;
-        panel.add(nextButton, gbc);
+        panel.add(label, gbc);
         return panel;
     }
     
@@ -215,7 +217,7 @@ public class RunGUI extends JFrame implements logicObserver {
         panel.setMaximumSize(new Dimension(width-5, height));
         
         JButton button1 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add<br>Member #</div></html>");
+        		+ "Add<br>Membership Number</div></html>");
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
