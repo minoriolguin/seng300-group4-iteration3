@@ -106,19 +106,29 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
-                System.out.println("Meow");
+                System.out.println("LookUp Product");
                 //insert logic
                 break;
             case 2:
-                System.out.println("Button Clicked");
+            	//still need to attend to customer
+            	attendant.setAttendedToFalse();
+                //remove item from the scale/bagging area- system is disabled
+                screen.RemoveItemFromScale();
+                //verify that the item was removed
+                attendant.verifyItemRemovedFromOrder();
+                //set attended to true
+                attendant.respondToCustomer();
+                //enable customer to use the station again.
+                attendant.enableCustomerStation();
+               
                 //insert Logic
                 break;
             case 3:
-                System.out.println("Button Clicked");
+                System.out.println("Refill Coins");
                 //insert Logic
                 break;
             case 4:
-                System.out.println("Button Clicked");
+                System.out.println("Empty Coins");
                 //insert Logic
                 break;
             case 5:
@@ -130,13 +140,15 @@ public class AttendantFrame {
                 attendant.emptyBankNotes();
                 break;
             case 7:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Paper");
                 //insert Logic
                 break;
             case 8:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Ink");
                 //insert Logic
                 break;
+                
+                //do we wanna do a button that block/unblock customer?
             case 9:
                 System.out.println("Button Clicked");
                 //insert Logic

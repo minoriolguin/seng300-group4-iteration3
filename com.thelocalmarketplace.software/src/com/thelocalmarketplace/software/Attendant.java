@@ -1,9 +1,13 @@
 package com.thelocalmarketplace.software;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Scanner;
 
 import com.jjjwelectronics.Mass;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
+import com.tdc.banknote.Banknote;
 
 public class Attendant implements WeightDiscrepancyListener {
 
