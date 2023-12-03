@@ -420,16 +420,32 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		return inkRemaining;
 	}
     
+    public int getPaperRemaining() {
+    	return remainingPaper;
+    }
+    
     public void setInkRemaining(int amount) {
 		inkRemaining = amount;
 	}
     
+    public void setPaperRemaining(int amount) {
+    	remainingPaper = amount;
+    }
+    
 	public int getAverageInkUsagePerSession() {
 		return averageInkUsagePerSession;
+	}
+	
+	public int getAveragePaperUsagePerSession() {
+		return averagePaperUsedPerSession;
 	}
 
 	public void setAverageInkUsagePerSession(int averageInkUsagePerSession) {
 		this.averageInkUsagePerSession = averageInkUsagePerSession;
+	}
+	
+	public void setAveragePaperUsagePerSession(int averagePaperUsage) {
+		this.averagePaperUsedPerSession = averagePaperUsage;
 	}
 
 	@Override
