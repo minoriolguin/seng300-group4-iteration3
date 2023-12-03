@@ -1,6 +1,6 @@
 package com.thelocalmarketplace.software;
 
-
+import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
@@ -38,15 +38,28 @@ public class TouchScreen implements WeightDiscrepancyListener {
         this.software = software;
         skip = false;
     }
+
+    /**
+     * GUI displays message No items in Cart
+     */
+    public void displayNoItemsInCart(){
+
+    }
     
     /**
+     * Should Display this option during session
      * Initiates the payment process using coins.
      * Enables and activates the coin validator and enables the printer.
      */
     public void payByCoin () {
-        software.coinValidator.enable();
-        software.coinValidator.activate();
-        software.printer.enable();
+        if (!software.getProductsInOrder().isEmpty()){
+            software.coinValidator.enable();
+            software.coinValidator.activate();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
+
     }
     
     /**
@@ -54,9 +67,13 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Enables and activates the banknote validator and enables the printer.
      */
     public void payByBanknote () {
-        software.banknoteValidator.enable();
-        software.banknoteValidator.activate();
-        software.printer.enable();
+        if (!software.getProductsInOrder().isEmpty()){
+            software.banknoteValidator.enable();
+            software.banknoteValidator.activate();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
     }
     
     /**
@@ -64,29 +81,74 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Enables the card reader and enables the printer.
      */
     public void payByCard () {
-        software.cardReader.enable();
-        software.printer.enable();
+        if (!software.getProductsInOrder().isEmpty()) {
+            software.cardReader.enable();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
     }
 
-    public void addPLUProduct(PriceLookUpCode code){
-        PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
-        software.updateCart.addPLUProduct(product);
-    }
-    
     /**
-     * Prints the receipt for the current order.
+     * Displays message when product not found in DataBase
+     */
+    public void displayProductNotInDataBase(){
+    }
+
+    /**
+     * @param code of Product enter on touchscreen sends product to updated cart
+     * think about making this class ScannerScale listener so when item is on
+     * scale the "key in PLU code buttons are displayed"
+     */
+    public void selectAddPLUProduct(PriceLookUpCode code){
+        if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
+            PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+            software.updateCart.addProduct(product);
+        }
+        else
+            displayProductNotInDataBase();
+
+    }
+
+    /**
+     * @param barcode entered on GUI
+     *            adds barcoded product to order
+     */
+    public void manuallyEnterBarcode(Barcode barcode){
+        if (ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)){
+            BarcodedProduct product = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+            software.updateCart.addProduct(product);
+        }
+        else
+            displayProductNotInDataBase();
+    }
+
+    /**
+     * Prints the receipt for the current order. Is this auto called when payment
+     * happens?  Does products in order get cleared preventing this from printing
+     * current order?
      */
     public void printReceipt() {
         software.printReceipt.print();
     }
 
     /**
-     * Removes a selected barcoded product from the order.
+     * Removes a selected product from the order.
      *
-     * @param product The barcoded product to be removed.
+     * @param product The product to be removed.
      */
-    public void removeSelectedBarcodedProduct(BarcodedProduct product){
+    public void removeProduct(Product product){
         software.updateCart.removeItem(product);
+    }
+
+
+    /**
+     * This is to pop up after every barcode is scanned or plu product is added
+     * one button to call another to move back to order or displaying additem to
+     * bagging area
+     */
+    public void SelectSkipBaggingItem(){
+        skip = true;
     }
     
     /**
@@ -118,10 +180,20 @@ public class TouchScreen implements WeightDiscrepancyListener {
     /**
      * Signals that the bags have been added, enabling scanners.
      */
-    public void bagsAdded(){
+    public void selectBagsAdded(){
         software.weightDiscrepancy.expectOwnBagsToBeAdded = false;
         software.mainScanner.enable();
         software.handHeldScanner.enable();
+    }
+
+
+    /**
+     * @param amount number of bags they want
+     * @throws EmptyDevice if no bag in dispenser
+     *
+     */
+    public void purchaseBags(int amount) throws EmptyDevice {
+        software.purchaseBags.AddBagToOrder(amount);
     }
 
     /**
@@ -132,16 +204,16 @@ public class TouchScreen implements WeightDiscrepancyListener {
         software.updateCart.addProduct(itemClicked);
     }
     /**
-     * Displays a prompt for adding an item.
+     * Displays a prompt for adding an item to bagging area.
      */
-    public void displayAddItem(){
+    public void displayAddItemToBaggingArea(){
         // Implementation to be done in Iteration 3
     }
     
     /**
      * Displays a prompt for removing an item.
      */
-    public void displayRemoveItem(){
+    public void displayRemoveItemFromBaggingArea(){
         // Implementation to be done in Iteration 3
     }
     
@@ -172,13 +244,14 @@ public class TouchScreen implements WeightDiscrepancyListener {
     
     @Override
     public void RemoveItemFromScale() {
-        displayRemoveItem();
+        software.blockCustomer();
+        displayRemoveItemFromBaggingArea();
     }
 
     @Override
     public void AddItemToScale() {
         software.blockCustomer();
-        displayAddItem();
+        displayAddItemToBaggingArea();
     }
 
     @Override
