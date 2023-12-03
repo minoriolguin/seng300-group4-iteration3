@@ -98,8 +98,8 @@ public class SelfCheckoutSimulation extends JFrame {
 
 	        // Create three buttons
 	        String[] buttonTitles = {"Bronze Station",
-					"Gold Station",
-					"Silver Station"
+					"Silver Station",
+					"Gold Station"
 					 };
 
 	        // Array of button listeners
