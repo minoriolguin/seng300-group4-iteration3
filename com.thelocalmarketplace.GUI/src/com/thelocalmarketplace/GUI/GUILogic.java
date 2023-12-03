@@ -59,7 +59,7 @@ public class GUILogic {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
         screen.signalForAttendant();
-        AttendantFrame attendant_frame = new AttendantFrame();
+        AttendantFrame attendant_frame = new AttendantFrame(screen);
         attendant_frame.show();
 	}
 	
