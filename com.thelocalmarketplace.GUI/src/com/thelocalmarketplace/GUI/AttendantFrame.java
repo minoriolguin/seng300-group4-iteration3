@@ -27,6 +27,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.software.TouchScreen;
+
 public class AttendantFrame {
 	 
 	JLabel totalLabel;
@@ -34,7 +36,9 @@ public class AttendantFrame {
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
-    public AttendantFrame() {
+	public TouchScreen screen;
+    public AttendantFrame(TouchScreen s) {
+    	screen = s;
         attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
         attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

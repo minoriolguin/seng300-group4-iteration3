@@ -32,6 +32,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         this.software = software;
         this.weightDiscrepancy = software.weightDiscrepancy;
         this.membershipScanner = new MembershipScanner(software);
+        this.currentMassOnScanner = Mass.ZERO;
 
         // register both scanners, Both are automatically dealt with
         software.handHeldScanner.register(this);
@@ -48,6 +49,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	software.blockCustomer();
     	// Add product to Hashmap, with detected weight on scale.
         software.getProductsInOrder().put(product,currentMassOnScanner);
+        software.getPluCodedProductsInOrder().add(product);
         //Dealing With Heavy Item
         if(software.touchScreen.skipBaggingItem()) {
             software.attendant.notifySkipBagging();
@@ -66,6 +68,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
             //item added to bagged products
             software.addBaggedProduct(product, productsWeight);
         }
+        
         //Converting Mass to grams than to kg in type long
         long tempPrice = ((currentMassOnScanner.inGrams().longValue())/1000) * product.getPrice();
         // Convert price to type BigDecimal

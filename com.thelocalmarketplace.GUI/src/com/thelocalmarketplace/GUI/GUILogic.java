@@ -16,6 +16,9 @@ package com.thelocalmarketplace.GUI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.TouchScreen;
+
 
 
 
@@ -25,6 +28,10 @@ import java.util.List;
  * GUI code) and Panels
  */
 public class GUILogic {
+	public TouchScreen screen;
+	public GUILogic(TouchScreen t) {
+		this.screen = t;
+	}
 	
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -51,7 +58,8 @@ public class GUILogic {
 	public void buttonR3_CustomerCallsAttendant() {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
-        AttendantFrame attendant_frame = new AttendantFrame();
+        screen.signalForAttendant();
+        AttendantFrame attendant_frame = new AttendantFrame(screen);
         attendant_frame.show();
 	}
 	

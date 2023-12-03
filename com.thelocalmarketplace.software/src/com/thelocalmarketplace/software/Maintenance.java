@@ -51,7 +51,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 	private int averageBanknotesUsagePerSession;
 
 	private int currentBanknotes;
-    
+	
     ArrayList<String> issues;
 
 	// String messages that simulate maintenance codes
@@ -78,6 +78,20 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     
     public Maintenance(Software software){
         this.software = software;
+        
+        // attach this class as an observer to each coin dispenser
+        if (software.getCoinDenominations() == null) {
+        	throw new NullPointerSimulationException("coin denominations");   		
+        }
+       
+        // attach this class as an observer to each coin dispenser
+        for (BigDecimal coinDenomination : software.getCoinDenominations()) {
+        	software.getCoinDispensers().get(coinDenomination).attach(this);
+        }
+        
+        // attach this class as an observer to the coin storage unit
+        software.getCoinStorage().attach(this);
+
         // make predictions (check component statuses)
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
