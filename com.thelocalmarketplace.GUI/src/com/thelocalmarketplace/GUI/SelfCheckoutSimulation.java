@@ -45,45 +45,8 @@ public class SelfCheckoutSimulation extends JFrame {
 	    private SelfCheckoutStationGold gold_station;
 	    private SelfCheckoutStationSilver silver_staiton;
 	 public SelfCheckoutSimulation(SelfCheckoutStationBronze b, SelfCheckoutStationGold g, SelfCheckoutStationSilver s ) {
-		 	coindenominations = new ArrayList<BigDecimal>();
-	        CAD = Currency.getInstance("CAD");
-	        coindenominations.add(value_toonie);
-	        coindenominations.add(value_loonie);
-	        coindenominations.add(value_quarter);
-	        coindenominations.add(value_dime);
-	        coindenominations.add(value_nickel);
-	        coindenominations.add(value_penny);
-	        
-
-	        billDenominations = new BigDecimal[5];
-	        billDenominations[0] = new BigDecimal("5.00");
-	        billDenominations[1] = new BigDecimal("10.00");
-	        billDenominations[2] = new BigDecimal("20.00");
-	        billDenominations[3] = new BigDecimal("50.00");
-	        billDenominations[4] = new BigDecimal("100.00");
-	        
-	        Currency c = Currency.getInstance("CAD");
-	        BigDecimal[] billDenom = { new BigDecimal("5.00"),
-	                new BigDecimal("10.00"),
-	                new BigDecimal("20.00"),
-	                new BigDecimal("50.00"),
-	                new BigDecimal("100.00")};
-	        BigDecimal[] coinDenom = { new BigDecimal("0.01"),
-	                new BigDecimal("0.05"),
-	                new BigDecimal("0.1"),
-	                new BigDecimal("0.25"),
-	                new BigDecimal("1"),
-	                new BigDecimal("2") };
-
-	        AbstractSelfCheckoutStation.resetConfigurationToDefaults();
-	        AbstractSelfCheckoutStation.configureCurrency(c);
-	        AbstractSelfCheckoutStation.configureBanknoteDenominations(billDenom);
-	        AbstractSelfCheckoutStation.configureCoinDenominations(coinDenom);
-	        AbstractSelfCheckoutStation.configureReusableBagDispenserCapacity(20);
-	        AbstractSelfCheckoutStation.configureBanknoteStorageUnitCapacity(20);
-	        AbstractSelfCheckoutStation.configureCoinStorageUnitCapacity(20);
-	        AbstractSelfCheckoutStation.configureCoinTrayCapacity(20);
-	        
+		 	
+	    
 	        bronze_station = b;
 	        gold_station = g;
 	        silver_staiton = s;
