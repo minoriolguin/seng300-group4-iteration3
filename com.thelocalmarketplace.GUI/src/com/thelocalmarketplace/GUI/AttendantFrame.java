@@ -27,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
 
 public class AttendantFrame {
@@ -36,9 +37,11 @@ public class AttendantFrame {
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
+	private Attendant attendant;
 	public TouchScreen screen;
     public AttendantFrame(TouchScreen s) {
     	screen = s;
+    	attendant = new Attendant(s.getSoftware());
         attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
         attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,11 +122,11 @@ public class AttendantFrame {
                 //insert Logic
                 break;
             case 5:
-                System.out.println("Button Clicked");
-                //insert Logic
+                System.out.println("Refill Banknotes");
+                
                 break;
             case 6:
-                System.out.println("Button Clicked");
+                System.out.println("Empty Banknotes");
                 //insert Logic
                 break;
             case 7:
