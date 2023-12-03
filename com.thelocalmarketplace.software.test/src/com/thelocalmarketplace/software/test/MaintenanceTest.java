@@ -354,6 +354,31 @@ public class MaintenanceTest {
 	}
 
 	@Test
+	public void testSessionNotDisabledAddCoinsDispenser() {
+		fail("Not yet implemented");
+	}
+	
+	@Test 
+	public void testUsingNullDispenserAddCoins() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testUsingNullDispenserRemoveCoins() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testSessionNotDisabledRemoveCoinsDispenser() {
+		fail("Not yet implemented");	
+	}
+	
+	@Test
+	public void testSessionNotDisabledRemoveCoinsStorage() {
+		fail("Not yet implemented");
+	}
+
+	@Test
 	public void testPredictLowCoinsDispenser() {
 		fail("Not yet implemented");
 	}
