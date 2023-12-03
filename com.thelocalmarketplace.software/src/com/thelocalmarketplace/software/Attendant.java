@@ -1,5 +1,6 @@
 package com.thelocalmarketplace.software;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.jjjwelectronics.Mass;
 
@@ -8,6 +9,14 @@ public class Attendant implements WeightDiscrepancyListener {
     public Software software;
     public ArrayList<String> notifs;
     public boolean reusableBagsEmpty;
+    /**
+     * A boolean variable that keeps track of whether a customer has been attended to.
+     * 
+     * Is true if no customer has requested it.
+     * Becomes false when a customer requests for an attendant.
+     * Goes back to true after the customer has gotten their help.
+     **/
+    private boolean attended = true;
     
     public Attendant(Software software){
         this.software = software;
@@ -39,6 +48,7 @@ public class Attendant implements WeightDiscrepancyListener {
 
 	public void notifySkipBagging(){
         software.unblockCustomer();
+        software.touchScreen.skip = false;
     }
 
     public void verifyItemInBaggingArea(){
@@ -55,7 +65,12 @@ public class Attendant implements WeightDiscrepancyListener {
     
     public void disableCustomerStation() {
     	software.blockCustomerStation();
-    	
+        // Handle the scenario when disabling is immediate or pending
+        if (software.isPendingMaintenance()) {
+            System.out.println("Disabling is set to pending until the current session ends.");
+        } else {
+            System.out.println("Station is disabled for maintenance.");
+        }
     }
     
     /**
@@ -84,6 +99,47 @@ public class Attendant implements WeightDiscrepancyListener {
     public void bagsTooHeavy() {
         software.weightDiscrepancy.massOfOwnBags = Mass.ZERO;
     }
+    
+    /**
+     * Prompts the attendant to respond to the customer who signaled for help
+     * 
+     * For testing: while the respondent has not attended to the customer, the boolean
+     * "attended" remains false.
+     * 
+     * Unclear point: I am not sure attendant has their own touch screen or will be using
+     * a command line kind of interface. 
+     * For this code, I just used if attended == true until I have the concrete version
+     * of how the attendant will be interacted with.
+     * 
+     * Update: After seeing the message from the GUI Team, I have updated the code and
+     * added a scanner.
+     **/
+    public void respondToCustomer() {
+    	Scanner scanner = new Scanner(System.in);
+    	notifs.add("A customer needs your help");    	
+    	
+    	
+    	while (true) {
+    		System.out.println("\nHave you attended to them?\n");
+            String response = scanner.nextLine();
+
+            if (response.equalsIgnoreCase("Yes")) {
+            	attended = true;
+        		software.setNeedsAttentionToFalse();
+        		break;
+            } else if (response.equalsIgnoreCase("No")) {
+            	System.out.println("Please attend to the customer and "
+            			+ "then enter 'Yes' to continue.");
+            } else {
+                System.out.println("Invalid response. Please enter Yes or No.");
+            }
+        }
+    }
+    
+    public void setAttendedToFalse() {
+    	attended = false;
+    }
+    
 	@Override
 	public void RemoveItemFromScale() {
 		// TODO Auto-generated method stub

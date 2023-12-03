@@ -9,35 +9,48 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class SelectLanguage extends JPanel { 
-	JButton engButton = new JButton("ENGLISH");
-	JButton cancel = new JButton("CANCEL");
-	RunGUI instance;
+	private JButton engButton = new JButton("ENGLISH");
+	private JButton cancel = new JButton("CANCEL");
 	
-	public SelectLanguage(RunGUI instance) {
-		this.instance = instance;
+	public SelectLanguage() {
+		getCancel().setBackground(Color.RED);
+		getCancel().setPreferredSize(new Dimension(100, 50));
+		getEngButton().setPreferredSize(new Dimension(250, 130));
+		add(getEngButton());
+		add(getCancel());
 		
-		cancel.setBackground(Color.RED);
-		cancel.setPreferredSize(new Dimension(100, 50));
-		engButton.setPreferredSize(new Dimension(250, 130));
-		add(engButton);
-		add(cancel);
-		
-		cancel.addActionListener(new ActionListener() {
+		getCancel().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				instance.switchPanels("AddItemsPanel");
+				setVisible(false);
 				
 			}
 			
 		});
-		engButton.addActionListener(new ActionListener() {
+		getEngButton().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("ENGLISH LANGUAGE SELECTED");
-				instance.switchPanels("AddItemsPanel");
+				setVisible(false);
 				
 			}
 			
 		});
+	}
+
+	public JButton getCancel() {
+		return cancel;
+	}
+
+	public void setCancel(JButton cancel) {
+		this.cancel = cancel;
+	}
+
+	public JButton getEngButton() {
+		return engButton;
+	}
+
+	public void setEngButton(JButton engButton) {
+		this.engButton = engButton;
 	}
 }

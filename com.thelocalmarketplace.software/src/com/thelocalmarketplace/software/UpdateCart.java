@@ -12,7 +12,11 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
+import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 /* The UpdateCart class handles the addition and removal of items from the self-checkout cart.
 * It also manages bulky items, blocking and unblocking customer interactions, and updates the expected weight and total cost.
@@ -32,11 +36,29 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         this.software = software;
         this.weightDiscrepancy = software.weightDiscrepancy;
         this.membershipScanner = new MembershipScanner(software);
+        this.currentMassOnScanner = Mass.ZERO;
 
         // register both scanners, Both are automatically dealt with
         software.handHeldScanner.register(this);
         software.mainScanner.register(this);
         software.scannerScale.register(this);
+    }
+
+    /**
+     * Add a generalized product type
+     *
+     * @param product - generalized product to add
+     */
+    public void addProduct(Product product)
+    {
+        if(product instanceof BarcodedProduct)
+        {
+            this.addScannedProduct(((BarcodedProduct) product).getBarcode());
+        }
+        else if(product instanceof PLUCodedProduct)
+        {
+            this.addPLUProduct((PLUCodedProduct) product);
+        }
     }
     /**
      * Adds a PLU product to the cart
@@ -47,25 +69,32 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	//System: Blocks the self-checkout station from further customer interaction
     	software.blockCustomer();
     	// Add product to Hashmap, with detected weight on scale.
-        software.getProductsInOrder().put(product,currentMassOnScanner);
+        if(software.getProductsInOrder().containsKey(product))
+            software.getProductsInOrder().replace(product,software.getProductsInOrder().get(product).sum(currentMassOnScanner));
+        else
+            software.getProductsInOrder().put(product,currentMassOnScanner);
+        software.getPluCodedProductsInOrder().add(product);
         //Dealing With Heavy Item
         if(software.touchScreen.skipBaggingItem()) {
             software.attendant.notifySkipBagging();
         }
         else {
             // System: Updates the expected weight from the bagging area.
-            Mass productsWeight = currentMassOnScanner;
-            software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(productsWeight));
+            software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(currentMassOnScanner));
             // System: Signals to the Customer to place the scanned item in the bagging area.
             weightDiscrepancy.notifyAddItemToScale();
             // if item is less than sensitivity limit of scale it will not notify weightDiscrepancy
             // therefore customer won't get unblocked till attendant verifies item
-            if (productsWeight.compareTo(software.baggingAreaScale.getSensitivityLimit()) < 0)
+            if (currentMassOnScanner.compareTo(software.baggingAreaScale.getSensitivityLimit()) < 0)
                 software.attendant.verifyItemInBaggingArea();
             //6.When weight on scale changes to correct weight, weightDiscrepancy will unblock Customer
             //item added to bagged products
-            software.addBaggedProduct(product, productsWeight);
+            if(software.getBaggedProducts().containsKey(product))
+                software.getBaggedProducts().replace(product,software.getBaggedProducts().get(product).sum(currentMassOnScanner));
+            else
+                software.getBaggedProducts().put(product,currentMassOnScanner);
         }
+        
         //Converting Mass to grams than to kg in type long
         long tempPrice = ((currentMassOnScanner.inGrams().longValue())/1000) * product.getPrice();
         // Convert price to type BigDecimal
@@ -82,7 +111,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
      *
      * @param barcode The barcode of the scanned item.
      */
-    public void addScannedItem(Barcode barcode) {
+    public void addScannedProduct(Barcode barcode) {
         //2. System: Blocks the self-checkout station from further customer interaction.
         software.blockCustomer();
         //3. System: Determines the characteristics (weight and cost) of the product associated with the
@@ -104,12 +133,18 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
                 software.attendant.verifyItemInBaggingArea();
             //6.When weight on scale changes to correct weight, weightDiscrepancy will unblock Customer
             //item added to bagged products
-            software.addBaggedProduct(product, productsWeight);
+            if(software.getBaggedProducts().containsKey(product))
+                software.getBaggedProducts().replace(product,software.getBaggedProducts().get(product).sum(productsWeight));
+            else
+                software.getBaggedProducts().put(product,productsWeight);
         }
         //7.Update the orderTotal (not part of use case for some reason)
         software.getBarcodedProductsInOrder().add(product);
         Mass productsWeight = new Mass(product.getExpectedWeight());
-        software.getProductsInOrder().put(product, productsWeight);
+        if(software.getProductsInOrder().containsKey(product))
+            software.getProductsInOrder().replace(product,software.getProductsInOrder().get(product).sum(productsWeight));
+        else
+            software.getProductsInOrder().put(product,productsWeight);
         BigDecimal price = BigDecimal.valueOf(product.getPrice());
         software.addToOrderTotal(price);
     }
@@ -119,34 +154,78 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
      *
      * @param product The BarcodedProduct to be removed.
      */
-    public void removeItem(Product product){
-        software.blockCustomer();
-        BigDecimal price;
-        if (product.isPerUnit()) {
-            price = BigDecimal.valueOf(product.getPrice());
-            software.getBarcodedProductsInOrder().remove(product);
-        }
-        else {
-            price = BigDecimal.valueOf(product.getPrice() * ((software.getProductsInOrder().get(product).inGrams().longValue()) / 1000));
-            software.getPluCodedProductsInOrder().remove(product);
-        }
-        software.subtractFromOrderTotal(price);
-        software.getProductsInOrder().remove(product);
-        software.weightDiscrepancy.notifyRemoveItemFromScale();
-        // when item is removed isWeightDiscrepancy auto called and if
-        // weight corrected station enabled
-        if (software.getBaggedProducts().containsKey(product)) {
-            software.getBaggedProducts().remove(product);
-            //resets the expected weight to zero plus weight of added bags
-            software.setExpectedTotalWeight(software.weightDiscrepancy.massOfOwnBags);
-            for (Product products : software.getBaggedProducts().keySet()) {
-                Mass productsWeight = software.getProductsInOrder().get(products);
-                software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(productsWeight));
+    public void removeItem(Product product) {
+        if(software.getProductsInOrder().containsKey(product)){
+            software.blockCustomer();
+            BigDecimal price;
+            if (product.isPerUnit()) {
+                price = BigDecimal.valueOf(product.getPrice());
+                software.getBarcodedProductsInOrder().remove(product);
             }
+            else {
+                price = BigDecimal.valueOf(product.getPrice() * ((software.getProductsInOrder().get(product).inGrams().longValue()) / 1000));
+                software.getPluCodedProductsInOrder().remove(product);
+            }
+            software.subtractFromOrderTotal(price);
+            software.getProductsInOrder().remove(product);
+            software.weightDiscrepancy.notifyRemoveItemFromScale();
+            // when item is removed isWeightDiscrepancy auto called and if
+            // weight corrected station enabled
+            if (software.getBaggedProducts().containsKey(product)) {
+                software.getBaggedProducts().remove(product);
+                //resets the expected weight to zero plus weight of added bags
+                software.setExpectedTotalWeight(software.weightDiscrepancy.massOfOwnBags);
+                for (Product products : software.getBaggedProducts().keySet()) {
+                    Mass productsWeight = software.getProductsInOrder().get(products);
+                    software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(productsWeight));
+                }
+            }
+            else
+                software.attendant.verifyItemRemovedFromOrder();
         }
-        else
-            software.attendant.verifyItemRemovedFromOrder();
     }
+    
+    /**
+     * Perform a text search for a product description
+     * 
+     * case insensitive
+     * 
+     * @param searchStr - the string/substring to search for a product's description with
+     * @return - An array list containing all of the products with matching descriptions. This Array list
+     * 			 will be empty if there are no matches
+     */
+    public ArrayList<Product> textSearch(String searchStr)
+    {
+    	if(searchStr == null)
+    	{
+    		throw new NullPointerSimulationException();
+    	}
+
+    	ArrayList<Product> productMatches = new ArrayList<>();
+   
+    	//iterate through barcoded products
+    	for(BarcodedProduct product : ProductDatabases.BARCODED_PRODUCT_DATABASE.values())
+    	{
+			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
+    	}
+    	
+    	//iterate through PLUCoded products
+    	for(PLUCodedProduct product : ProductDatabases.PLU_PRODUCT_DATABASE.values())
+    	{
+			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			{
+				productMatches.add(product);
+			}
+    	}
+    	
+
+		return productMatches;
+    }
+    
+
 
     /**
      * An event announcing that the indicated barcode has been successfully scanned.
@@ -160,7 +239,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	 if (isMembershipBarcode(barcode)) {
              membershipScanner.handleMembershipBarcode(barcode);
          } else {
-             addScannedItem(barcode);
+             addScannedProduct(barcode);
          }
     }
     	 private boolean isMembershipBarcode(Barcode barcode) {
