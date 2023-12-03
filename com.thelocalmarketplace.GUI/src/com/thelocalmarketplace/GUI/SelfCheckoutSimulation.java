@@ -130,6 +130,7 @@ public class SelfCheckoutSimulation extends JFrame {
 	            case 1:
 	                System.out.println("Meow");
 	                Software software = new Software(bronze_station);
+	                software.turnOn();
 	                TouchScreen touchscreen = new TouchScreen(software);
 	                GUILogic guiLogic = new GUILogic(touchscreen);
 	                RunGUI gui = new RunGUI(guiLogic); 
