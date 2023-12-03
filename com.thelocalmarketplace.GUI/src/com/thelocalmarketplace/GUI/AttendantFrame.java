@@ -127,7 +127,7 @@ public class AttendantFrame {
                 break;
             case 6:
                 System.out.println("Empty Banknotes");
-                //insert Logic
+                attendant.emptyBankNotes();
                 break;
             case 7:
                 System.out.println("Button Clicked");

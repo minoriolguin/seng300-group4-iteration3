@@ -157,5 +157,6 @@ public class Attendant implements WeightDiscrepancyListener {
 	 * **/
 	public void emptyBankNotes() {
 		software.getBankNoteStorage().unload();
+		System.out.println(software.getBankNoteStorage().getBanknoteCount());
 	}
 }
