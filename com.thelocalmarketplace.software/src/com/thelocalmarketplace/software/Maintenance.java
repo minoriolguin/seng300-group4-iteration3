@@ -245,14 +245,10 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	} else {
     		int i;
     		Coin coin = new Coin(denomination);
-    		Coin[] coins = new Coin[amount];
     		
     		for (i = 0; i <= amount - 1; i++ ) {
-    			coins[i] = coin;
-    		}
-    		
-    		dispenser.load(coins);
-    		
+    			dispenser.receive(coin);
+    		}  		
     	}
    	}
     	    
