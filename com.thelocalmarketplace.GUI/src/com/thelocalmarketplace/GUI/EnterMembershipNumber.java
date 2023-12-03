@@ -26,6 +26,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,14 +35,18 @@ import javax.swing.JTextField;
 public class EnterMembershipNumber extends JPanel {
 	JLabel text = new JLabel("Please enter your membership number here");
     JTextField textField = new JTextField();
-    private GUILogic guiLogicInstance;
     JLabel text2 = new JLabel("Membership number successfully entered");
     JButton close = new JButton("Continue");
     JPanel panel2 = new JPanel();
+    
+
+	RunGUI instance;
 	
-	public EnterMembershipNumber() {
+	public EnterMembershipNumber(RunGUI instance) {
+		this.instance = instance;
 		textField.setMaximumSize(new Dimension(150, 30));
-		setLayout(new GridLayout(5,1));
+		textField.setAlignmentX(CENTER_ALIGNMENT);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		add(text);
 		add(textField);
 		add(createNumberPadPanel());
@@ -49,13 +54,17 @@ public class EnterMembershipNumber extends JPanel {
 
 		panel2.add(text2);
     	panel2.add(close);
-    	panel2.setVisible(false);
+    	panel2.setPreferredSize(new Dimension(300, 300));
+    	text2.setVisible(false);
+    	close.setVisible(false);
 		
 		//close button after membership number is entered
 		close.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
+				instance.switchPanels("AddItemsPanel");
+				
+				reset();
 				
 			}
 			
@@ -64,9 +73,16 @@ public class EnterMembershipNumber extends JPanel {
 	
 	//called after a number is entered
 	private void confirm() {
-		panel2.setVisible(true);
+    	text2.setVisible(true);
+    	close.setVisible(true);
     	//maybe needs to send the membership number entered to another class in the software to be stored?
 		//unclear what the system must do with the membership number
+	}
+	
+	private void reset() {
+    	text2.setVisible(false);
+    	close.setVisible(false);
+    	textField.setText("");
 	}
 	
 	private JPanel createNumberPadPanel() {

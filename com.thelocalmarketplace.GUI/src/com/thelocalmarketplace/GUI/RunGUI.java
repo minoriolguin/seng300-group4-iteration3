@@ -79,6 +79,8 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(createPaymentPanel(), "paymentPanel");
         cardPanel.add(createCashBillPanel(), "cashBillPanel");
         cardPanel.add(createCashCoinPanel(), "cashCoinPanel");
+        cardPanel.add(new SelectLanguage(this), "selectLanguage");
+        cardPanel.add(new EnterMembershipNumber(this), "enterMembership");
 //        cardPanel.add(createNumberPad(), "numpadPanel");
         add(cardPanel);
         
@@ -218,8 +220,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
             	guiLogicInstance.buttonR1_AddMemberNoButton();
-            	EnterMembershipNumber membershipPanel = new EnterMembershipNumber();
-              	addOverlayPanel(membershipPanel);
+              	switchPanels("enterMembership");
             }
         });
         
@@ -271,8 +272,7 @@ public class RunGUI extends JFrame implements logicObserver {
             @Override
             public void actionPerformed(ActionEvent e) {
             	guiLogicInstance.buttonR6_CustomerSelectsLanguage();
-            	SelectLanguage languagesPanel = new SelectLanguage();
-              	addOverlayPanel(languagesPanel);
+              	switchPanels("selectLanguage");
             }
         });
         JButton button7 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
