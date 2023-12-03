@@ -39,16 +39,21 @@ public class EnterMembershipNumber extends JPanel {
     JButton close = new JButton("Continue");
     JPanel panel2 = new JPanel();
     
+    JPanel labelPanel = new JPanel();
+    JPanel textPanel = new JPanel();
+    
 
 	RunGUI instance;
 	
 	public EnterMembershipNumber(RunGUI instance) {
 		this.instance = instance;
-		textField.setMaximumSize(new Dimension(150, 30));
+		textField.setPreferredSize(new Dimension(150, 30));
 		textField.setAlignmentX(CENTER_ALIGNMENT);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		add(text);
-		add(textField);
+		labelPanel.add(text);
+		textPanel.add(textField);
+		add(labelPanel);
+		add(textPanel);
 		add(createNumberPadPanel());
 		add(panel2);
 
