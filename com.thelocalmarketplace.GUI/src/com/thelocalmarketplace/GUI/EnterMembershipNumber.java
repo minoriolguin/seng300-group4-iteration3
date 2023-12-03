@@ -46,6 +46,10 @@ public class EnterMembershipNumber extends JPanel {
 		add(textField);
 		add(createNumberPadPanel());
 		add(panel2);
+
+		panel2.add(text2);
+    	panel2.add(close);
+    	panel2.setVisible(false);
 		
 		//close button after membership number is entered
 		close.addActionListener(new ActionListener() {
@@ -59,8 +63,7 @@ public class EnterMembershipNumber extends JPanel {
 	}
 	
 	private void confirm() {
-		panel2.add(text2);
-    	panel2.add(close);
+		panel2.setVisible(true);
     	System.out.println("conf");
 	}
 	
