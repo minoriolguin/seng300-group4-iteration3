@@ -47,6 +47,7 @@ public class Attendant implements WeightDiscrepancyListener {
 
 	public void notifySkipBagging(){
         software.unblockCustomer();
+        software.touchScreen.skip = false;
     }
 
     public void verifyItemInBaggingArea(){

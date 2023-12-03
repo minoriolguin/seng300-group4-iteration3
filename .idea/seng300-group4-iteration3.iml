@@ -11,7 +11,6 @@
       <sourceFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.hardware_0.3.3/com.thelocalmarketplace.hardware" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.hardware_0.3.3/powerutility" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.hardware_0.3.3/simulation" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/com.thelocalmarketplace.hardware_0.3.3/simulation 2" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

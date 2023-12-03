@@ -203,6 +203,7 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		scannerScale.enable();
 		
 		// Check for maintenance and predict issues
 		maintenance.checkInk(printReceipt.getAveragePrintedChars());
@@ -280,6 +281,7 @@ public class Software {
 	public void unblockCustomer() {
 		handHeldScanner.enable();
 		mainScanner.enable();
+		scannerScale.enable();
 		blocked = false;
 	}
 	
