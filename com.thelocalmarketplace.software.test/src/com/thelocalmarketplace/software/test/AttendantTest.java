@@ -66,4 +66,16 @@ public class AttendantTest {
     	assertTrue(checkout.isCustomerStationBlocked());
     }
     
+    @Test
+    public void testEnableCustomerStationWhenEnabled() {
+    	attendant.enableCustomerStation();
+    	assertFalse(checkout.isCustomerStationBlocked()); //Nothing happens
+    }
+    
+    @Test
+    public void testEnableCustomerStationWhenDisabled() {
+    	attendant.disableCustomerStation();
+    	attendant.enableCustomerStation();
+    	assertFalse(checkout.isCustomerStationBlocked());
+    }
 }

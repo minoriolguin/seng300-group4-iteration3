@@ -141,7 +141,7 @@ public class BlackBoxTests {
         software.touchScreen.skip = true;
         hardware.getHandheldScanner().scan(inRange);
         //know product adds from test case above, now remove and ensure its gone
-        software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
+        software.touchScreen.removeProduct(inRangeProduct);
         //assert it's removed from order
         assertTrue(software.getBarcodedProductsInOrder().isEmpty());
         assertEquals(BigDecimal.ZERO, software.getOrderTotal());
@@ -159,7 +159,7 @@ public class BlackBoxTests {
         hardware.getHandheldScanner().scan(inRange);
         hardware.getBaggingArea().addAnItem(inRange);
         //remove item
-        software.touchScreen.removeSelectedBarcodedProduct(inRangeProduct);
+        software.touchScreen.removeProduct(inRangeProduct);
         //assert customer disabled
         assertTrue(hardware.getHandheldScanner().isDisabled());
         assertTrue(hardware.getMainScanner().isDisabled());
@@ -192,7 +192,7 @@ public class BlackBoxTests {
         assertEquals(inRange.getMass(),software.weightDiscrepancy.massOfOwnBags);
         //make sure expected weight in software updated
         assertEquals(inRange.getMass(),software.getExpectedTotalWeight());
-        software.touchScreen.bagsAdded();
+        software.touchScreen.selectBagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
         assertFalse(hardware.getHandheldScanner().isDisabled());
@@ -218,7 +218,7 @@ public class BlackBoxTests {
         assertTrue(hardware.getHandheldScanner().isDisabled());
         assertTrue(hardware.getMainScanner().isDisabled());
         //say they are done
-        software.touchScreen.bagsAdded();
+        software.touchScreen.selectBagsAdded();
         //can continue
         assertFalse(software.weightDiscrepancy.expectOwnBagsToBeAdded);
         assertFalse(hardware.getHandheldScanner().isDisabled());

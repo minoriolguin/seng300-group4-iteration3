@@ -14,6 +14,7 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
@@ -71,6 +72,7 @@ public class Software {
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
+	public final BanknoteStorageUnit banknoteStorageUnit;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 	public final CoinStorageUnit coinStorage;
@@ -101,6 +103,7 @@ public class Software {
 			this.coinValidator = bronze.getCoinValidator();
 			this.cardReader = bronze.getCardReader();
 			this.banknoteDispenser = bronze.getBanknoteOutput();
+			this.banknoteStorageUnit = bronze.getBanknoteStorage();
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
 			this.coinDispensers = bronze.getCoinDispensers();
@@ -116,6 +119,7 @@ public class Software {
 			this.coinValidator = silver.getCoinValidator();
 			this.cardReader = silver.getCardReader();
 			this.banknoteDispenser = silver.getBanknoteOutput();
+			this.banknoteStorageUnit = silver.getBanknoteStorage();
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
 			this.coinDispensers = silver.getCoinDispensers();
@@ -131,6 +135,7 @@ public class Software {
 			this.coinValidator = gold.getCoinValidator();
 			this.cardReader = gold.getCardReader();
 			this.banknoteDispenser = gold.getBanknoteOutput();
+			this.banknoteStorageUnit = gold.getBanknoteStorage();
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
 			this.coinDispensers = gold.getCoinDispensers();
@@ -145,6 +150,7 @@ public class Software {
 			this.coinValidator = hardware.getCoinValidator();
 			this.cardReader = hardware.getCardReader();
 			this.banknoteDispenser = hardware.getBanknoteOutput();
+			this.banknoteStorageUnit = hardware.getBanknoteStorage();
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
 			this.coinDispensers = hardware.getCoinDispensers();
