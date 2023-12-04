@@ -26,6 +26,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import java.math.BigDecimal;
@@ -186,20 +188,20 @@ public class RunGUI extends JFrame implements logicObserver {
         panel.add(welcomeLabel, gbc);
         
         JLabel label = new JLabel("Press Anywhere to Start");
-        panel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	guiLogicInstance.StartSessionButtonPressed();
-                switchPanels("AddItemsPanel");
-                continueSim = true;
+        panel.addMouseListener(new MouseListener() {
+           // @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	guiLogicInstance.StartSessionButtonPressed();
+//                switchPanels("AddItemsPanel");
+//                continueSim = true;
+//
+//                PriceThread priceThread = new PriceThread();
+//
+//                priceThread.start();
+//
+//            }
 
-                PriceThread priceThread = new PriceThread();
-
-                priceThread.start();
-
-            }
-
-            private class PriceThread extends Thread {
+        	class PriceThread extends Thread {
                 public void run()
                 {
                     while(continueSim == true) {
@@ -210,6 +212,42 @@ public class RunGUI extends JFrame implements logicObserver {
 
                 }
             }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				guiLogicInstance.StartSessionButtonPressed();
+                switchPanels("AddItemsPanel");
+                continueSim = true;
+
+                PriceThread priceThread = new PriceThread();
+
+                priceThread.start();
+                
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
 
 
         });
