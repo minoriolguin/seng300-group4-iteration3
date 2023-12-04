@@ -24,7 +24,9 @@ public class VirtualKeyboard {
     private JPanel resultArea= new JPanel(new GridLayout(4,5,20,20));
     private Software software;
     
-    
+    /** 
+     * Function initialize the VirtualKeyboard frame and add appropriate component
+      **/
 
     public void run(Software s) {
         JFrame frame = new JFrame("Virtual Keyboard");
@@ -37,10 +39,6 @@ public class VirtualKeyboard {
         JScrollPane inputScrollPane = new JScrollPane(inputArea);
         frame.add(inputScrollPane, BorderLayout.NORTH);
         
-//        resultArea = new JTextArea();
-//        resultArea.setEditable(false);
-//        JScrollPane resultScrollPane = new JScrollPane(resultArea);
-//        frame.add(resultScrollPane, BorderLayout.CENTER);
        
         frame.add(resultArea,BorderLayout.CENTER);
 
@@ -49,7 +47,10 @@ public class VirtualKeyboard {
 
         frame.setVisible(true);
     }
-
+    /** 
+     * Function to instantiate the keyboard panel and fill it with buttons specified in keys.
+     * Returns the JPanel
+      **/
     private JPanel createKeyboardPanel() {
         JPanel keyboardPanel = new JPanel(new GridLayout(4, 13));
 
@@ -68,7 +69,9 @@ public class VirtualKeyboard {
 
         return keyboardPanel;
     }
-
+    /** 
+     * Function to handle what happens when one of keyboard button is pressed
+      **/
     private class KeyboardButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -108,7 +111,9 @@ public class VirtualKeyboard {
         }
         
         
-
+        /** 
+         * Function to update the display area when enter is hit
+          **/
         private void updateResultArea(ArrayList<Product> result) {
             for(Product item: result) {
             	
@@ -130,7 +135,10 @@ public class VirtualKeyboard {
 	           		 resultArea.repaint();
 	            	}
             }
-        }
+        }	
+        /** 
+         * Updates customer product shopping cart when clicked
+          **/
         private void handleProductClicked(Product item){
         	software.updateCart.addProduct(item);
         }

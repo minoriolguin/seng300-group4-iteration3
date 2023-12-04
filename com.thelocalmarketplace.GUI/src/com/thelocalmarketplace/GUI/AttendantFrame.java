@@ -14,6 +14,7 @@
 package com.thelocalmarketplace.GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -21,12 +22,25 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
+import com.jjjwelectronics.Mass;
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
@@ -41,8 +55,18 @@ public class AttendantFrame {
 	private Attendant attendant;
 	public Product product;
 	public TouchScreen screen;
+	
+	JPanel middlePanel = new JPanel();
     public AttendantFrame(TouchScreen s) {
+    	
     	screen = s;
+    	
+    	// For Testing Purpose
+//    	PriceLookUpCode testcode = new PriceLookUpCode("1234");
+//    	PLUCodedProduct testProduct = new PLUCodedProduct(testcode,"Apple",5);
+//    	screen.getSoftware().updateCart.addPLUProduct(testProduct);
+    	
+    	
     	attendant = new Attendant(s.getSoftware());
         attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
@@ -53,11 +77,8 @@ public class AttendantFrame {
         JPanel topPanel = createLabelPanel("Attendant", 450, 150); 
         attend_frame.add(topPanel, BorderLayout.NORTH);
 
-        // Middle Panel (Single Button)
-        JPanel middlePanel = new JPanel();
-        JButton topButton = new JButton("Top Button");
-        topButton.addActionListener(e -> handleButtonClick(1)); // Assuming 1 corresponds to "Meow"
-        middlePanel.add(topButton);
+        // Middle Panel (DIsplay Area)
+       
         attend_frame.add(middlePanel, BorderLayout.CENTER);
 
         // Bottom Panel
@@ -111,26 +132,15 @@ public class AttendantFrame {
             	
                 System.out.println("Lookup Product");
                 //insert logic
+                // Init new keyboard frame
                 VirtualKeyboard keyboard = new VirtualKeyboard();
+                // Run keyboard frame
                 keyboard.run(screen.getSoftware());
                 break;
             case 2:
-            	//still need to attend to customer
-            	attendant.setAttendedToFalse();
-                //remove item from the scale/bagging area- system is disabled
-                screen.RemoveItemFromScale();
-                //verify that the item was removed
-                screen.removeProduct(product);
-                
-                screen.displayRemoveItemFromBaggingArea();
-                
-                attendant.verifyItemRemovedFromOrder();
-                //set attended to true
-               // attendant.respondToCustomer();
-                
-                
-               
-                //insert Logic
+            	// Call removeItemCall function
+            	removeItemCall();
+           
                 break;
             case 3:
                 System.out.println("Refill Coins");
@@ -170,7 +180,7 @@ public class AttendantFrame {
                 break;    
         }
     }
-
+    
     private JPanel createLabelPanel(String labelText, int width, int height) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setPreferredSize(new Dimension(width, height));
@@ -184,5 +194,114 @@ public class AttendantFrame {
     
     public void show() {
     	attend_frame.setVisible(true);
+    }
+    private void removeItemCall() {
+    	// Creates a title called "Remove Items"
+    	JLabel title = new JLabel("Remove Items:");
+    	// Change middle panel display to box layout so items stack above each other
+    	middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
+    	// Add title to panel
+    	middlePanel.add(title);
+    	// Iterate through PLUCodedProduct in order list to get all items and make them a label with
+    	// proper mouse click event handling and add to panel
+    	for(PLUCodedProduct item: screen.getSoftware().getPluCodedProductsInOrder()) {
+    		JLabel itemLabel = new JLabel(item.getDescription());
+    		itemLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+    		itemLabel.addMouseListener(new MouseListener() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// Remove item from product list
+					screen.removeProduct(item);
+					middlePanel.remove(itemLabel);
+					middlePanel.revalidate();
+					middlePanel.repaint();
+					
+					
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+    			
+    		});
+    		middlePanel.add(itemLabel);
+    	}
+    	// Iterate through BarCoded Product in order list to get all items and make them a label with
+    	// proper mouse click event handling and add to panel
+    	for(BarcodedProduct item: screen.getSoftware().getBarcodedProductsInOrder()) {
+    		JLabel itemLabel = new JLabel(item.getDescription());
+    		itemLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+    		itemLabel.addMouseListener(new MouseListener() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// Remove item from product list
+					screen.removeProduct(item);
+					middlePanel.remove(itemLabel);
+					middlePanel.revalidate();
+					middlePanel.repaint();
+					
+					
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+    			
+    		});
+    		middlePanel.add(itemLabel);
+    	}
+    	// Make a finished button that is appended but clear all of middlePanel content when clicked
+    	JButton finished = new JButton("Done");
+    	finished.addActionListener(e->{
+    		middlePanel.removeAll();
+    		middlePanel.revalidate();
+        	middlePanel.repaint();
+    		
+    	});
+    	middlePanel.add(finished);
+    	middlePanel.revalidate();
+    	middlePanel.repaint();
     }
 }
