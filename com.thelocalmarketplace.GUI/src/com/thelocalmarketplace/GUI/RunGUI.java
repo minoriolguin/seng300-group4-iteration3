@@ -40,10 +40,12 @@ import java.util.ArrayList;
 import java.util.List;
 import com.thelocalmarketplace.software.PayByCard;
 import com.jjjwelectronics.card.Card;
+import com.thelocalmarketplace.software.TouchScreen;
 
 import javax.swing.Action;
 
 public class RunGUI extends JFrame implements logicObserver {
+	private TouchScreen touchScreen;
 	private PayByCard payByCard;
 	private Card card;
     // for receipt building on GUI 
@@ -686,6 +688,8 @@ public class RunGUI extends JFrame implements logicObserver {
         TY_receiptLabel.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridy = 1;
         panel.add(TY_receiptLabel, gbc);
+        touchScreen.printReceipt();
+        
 
         JButton exitButton = new JButton("Exit");
         exitButton.addActionListener(new ActionListener() {
@@ -717,6 +721,7 @@ public class RunGUI extends JFrame implements logicObserver {
                 }
                 switchPanels("thankYouPanel");
                 payByCard.aCardHasBeenSwiped();
+                
             }
         });
         JButton payment_button2 = new JButton("DEBIT (Tap)");
