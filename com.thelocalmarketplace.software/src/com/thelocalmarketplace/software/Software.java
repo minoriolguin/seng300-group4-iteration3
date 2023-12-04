@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.bag.IReusableBagDispenser;
 import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
@@ -78,6 +79,7 @@ public class Software {
 	public final CoinValidator coinValidator;
 	public final ICardReader cardReader;
 	public final IReceiptPrinter printer;
+	public final IReusableBagDispenser reusableBagDispenser;
 	// add instances of your class here then initialize below
 	public final WeightDiscrepancy weightDiscrepancy;
 	public TouchScreen touchScreen;
@@ -88,11 +90,17 @@ public class Software {
 	public final PayByCard payByCard;
 	public final UpdateCart updateCart;
 	public final Maintenance maintenance;
+	public final PurchaseBags purchaseBags;
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
+	
+	/**
+     * A boolean variable that keeps track of whether a customer needs attention.
+     **/
+	private boolean needsAttention = false;
 
 
 	private AbstractSelfCheckoutStation station;
@@ -104,7 +112,7 @@ public class Software {
 	/*Constructor for SelfCheckout
 	 *  
 	 */
-	private Software(AbstractSelfCheckoutStation hardware) {
+	public Software(AbstractSelfCheckoutStation hardware) {
 		if (hardware instanceof SelfCheckoutStationBronze bronze) {
 			this.station = bronze;
 			this.baggingAreaScale = bronze.getBaggingArea();
@@ -118,6 +126,7 @@ public class Software {
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
 			this.coinDispensers = bronze.getCoinDispensers();
+			this.reusableBagDispenser = bronze.getReusableBagDispenser();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -131,6 +140,7 @@ public class Software {
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
 			this.coinDispensers = silver.getCoinDispensers();
+			this.reusableBagDispenser = silver.getReusableBagDispenser();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -144,6 +154,7 @@ public class Software {
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
 			this.coinDispensers = gold.getCoinDispensers();
+			this.reusableBagDispenser = gold.getReusableBagDispenser();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -156,6 +167,7 @@ public class Software {
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
 			this.coinDispensers = hardware.getCoinDispensers();
+			this.reusableBagDispenser = hardware.getReusableBagDispenser();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -171,6 +183,8 @@ public class Software {
 		payByCoin = new PayByCoin(this);
 		printReceipt = new PrintReceipt(this);
 		maintenance = new Maintenance(this);
+		purchaseBags = new PurchaseBags(this);
+
 
 		//Initialize Product Lists and Weight Limit
 		productsInOrder = new HashMap<>();
@@ -192,7 +206,7 @@ public class Software {
 	}
 	
 	/**
-	 * Starts a new self-checkout session by enabling necessary hardware components.
+	 * Starts a new self-checkout session by enabling necessary hardware components and checking maintenance.
 	 * This method should be called at the beginning of each customer interaction session.
 	 * It enables handheld and main scanners, as well as the bagging area scale.
 	 */
@@ -206,20 +220,42 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		
+		// Check for maintenance and predict issues
+		maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
+        }
 	}
 	
 	/**
-	 * Ends the current self-checkout session, clearing the order data and resetting the expected total weight.
+	 * Ends the current self-checkout session, clearing the order data, checking maintenance,
+	 * and resetting the expected total weight.
 	 * This method should be called at the end of each customer interaction session.
 	 */
     public void endSession() {
-        // Clear the session data
-        baggedProducts.clear();
-        barcodedProductsInOrder.clear();
-        pluCodedProductsInOrder.clear();
-        productsInOrder.clear();
-        expectedTotalWeight = Mass.ZERO;
-        orderTotal = BigDecimal.ZERO;
+	  	  // Check for maintenance and predict issues
+	  	  maintenance.checkInk(printReceipt.getAveragePrintedChars());
+        maintenance.checkPaper(printReceipt.getAveragePaperUsed());
+        maintenance.predictCoinsFullStorage();
+        for (BigDecimal denomination : coinDispensers.keySet()) {
+        	maintenance.predictLowCoinsDispenser(denomination);
+        	maintenance.predictCoinsFullDispenser(denomination);
+        }
+        if (maintenance.getIssues().size() != 0) {
+        	notifyMaintenance(maintenance.getIssues());
+        }
+        
+		    baggedProducts.clear();
+	  	  barcodedProductsInOrder.clear();
+	  	  expectedTotalWeight = Mass.ZERO;
+	    	orderTotal = BigDecimal.ZERO;
 
         // Disable any enabled devices
         handHeldScanner.disable();
@@ -239,6 +275,7 @@ public class Software {
             System.out.println("Session ended. No pending maintenance.");
         }
     }
+
 
 	/**
 	 * Blocks customer interactions by disabling various hardware components.
@@ -312,7 +349,6 @@ public class Software {
 		coinValidator.enable();;
 		cardReader.enable();;
 		banknoteDispenser.enable();
-		coinTray.enable();
 		printer.enable();
 		customerStationBlock = false;
 	}
@@ -525,4 +561,38 @@ public class Software {
         return orderTotal.compareTo(BigDecimal.ZERO) > 0;
     }
 
+	/**
+	 * Notifcation method specifically for addressing maintenance issues
+	 * @param issues, Arraylist of string
+	 */
+	public void notifyMaintenance(ArrayList<String> issues) {
+		attendant.addressMaintenanceIssues(issues);
+		setNeedsAttentionToTrue();
+	}
+	
+	/**
+	 * Notifies the attendant that they should attend to the customer
+	 **/
+	public void notifyAttendant() {
+	    if (needsAttention == true) {
+	    	attendant.setAttendedToFalse();
+	        attendant.respondToCustomer();
+	    } else {
+	        // Nothing should happen here since this should never happen
+	    }
+	}
+	
+	/**
+	 * Sets the needs attention field to true
+	 **/
+	public void setNeedsAttentionToTrue() {
+		needsAttention = true;
+	}
+	
+	/**
+	 * Sets need attention field to false
+	 **/
+	public void setNeedsAttentionToFalse() {
+		needsAttention = false;
+	}
 }
