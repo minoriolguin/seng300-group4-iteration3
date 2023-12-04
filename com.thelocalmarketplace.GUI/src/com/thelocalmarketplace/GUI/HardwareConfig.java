@@ -6,12 +6,9 @@ import java.util.Currency;
 
 import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
-import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 public class HardwareConfig {
 	private ArrayList<BigDecimal> coindenominations;
@@ -38,9 +35,6 @@ public class HardwareConfig {
     
     
     public HardwareConfig() {
-    	PriceLookUpCode appleCode = new PriceLookUpCode("12345");
-    	PLUCodedProduct appleProduct = new PLUCodedProduct(appleCode,"apple",2);
-    	ProductDatabases.PLU_PRODUCT_DATABASE.put(appleCode, appleProduct);
     	coindenominations = new ArrayList<BigDecimal>();
         CAD = Currency.getInstance("CAD");
         coindenominations.add(value_toonie);

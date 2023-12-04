@@ -27,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
 
@@ -38,6 +39,7 @@ public class AttendantFrame {
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
 	private Attendant attendant;
+	public Product product;
 	public TouchScreen screen;
     public AttendantFrame(TouchScreen s) {
     	screen = s;
@@ -106,21 +108,38 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
+            	
                 System.out.println("Lookup Product");
                 //insert logic
                 VirtualKeyboard keyboard = new VirtualKeyboard();
                 keyboard.run(screen.getSoftware());
                 break;
             case 2:
-                System.out.println("Button Clicked");
+            	//still need to attend to customer
+            	attendant.setAttendedToFalse();
+                //remove item from the scale/bagging area- system is disabled
+                screen.RemoveItemFromScale();
+                //verify that the item was removed
+                screen.removeProduct(product);
+                
+                screen.displayRemoveItemFromBaggingArea();
+                
+                attendant.verifyItemRemovedFromOrder();
+                //set attended to true
+               // attendant.respondToCustomer();
+                
+                
+               
                 //insert Logic
                 break;
             case 3:
-                System.out.println("Button Clicked");
-                //insert Logic
+                System.out.println("Refill Coins");
+                attendant.setAttendedToFalse();
+                attendant.disableCustomerStation();
+                attendant.refillBankNotes();
                 break;
             case 4:
-                System.out.println("Button Clicked");
+                System.out.println("Empty Coins");
                 //insert Logic
                 break;
             case 5:
@@ -132,13 +151,15 @@ public class AttendantFrame {
                 attendant.emptyBankNotes();
                 break;
             case 7:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Paper");
                 //insert Logic
                 break;
             case 8:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Ink");
                 //insert Logic
                 break;
+                
+                //do we wanna do a button that block/unblock customer?
             case 9:
                 System.out.println("Button Clicked");
                 //insert Logic
