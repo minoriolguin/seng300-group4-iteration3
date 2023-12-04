@@ -44,6 +44,10 @@ public class SelfCheckoutSimulation extends JFrame {
 	    private SelfCheckoutStationBronze bronze_station;
 	    private SelfCheckoutStationGold gold_station;
 	    private SelfCheckoutStationSilver silver_station;
+	    private Software software;
+	    private TouchScreen touchScreen;
+	    private GUILogic guiLogic;
+	    private RunGUI gui;
 	 public SelfCheckoutSimulation(SelfCheckoutStationBronze b, SelfCheckoutStationGold g, SelfCheckoutStationSilver s ) {
 		 	
 	    
@@ -91,29 +95,26 @@ public class SelfCheckoutSimulation extends JFrame {
 	 private void handleButtonClick(int buttonNumber) {
 	        switch (buttonNumber) {
 	            case 1:
-	                System.out.println("Bronze");
-	                Software software = new Software(bronze_station);
+	                software = new Software(bronze_station);
 	                software.turnOn();
-	                TouchScreen touchscreen = new TouchScreen(software);
-	                GUILogic guiLogic = new GUILogic(touchscreen);
-	                RunGUI gui = new RunGUI(guiLogic); 
+	                touchScreen = new TouchScreen(software);
+	                guiLogic = new GUILogic(touchScreen);
+	                gui = new RunGUI(guiLogic); 
 	                break;
 	            case 2:
-	            	 System.out.println("Silver");
-		                Software softwareS = new Software(silver_station);
-		                softwareS.turnOn();
-		                TouchScreen touchscreenS = new TouchScreen(softwareS);
-		                GUILogic guiLogicS = new GUILogic(touchscreenS);
-		                RunGUI guiS = new RunGUI(guiLogicS); 
-		                break;
+	            	software = new Software(gold_station);
+	                software.turnOn();
+	                touchScreen = new TouchScreen(software);
+	                guiLogic = new GUILogic(touchScreen);
+	                gui = new RunGUI(guiLogic);
+	                break;
 	            case 3:
-	            	 System.out.println("Gold");
-		                Software softwareG = new Software(gold_station);
-		                softwareG.turnOn();
-		                TouchScreen touchscreenG = new TouchScreen(softwareG);
-		                GUILogic guiLogicG = new GUILogic(touchscreenG);
-		                RunGUI guiG= new RunGUI(guiLogicG); 
-		                break;
+	            	software = new Software(silver_station);
+	                software.turnOn();
+	                touchScreen = new TouchScreen(software);
+	                guiLogic = new GUILogic(touchScreen);
+	                gui = new RunGUI(guiLogic);
+	                break;
 	            
 	        }
 	       }
