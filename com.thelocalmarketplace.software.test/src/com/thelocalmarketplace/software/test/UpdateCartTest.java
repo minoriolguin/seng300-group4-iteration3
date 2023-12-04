@@ -1,415 +1,500 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+/**
+ * This class contains JUnit tests for the UpdateCart class in the Self Checkout System.
+ * Project 3 Iteration Group 4
+ *
+ * Group Members:
+ * - Julie Kim 10123567
+ * - Aryaman Sandhu 30017164
+ * - Arcleah Pascual 30056034
+ * - Aoi Ueki 30179305
+ * - Ernest Shukla 30156303
+ * - Shawn Hanlon 10021510
+ * - Jaimie Marchuk 30112841
+ * - Sofia Rubio 30113733
+ * - Maria Munoz 30175339
+ * - Anne Lumumba 30171346
+ * - Nathaniel Dafoe 30181948
+ * - Arvin Bolbolanardestani 30165484
+ * - Anthony Chan 30174703
+ * - Marvellous Chukwukelu 30197270
+ * - Farida Elogueil 30171114
+ * - Ahmed Elshabasi 30188386
+ * - Shawn Hanlon 10021510
+ * - Steven Huang 30145866
+ * - Nada Mohamed 30183972
+ * - Jon Mulyk 30093143
+ * - Althea Non 30172442
+ * - Minori Olguin 30035923
+ * - Kelly Osena 30074352
+ * - Muhib Qureshi 30076351
+ * - Sofia Rubio 30113733
+ * - Muzammil Saleem 30180889
+ * - Steven Susorov 30197973
+ * - Lydia Swiegers 30174059
+ * - Elizabeth Szentmiklossy 30165216
+ * - Anthony Tolentino 30081427
+ * - Johnny Tran 30140472
+ * - Kaylee Xiao 30173778
+ */
 package com.thelocalmarketplace.software.test;
 
+import com.jjjwelectronics.Item;
 import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
+import com.jjjwelectronics.scanner.BarcodedItem;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
-import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.Software;
-import com.thelocalmarketplace.software.TouchScreen;
 import com.thelocalmarketplace.software.UpdateCart;
-import com.thelocalmarketplace.software.WeightDiscrepancy;
 
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import powerutility.PowerGrid;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+
+/**
+ * JUnit test class for the UpdateCart class in the Self Checkout System.
+ *@author Shawn Hanlon
+ *@author Jon Mulyk
+ *
+ **This documentation includes contributions from the following authors:
+ *@author Elizabeth Szentmiklossy
+ */
 public class UpdateCartTest {
     private Software software;
-    private SelfCheckoutStationGold station;
+    private SelfCheckoutStationGold hardware;
     private BarcodedProduct barcodedProduct1;
     private BarcodedProduct barcodedProduct2;
     private BarcodedProduct barcodedProduct3;
-    private Barcode barcode;
-    private Barcode barcode2;
-    private Barcode barcode3;
+    private Barcode barcode1;
+    private BarcodedItem bar1Item;
+    private BarcodedItem bar1ItemCopied;
+    private BigDecimal bar1price;
     private PLUCodedProduct PLUProduct1;
-    private PLUCodedProduct PLUProduct2;
+    private PLUCodedItem PLUProduct1item;
+    private PLUCodedItem PLUProduct1itemCopy;
+    private BigDecimal plu1Price;
     private PLUCodedProduct PLUProduct3;
     private UpdateCart updateCart;
-//    private WeightDiscrepancy weightDiscrepancy;
-//    private Attendant attendant;
 
-
+    
+    /**
+     * Setup method to initialize test variables and objects.
+     */
     @Before
     public void setUp() {
-    	//initial setup variables
-        PowerGrid.engageUninterruptiblePowerSource();
-        SelfCheckoutStationGold.resetConfigurationToDefaults();
-        station = new SelfCheckoutStationGold();
-        software = Software.getInstance(station);
-        software.turnOn();
-        updateCart = new UpdateCart(software);
+    	// Creating instances for testing
+        hardware = new SelfCheckoutStationGold();
+        software = Software.getInstance(hardware);
         this.updateCart = software.updateCart;
-//        attendant = new Attendant(software);
-//        weightDiscrepancy = software.weightDiscrepancy;
+        software.turnOn();
         
-        //create dummy barcodedProducts
+        //create test barcodedProducts
         Numeral[] testBarcode = new Numeral[4];
         testBarcode[0] = Numeral.nine;
         testBarcode[1] = Numeral.five;
         testBarcode[2] = Numeral.eight;
         testBarcode[3] = Numeral.eight;
-        barcode = new Barcode(testBarcode);
-        barcodedProduct1 = new BarcodedProduct(barcode, "test", 5, 100);
-
+        barcode1 = new Barcode(testBarcode);
+        barcodedProduct1 = new BarcodedProduct(barcode1, "lamp", 5, 100);
+        Mass bar1mass = new Mass((double)100);
+        bar1Item = new BarcodedItem(barcode1,bar1mass);
+        bar1price = new BigDecimal(barcodedProduct1.getPrice());
+        bar1ItemCopied = new BarcodedItem(barcode1,bar1mass);
         Numeral[] testBarcode2 = new Numeral[2];
         testBarcode2[0] = Numeral.zero;
         testBarcode2[1] = Numeral.one;
-        barcode2 = new Barcode(testBarcode2);
-        barcodedProduct2 = new BarcodedProduct(barcode2, "test2", 100, 10);
+        Barcode barcode2 = new Barcode(testBarcode2);
+        barcodedProduct2 = new BarcodedProduct(barcode2, "batteries", 100, 10);
         Numeral[] testBarcode3 = new Numeral[2];
         testBarcode3[0] = Numeral.nine;
         testBarcode3[1] = Numeral.one;
-        barcode3 = new Barcode(testBarcode3);
-        barcodedProduct3 = new BarcodedProduct(barcode3, "lightTest", 100, 0.01);
+        Barcode barcode3 = new Barcode(testBarcode3);
+        barcodedProduct3 = new BarcodedProduct(barcode3, "sticky notes", 100, 0.01);
         
         //add barcoded products to the barcoded product database
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1, barcodedProduct1);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode2, barcodedProduct2);
         ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode3, barcodedProduct3);
 
         //create dummy PLUProduts
         PriceLookUpCode PLUCode1 = new PriceLookUpCode("7162");
         PLUProduct1 = new PLUCodedProduct(PLUCode1, "chocolate", 21);
+        Mass plu1 = new Mass(1000000);
+        Mass plu2 = new Mass(2000000);
+        PLUProduct1item = new PLUCodedItem(PLUCode1,plu1);
+        PLUProduct1itemCopy = new PLUCodedItem(PLUCode1,plu2);
+        long tempplu1price = ((PLUProduct1item.getMass().inGrams().longValue())/1000) * PLUProduct1.getPrice();
+        
+        // Convert price to type BigDecimal
+        plu1Price = BigDecimal.valueOf(tempplu1price);
+        
 
         PriceLookUpCode PLUCode2 = new PriceLookUpCode("28022");
-        PLUProduct2 = new PLUCodedProduct(PLUCode2, "steel", 2);
+        PLUCodedProduct PLUProduct2 = new PLUCodedProduct(PLUCode2, "steel", 2);
 
         PriceLookUpCode PLUCode3 = new PriceLookUpCode("5168");
         PLUProduct3 = new PLUCodedProduct(PLUCode3, "coffee", 4);
-        
+
         //add PLUProducts to the PLU product database
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode1, PLUProduct1);
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode2, PLUProduct2);
         ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode3, PLUProduct3);
     }
     
+
     /**
-     * Test adding a scanned barcode product
-     * 
-     * Check if it gets added to the order, and that the expected weight is correct
+     * JUnit test for the listener registration of the UpdateCart class in the Self Checkout System.
+     * This test ensures that the UpdateCart instance is correctly registered as a listener with the hardware components.
      */
     @Test
-    public void testAddScannedProduct() 
-    {
-        updateCart.addScannedItem(barcode);
-
-        //products in order and barcodedProductsInOrder
-        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
-
-        // Verify that the expected total weight is updated
-        Mass expectedMass = new Mass(barcodedProduct1.getExpectedWeight());
-        assertEquals(expectedMass, software.getExpectedTotalWeight());
-        
-        //Check the the software got unblocked (no weight discrepancy)
-        assertFalse(software.isBlocked());
+    public void listenerRegistration(){
+    	// Check if the UpdateCart instance is a listener for the scanning area, handheld scanner, and main scanner
+        assertTrue(hardware.getScanningArea().listeners().contains(software.updateCart));
+        assertTrue(hardware.getHandheldScanner().listeners().contains(software.updateCart));
+        assertTrue(hardware.getMainScanner().listeners().contains(software.updateCart));
     }
-
-    
     /**
-     * Adding a PLU product to the order
+     * JUnit test case for adding a PLU product to the cart along with bagging.
      */
     @Test
-    public void testAddPLUProduct()
-    {
-    	//add item to cart
-    	updateCart.addPLUProduct(PLUProduct1);
-
-    	//Check that the item got added to the order
+    public void testAddPLUProductWithPLUProduct(){
+    	// Set up the initial conditions
+    	software.startSession();
+        software.touchScreen.skip = false;
+        // Ensure the expected mass is zero before adding
+        assertEquals(0,software.getExpectedTotalWeight().compareTo(Mass.ZERO));
+        assertFalse(hardware.getScanningArea().isDisabled());
+        
+        // Add a PLU-coded item to the scanning area
+        hardware.getScanningArea().addAnItem(PLUProduct1item);
+        assertEquals(0,PLUProduct1item.getMass().compareTo(software.updateCart.currentMassOnScanner));
+        
+        // Add the PLU product to the cart
+        software.updateCart.addPLUProduct(PLUProduct1);
+        
+        // Ensure the customer gets blocked
+        assertTrue(software.isBlocked());
+        
+        // Verify that the item is added to the products hash map and has the correct weight
         assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertEquals(0,PLUProduct1item.getMass().compareTo(software.getExpectedTotalWeight()));
+        assertEquals(0,PLUProduct1item.getMass().compareTo(software.getProductsInOrder().get(PLUProduct1)));
         
-        //Check the the software got unblocked (no weight discrepancy)
+        // Verify that the item is added to the PLU products array list
+        assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+        // Verify that the order total is correct
+        assertEquals(plu1Price,software.getOrderTotal());
+        // Remove the item from the main scale and put it in the bagging area
+        hardware.getScanningArea().removeAnItem(PLUProduct1item);
+        hardware.getBaggingArea().addAnItem(PLUProduct1item);
+        // Ensure the customer is unblocked
         assertFalse(software.isBlocked());
     }
-    
-    //expect this to fail because it can't get the product from the database
-    /**
-     * Add a PLU item that is not in the database
-     */
-    // @TODO: change the exception to be more specific to the case
-    @Test(expected = NullPointerSimulationException.class)
-    public void testAddPLUNotInDatabase()
-    {
-    	//create PLU product, but don't add it to the database
-        PriceLookUpCode PLUCode = new PriceLookUpCode("6704");
-    	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "keyboard", 519);
-    	
-    	//add the PLU product to the cart
-    	updateCart.addPLUProduct(product);
-    }
-    
-    /**
-     * Test the case where a null barcode is called
-     */
-    @Test(expected = NullPointerSimulationException.class)
-    public void testAddNullBarcode()
-    {
-    	Barcode barcode = null;
-    	updateCart.addScannedItem(barcode);
-    }
-
 
     /**
-     * Test the case where a barcode is mapped to a null plu product
+     * JUnit test case for adding a PLU product to the cart and skipping bagging.
+     * The test verifies that when a PLU product is added, the customer gets unblocked by the attendant,
+     * the product is added to the order, and the expected weight is not affected.
      */
-    @Test(expected = NullPointerSimulationException.class)
-    public void testAddNullScannedProduct()
-    {
-
-        //create dummy barcodedProducts
-        Numeral[] numBarcode = new Numeral[4];
-        numBarcode[0] = Numeral.two;
-        numBarcode[1] = Numeral.two;
-        numBarcode[2] = Numeral.eight;
-        numBarcode[3] = Numeral.six;
-        barcode = new Barcode(numBarcode);
-        BarcodedProduct barcodedProduct = null;
+    @Test
+    public void testAddPLUProductWithPLUProductSkipBagging(){
+    	// Set up the initial conditions
+    	software.startSession();
+        software.touchScreen.skip = true;
         
-        //map the valid barcode to a null barcoded product
-        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode, barcodedProduct);
+        // Ensure the expected mass is zero before adding
+        assertEquals(0,software.getExpectedTotalWeight().compareTo(Mass.ZERO));
+        assertFalse(hardware.getScanningArea().isDisabled());
         
-
-    	updateCart.addScannedItem(barcode);
-    }
-    
-    
-    /**
-     * Test the case where a null PLU product is added to the cart
-     */
-    @Test(expected = NullPointerSimulationException.class)
-    public void testAddNullPLUProduct()
-    {
-    	PLUCodedProduct product = null;
-    	updateCart.addPLUProduct(product);
-    }
-    
-    /**
-     * Test the case where a product with a null PLU code is added to the cart
-     */
-    @Test(expected = NullPointerSimulationException.class)
-    public void testAddPLUWithNullLookUpCode()
-    {
-    	PLUCodedProduct product = new PLUCodedProduct(null, "123", 123);
-    	updateCart.addPLUProduct(product);
-    }
-    
-    /**
-     * Test the case where a PLU item without a description is added to the cart
-     * 
-     * description might be optional??
-     */
-//    @Test
-//    public void testAddPLUWithEmptyDescription()
-//    {
-//        PriceLookUpCode PLUCode = new PriceLookUpCode("4139");
-//    	PLUCodedProduct product = new PLUCodedProduct(PLUCode, "", 123);
-//    	updateCart.addPLUProduct(product);
-//    }
-    
-    /**
-     * Test removing a valid PLU product from the order
-     * 
-     * relies on addPLUProduct to work correctly
-     */
-    @Test
-    public void testRemovePLUProduct()
-    {
-    	updateCart.addPLUProduct(PLUProduct1);
-//        assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
-
-    	updateCart.removeItem(PLUProduct1);
-        assertFalse(software.getProductsInOrder().containsKey(PLUProduct1));
-    	
-    }
-    
-    /**
-     * Test removing a valid barcoded product from the order
-     *
-     * relies on addScannedItem to work correctly
-     */
-    @Test
-    public void testRemoveScannedProduct() 
-    {
-        // Add an item first
-        updateCart.addScannedItem(barcode);
-        // Then remove it
-        updateCart.removeItem(barcodedProduct1);
-
-        // Verify that the product was removed from the cart
-        assertFalse(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-    }
-    
-    
-    /**
-     * Test that the order was updated correctly for a scanned product
-     */
-    @Test
-    public void testOrderTotalUpdateWithScanned() 
-    {
-        updateCart.addScannedItem(barcode);
-        BigDecimal expectedTotal = new BigDecimal(barcodedProduct1.getPrice());
-
-        // Verify that the order total has been changed correctly
-        assertEquals(expectedTotal, software.getOrderTotal());
-    }
-    
-    /*
-     * Test that the order was updated correctly for a PLU product
-     */
-    @Test
-    public void testOrderTotalUpdateWithPLU() 
-    {
-    	updateCart.addPLUProduct(PLUProduct1);
-        BigDecimal expectedTotal = new BigDecimal(PLUProduct1.getPrice());
-
-        // Verify that the order total has been changed correctly
-        assertEquals(expectedTotal, software.getOrderTotal());
-    }
-    
-    /**
-     * Test removing a scanned product that is not in the cart
-     */
-    @Test
-    public void testRemoveScannedProductNotInCart() 
-    {
-        updateCart.removeItem(barcodedProduct1);
-        // Verify the cart remains unchanged
-        assertTrue(software.getBarcodedProductsInOrder().isEmpty());
-    }
-    
-    /**
-     * Test adding the same scanned product 3 times
-     */
-    @Test
-    public void testAddSameScannedProuductMultipleTimes() 
-    {
-        int quantity = 3;
-        for (int i = 0; i < quantity; i++) {
-            updateCart.addScannedItem(barcode);
-        }
-        BigDecimal expectedTotal = new BigDecimal(15);
-
-        assertEquals(expectedTotal, software.getOrderTotal());
-        assertEquals(new Mass(barcodedProduct1.getExpectedWeight() * 3), software.getExpectedTotalWeight());
-
-        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-    }
-    
-    /**
-     * Test adding 
-     */
-    @Test
-    public void testAddMultipleDifferentScannedProducts() 
-    {
-        // Add multiple different items
-        updateCart.addScannedItem(barcode); // First item
-        updateCart.addScannedItem(barcode2); // Second item
-        BigDecimal expectedTotal = new BigDecimal(105);
-        assertEquals(expectedTotal, software.getOrderTotal());
-        assertEquals(new Mass(barcodedProduct1.getExpectedWeight() + barcodedProduct2.getExpectedWeight()),
-                software.getExpectedTotalWeight());
-        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
-        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct2));
-    }
-    
-    @Test
-    public void testAddingPLUAndScannedProducts()
-    {
-    	updateCart.addPLUProduct(PLUProduct1);
-    	updateCart.addScannedItem(barcode);
-
-//    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
-    	
-    	//Check that the item got added to the order
+        // Add a PLU-coded item to the scanning area
+        hardware.getScanningArea().addAnItem(PLUProduct1item);
+        assertEquals(0,PLUProduct1item.getMass().compareTo(software.updateCart.currentMassOnScanner));
+        
+        // Add the PLU product to the cart
+        software.updateCart.addPLUProduct(PLUProduct1);
+        
+        /// Ensure the customer gets unblocked by the attendant
+        assertFalse(software.isBlocked());
+        
+        // Verify that the item is added to the products hash map, not added to the expected weight
         assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertEquals(0,Mass.ZERO.compareTo(software.getExpectedTotalWeight()));
+        assertEquals(0,PLUProduct1item.getMass().compareTo(software.getProductsInOrder().get(PLUProduct1)));
+        
+        // Verify that the item is added to the PLU products array list
+        assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+        // Verify that the order total is correct
+        assertEquals(plu1Price,software.getOrderTotal());
+    }
+    
+    /**
+     * JUnit test case for adding a scanned barcode product to the cart.
+     * The test checks if the scanned product is added to the order, and the expected weight is correct.
+     * Additionally, the test verifies that the customer gets blocked initially, and after placing the item
+     * in the bagging area, the customer gets unblocked.
+     */
+    @Test
+    public void testAddScannedProduct() {
+    	// Set up the initial conditions
+        software.startSession();
+        software.touchScreen.skip = false;
+        
+        // Ensure the expected mass is zero before adding
+        assertEquals(0,software.getExpectedTotalWeight().compareTo(Mass.ZERO));
+        // Add a scanned product to the cart
+        software.updateCart.addScannedProduct(barcode1);
+        // Ensure the customer gets blocked initially
+        assertTrue(software.isBlocked());
+        
+        // Verify that the item is added to the products hash map, and the weight is correct
         assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
-    }
-    
-    @Test
-    public void testRemovingPLUAndScannedProducts()
-    {
-    	updateCart.addPLUProduct(PLUProduct1);
-    	updateCart.addScannedItem(barcode);
-    	updateCart.removeItem(PLUProduct1);
-    	updateCart.removeItem(barcodedProduct1);
-
-//    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
-    	
-    	//Check that the item got added to the order
-        assertFalse(software.getProductsInOrder().containsKey(PLUProduct1));
-        assertFalse(software.getProductsInOrder().containsKey(barcodedProduct1));
-    
-    }
-    
-    /**
-     * Test custom skipping bagging for scanned product
-     */
-    @Test
-    public void testSkipBaggingForScannedProduct() 
-    {
-    	software.touchScreen.selectAddOwnBags();
-        updateCart.addScannedItem(barcode);
-        assertFalse(software.isBlocked());
-
-    }
-    
-    /**
-     * Test customer skipping bagging for PLU product
-     */
-    @Test 
-    public void testSkipBaggingForPLUProduct()
-    {
-    	software.touchScreen.selectAddOwnBags();
-        updateCart.addPLUProduct(PLUProduct1);        
+        assertEquals(0,bar1Item.getMass().compareTo(software.getExpectedTotalWeight()));
+        assertEquals(0,bar1Item.getMass().compareTo(software.getProductsInOrder().get(barcodedProduct1)));
+        
+        // Verify that the item is added to the barcoded products array list
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        
+        // Verify that the order total is correct
+        assertEquals(bar1price,software.getOrderTotal());
+        // Put the item in the Bagging Area
+        hardware.getBaggingArea().addAnItem(bar1Item);
+        // Ensure the customer gets unblocked
         assertFalse(software.isBlocked());
     }
     
     /**
-     * Test customer adding a light item to their order
+     * JUnit test case for adding a scanned barcode product to the cart with skip bagging.
+     * The test checks if the scanned product is added to the order, and the expected weight is correct.
+     * Additionally, the test verifies that the customer gets unblocked by the attendant.
      */
     @Test
-    public void testLightItems() 
-    {
-        updateCart.addScannedItem(barcode3);
+    public void testAddScannedProductSkipBagging() {
+    	// Set up the initial conditions
+        software.startSession();
+        software.touchScreen.skip = true;
+        
+        // Ensure the expected mass is zero before adding
+        assertEquals(0,software.getExpectedTotalWeight().compareTo(Mass.ZERO));
+        
+        // Add a scanned product to the cart
+        software.updateCart.addScannedProduct(barcode1);
+        
+        // Ensure the customer gets unblocked by the attendant
         assertFalse(software.isBlocked());
+        
+        // Verify that the item is added to the products hash map, and the weight is correct
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        assertEquals(0,Mass.ZERO.compareTo(software.getExpectedTotalWeight()));
+        assertEquals(0,bar1Item.getMass().compareTo(software.getProductsInOrder().get(barcodedProduct1)));
+        
+        // Verify that the item is added to the barcoded products array list
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        
+        // Verify that the order total is correct
+        assertEquals(bar1price,software.getOrderTotal());
     }
     
     /**
-     * Test barcode listener when a barcoded has been scanned
+     * JUnit test case for adding a barcoded product to the cart using the addProduct method.
+     * The test checks if the product is added to the order and the barcoded products array list.
      */
     @Test
-    public void testBarcodeScanEvent() 
-    {
-        updateCart.aBarcodeHasBeenScanned(station.getHandheldScanner(), barcode);
+    public void testAddProductSendsToAddScannedProduct() {
+    	// Add a barcoded product to the cart using the addProduct method
+    	software.updateCart.addProduct(barcodedProduct1);
+    	// Verify that the item is added to the products hash map
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        // Verify that the item is added to the barcoded products array list
         assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
     }
+    
+    /**
+     * JUnit test case for adding a PLU-coded product to the cart using the addProduct method.
+     * The test checks if the PLU-coded product is added to the order and the PLU-coded products array list.
+     */
+    @Test
+    public void testAddProductSendsToAddPLUProduct(){
+    	// Add a PLU-coded product to the cart using the addProduct method
+        software.updateCart.addProduct(PLUProduct1);
+        // Verify that the PLU-coded product is added to the PLU-coded products array list
+    	assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+    	// Verify that the PLU-coded product is added to the products hash map
+    	assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+    }
 
+    /**
+     * JUnit test case for removing a PLU-coded product from the cart.
+     * The test checks the removal process, including updating the order total, expected weight, and unblocking the customer.
+     */
+    @Test
+    public void removePLUCodedProduct() {
+    	// Set up the initial conditions
+        software.startSession();
+        software.touchScreen.skip = false;
+        hardware.getScanningArea().addAnItem(PLUProduct1item);
+        software.updateCart.addPLUProduct(PLUProduct1);
+        
+        // Ensure the PLU-coded product is added to the products hash map and the PLU-coded products array list
+        assertTrue(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertEquals(0, PLUProduct1item.getMass().compareTo(software.getExpectedTotalWeight()));
+        assertEquals(0, PLUProduct1item.getMass().compareTo(software.getProductsInOrder().get(PLUProduct1)));
+        //Verify the item has been added to PLU products array list
+        assertTrue(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+        // Verify the order total is correct
+        assertEquals(plu1Price, software.getOrderTotal());
+        
+        // Remove the item from the main scale and put it in the Bagging Area
+        hardware.getScanningArea().removeAnItem(PLUProduct1item);
+        hardware.getBaggingArea().addAnItem(PLUProduct1item);
+        
+        // Verify the customer is unblocked
+        assertFalse(software.isBlocked());
+
+        // Remove the PLU-coded product from the cart
+        software.updateCart.removeItem(PLUProduct1);
+        // Verify the customer is blocked, the product is removed from the PLU-coded products array list,
+        // the order total is updated, and the product is removed from the weight map
+        assertTrue(software.isBlocked());
+        assertFalse(software.getPluCodedProductsInOrder().contains(PLUProduct1));
+        assertEquals(BigDecimal.ZERO, software.getOrderTotal());
+        assertFalse(software.getProductsInOrder().containsKey(PLUProduct1));
+        assertEquals(0, Mass.ZERO.compareTo(software.getExpectedTotalWeight()));
+        
+        // Remove the product from the bagging area
+        hardware.getBaggingArea().removeAnItem(PLUProduct1item);
+        
+        // Verify the customer is unblocked
+        assertFalse(software.isBlocked());
+    }
+    
+    /**
+     * JUnit test case for adding the same scanned product twice to the cart.
+     * The test checks if the weights are correctly aggregated for identical scanned products.
+     */
+    @Test
+    public void testAddSameScannedProuductTwice() {
+    	// Set up the initial conditions
+    	software.startSession();
+        software.touchScreen.skip = false;
+        
+        // Add the same scanned product twice
+        software.updateCart.addScannedProduct(barcode1);
+        hardware.getBaggingArea().addAnItem(bar1Item);
+        software.updateCart.addScannedProduct(barcode1);
+        hardware.getBaggingArea().addAnItem(bar1ItemCopied);
+        
+        // Verify that the weights are correctly aggregated for the identical scanned products
+        assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getProductsInOrder().get(barcodedProduct1));
+        assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getBaggedProducts().get(barcodedProduct1));
+    }
+    
+    /**
+     * JUnit test case for adding the same PLU-coded product twice to the cart.
+     * The test checks if the weights are correctly aggregated for identical PLU-coded products.
+     */
+    @Test
+    public void testAddSamePLUproductTwice() {
+    	// Set up the initial conditions
+        software.startSession();;
+        software.touchScreen.skip = false;
+        
+        // Add the same PLU-coded product twice
+        hardware.getScanningArea().addAnItem(PLUProduct1item);
+        software.updateCart.addPLUProduct(PLUProduct1);
+        hardware.getScanningArea().removeAnItem(PLUProduct1item);
+        hardware.getBaggingArea().addAnItem(PLUProduct1item);
+
+        hardware.getScanningArea().addAnItem(PLUProduct1itemCopy);
+        software.updateCart.addPLUProduct(PLUProduct1);
+        hardware.getScanningArea().removeAnItem(PLUProduct1itemCopy);
+        hardware.getBaggingArea().addAnItem(PLUProduct1itemCopy);
+
+        // Verify that the weights are correctly aggregated for the identical PLU-coded products
+        assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getBaggedProducts().get(PLUProduct1));
+        assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getProductsInOrder().get(PLUProduct1));
+    }
+    
+    /**
+     * JUnit test case for text search functionality with barcoded products.
+     * The test checks if the text search returns the expected match for a given barcoded product name.
+     */
+    @Test
+    public void testTextSearchForBarcodedProduct()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("batteries");
+        assertEquals(1, matches.size());
+    	assertEquals(matches.get(0), barcodedProduct2);
+    }
+    
+    /**
+     * JUnit test case for text search functionality with PLU-coded products.
+     * The test checks if the text search returns the expected match for a given PLU-coded product name.
+     */
+    @Test
+    public void testTextSearchForPLUProduct()
+    {
+    	ArrayList<Product> matches = updateCart.textSearch("coffee");
+        assertEquals(1, matches.size());
+    	assertEquals(matches.get(0), PLUProduct3);
+    }
+    
+    /**
+     * JUnit test case for text search functionality with both PLU-coded and barcoded products.
+     * The test checks if the text search returns the expected matches for products with a common keyword.
+     */
+    @Test
+    public void testTextSearchForPLUAndBarcodedProduct()
+    {
+    	// Create products that both have "apple" in the name
+        Numeral[] testBarcode = new Numeral[4];
+        testBarcode[0] = Numeral.six;
+        testBarcode[1] = Numeral.two;
+        testBarcode[2] = Numeral.two;
+        testBarcode[3] = Numeral.two;
+        barcode1 = new Barcode(testBarcode);
+        BarcodedProduct bP1 = new BarcodedProduct(barcode1, "bundle of apples", 30, 100);
+
+        PriceLookUpCode PLUCode = new PriceLookUpCode("9028");
+        PLUCodedProduct PLUP1 = new PLUCodedProduct(PLUCode, "singular wrapped apple", 26);
+        
+        // Add barcodedProduct and PLUCodedProduct to the database
+        ProductDatabases.PLU_PRODUCT_DATABASE.put(PLUCode, PLUP1);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1, bP1);
+
+        // Perform text search and verify the results
+    	ArrayList<Product> matches = updateCart.textSearch("apple");
+        assertEquals(2, matches.size());
+        assertNotSame(matches.get(0), matches.get(1));
+    	assertTrue((matches.get(0) == PLUP1) || matches.get(0) == bP1);
+    	assertTrue((matches.get(1) == PLUP1) || matches.get(1) == bP1);
+    }
+    
+    /**
+     * JUnit test case for text search functionality with no matches.
+     * The test checks if the text search returns an empty list when there are no matches for the given search term.
+     */
+    @Test
+    public void testTexSearchWithNoMatches(){
+    	ArrayList<Product> matches = updateCart.textSearch("corn");
+        assertEquals(0, matches.size());
+    }
+    
+    /**
+     * JUnit test case for text search functionality with a null search string.
+     * The test checks if the text search throws a NullPointerSimulationException when a null search string is provided.
+     * @throws NullPointerSimulationException - Expected exception for a null search string.
+     */
+    @Test(expected = NullPointerSimulationException.class)
+    public void testTextSearchWithNullStr() {
+    	updateCart.textSearch(null);
+    }
 }
-
-
-
-
-

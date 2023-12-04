@@ -15,6 +15,7 @@ import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
 public class test {
 
 	public static void main(String[] args) {
+		HardwareConfig hardwareConfig = new HardwareConfig();
 		SelfCheckoutStationBronze bronze = new SelfCheckoutStationBronze();
 		SelfCheckoutStationGold	gold = new SelfCheckoutStationGold();
 		SelfCheckoutStationSilver silver= new SelfCheckoutStationSilver();

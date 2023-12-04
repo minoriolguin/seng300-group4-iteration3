@@ -12,7 +12,10 @@ public class SelectLanguage extends JPanel {
 	private JButton engButton = new JButton("ENGLISH");
 	private JButton cancel = new JButton("CANCEL");
 	
-	public SelectLanguage() {
+	RunGUI instance;
+	
+	public SelectLanguage(RunGUI instance) {
+		this.instance = instance;
 		getCancel().setBackground(Color.RED);
 		getCancel().setPreferredSize(new Dimension(100, 50));
 		getEngButton().setPreferredSize(new Dimension(250, 130));
@@ -22,7 +25,7 @@ public class SelectLanguage extends JPanel {
 		getCancel().addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
+				instance.switchPanels("AddItemsPanel");
 				
 			}
 			
@@ -31,7 +34,7 @@ public class SelectLanguage extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("ENGLISH LANGUAGE SELECTED");
-				setVisible(false);
+				instance.switchPanels("AddItemsPanel");
 				
 			}
 			
