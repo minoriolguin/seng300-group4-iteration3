@@ -28,9 +28,9 @@ public class ItemAddedFrame extends JPanel{
 	private GUILogic guiLogicInstance;
 	private EnterPLU plu;
 	
-	public ItemAddedFrame(RunGUI instance) {
+	public ItemAddedFrame(RunGUI instance, GUILogic guiLogicInstance) {
 		
-		guiLogicInstance = new GUILogic (screen);
+		this.guiLogicInstance = guiLogicInstance;
 		String item = guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode();
 		//Top Panel
 		JPanel topPanel = createLabelPanel("Item Added", 400, 100); 
