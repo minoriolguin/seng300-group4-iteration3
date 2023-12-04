@@ -260,7 +260,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	//iterate through barcoded products
     	for(BarcodedProduct product : ProductDatabases.BARCODED_PRODUCT_DATABASE.values())
     	{
-			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			if(product != null && (product.getDescription().contains(searchStr)||product.getDescription().contains(searchStr.toLowerCase())))
 			{
 				productMatches.add(product);
 			}
@@ -269,7 +269,7 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     	//iterate through PLUCoded products
     	for(PLUCodedProduct product : ProductDatabases.PLU_PRODUCT_DATABASE.values())
     	{
-			if(product != null && product.getDescription().contains(searchStr.toLowerCase()))
+			if(product != null && (product.getDescription().contains(searchStr)||product.getDescription().contains(searchStr.toLowerCase())))
 			{
 				productMatches.add(product);
 			}

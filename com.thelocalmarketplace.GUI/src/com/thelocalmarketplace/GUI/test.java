@@ -11,11 +11,13 @@ import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationBronze;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationSilver;
+import com.thelocalmarketplace.software.PopulateProductDatabases;
 
 public class test {
 
 	public static void main(String[] args) {
 		HardwareConfig hardwareConfig = new HardwareConfig();
+		PopulateProductDatabases.populateDatabases();
 		SelfCheckoutStationBronze bronze = new SelfCheckoutStationBronze();
 		SelfCheckoutStationGold	gold = new SelfCheckoutStationGold();
 		SelfCheckoutStationSilver silver= new SelfCheckoutStationSilver();

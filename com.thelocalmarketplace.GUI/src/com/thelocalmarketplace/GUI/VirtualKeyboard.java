@@ -83,14 +83,24 @@ public class VirtualKeyboard {
                     break;
                 case "Space":
                     inputArea.append(" ");
+                    
                     break;
                 case "Enter":
+                	resultArea.removeAll();
+                	resultArea.revalidate();
+                	resultArea.repaint();
+                	
                 	ArrayList<Product> searchResult = software.updateCart.textSearch(inputArea.getText());
                 	updateResultArea(searchResult);
                     break;
                 
                 default:
-                    inputArea.append(buttonText);
+                	if(inputArea.getText().isBlank()) {
+                		inputArea.append(buttonText);
+                	}
+                	else{
+                		inputArea.append(buttonText.toLowerCase());
+                	}
                     break;
             }
 
@@ -101,7 +111,7 @@ public class VirtualKeyboard {
 
         private void updateResultArea(ArrayList<Product> result) {
             for(Product item: result) {
-            	int i =1;
+            	
             	if (!item.isPerUnit()) {
             		PLUCodedProduct product = (PLUCodedProduct)item;
             		 JButton button = new JButton(product.getDescription());
