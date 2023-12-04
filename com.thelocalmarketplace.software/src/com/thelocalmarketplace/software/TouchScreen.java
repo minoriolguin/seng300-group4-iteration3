@@ -1,12 +1,19 @@
 package com.thelocalmarketplace.software;
 
 import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
+import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * The {@code TouchScreen} class represents the touch screen interface in a self-checkout system.
@@ -22,10 +29,21 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * The self-checkout software instance associated with the touch screen.
      */
     private final Software software;
+
+    private Calendar calendar;
     /**
      * Flag indicating whether to skip the bagging process for the next item.
      */
     public boolean skip;
+
+    private Card CreditCard = new Card("credit", "234567", "John",
+            "245", "7429", true, true);
+
+    private Card DebitCard = new Card("debit", "4567890", "Jane",
+            "908", "3579", true, true);
+    private Currency CAD;
+
+    private Boolean cardsRegistered = false;
 
     /**
      * Constructs a new {@code TouchScreen} instance associated with the provided self-checkout software.
@@ -37,6 +55,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
         software.weightDiscrepancy.register(this);
         this.software = software;
         skip = false;
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR,2);
+
     }
 
     /**
@@ -66,7 +87,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Initiates the payment process using banknotes.
      * Enables and activates the banknote validator and enables the printer.
      */
-    public void payByBanknote () {
+    private void payByBanknote () {
+        CAD = Currency.getInstance("CAD");
+        Coin.DEFAULT_CURRENCY = CAD;
         if (!software.getProductsInOrder().isEmpty()){
             software.banknoteValidator.enable();
             software.banknoteValidator.activate();
@@ -75,12 +98,22 @@ public class TouchScreen implements WeightDiscrepancyListener {
         else
             displayNoItemsInCart();
     }
+    //TODO: finish implementing banknote and coin payment
+    public void insertBanknote()
+    {
+        payByBanknote();
+    }
     
     /**
      * Initiates the payment process using a card swipe.
      * Enables the card reader and enables the printer.
      */
-    public void payByCard () {
+    private void payByCard () {
+        if (!cardsRegistered) {
+            software.payByCard.addCardData("credit", "234567", "John", calendar, "245", 120);
+            software.payByCard.addCardData("debit", "4567890", "Jane", calendar, "908", 210);
+            cardsRegistered = true;
+        }
         if (!software.getProductsInOrder().isEmpty()) {
             software.cardReader.enable();
             software.printer.enable();
@@ -88,6 +121,43 @@ public class TouchScreen implements WeightDiscrepancyListener {
         else
             displayNoItemsInCart();
     }
+
+    public void payViaSwipe(String type) throws IOException {
+        payByCard();
+        if (type.equals("credit"))
+            software.cardReader.swipe(CreditCard);
+        else
+            software.cardReader.swipe(DebitCard);
+    }
+
+    public void payViaTap(String type) throws IOException {
+        payByCard();
+        if (type.equals("credit"))
+            software.cardReader.tap(CreditCard);
+        else
+            software.cardReader.tap(DebitCard);
+    }
+
+    public void payViaInsert(String type, String pin) throws IOException{
+        payByCard();
+        if (type.equals("credit"))
+            try {
+                software.cardReader.insert(CreditCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+        else
+            try {
+                software.cardReader.insert(DebitCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+    }
+
 
     /**
      * Displays message when product not found in DataBase

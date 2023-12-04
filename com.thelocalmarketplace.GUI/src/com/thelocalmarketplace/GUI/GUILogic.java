@@ -13,8 +13,17 @@
 
 package com.thelocalmarketplace.GUI;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+
+import com.jjjwelectronics.card.InvalidPINException;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.TouchScreen;
+
+
 
 
 /*
@@ -75,7 +84,8 @@ public class GUILogic {
 	public String buttonR7_CustomerAddsItem_PLUCode() {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
         //Logic Here
-        //Example Code Here 
+        //Example Code Here
+
         String addItemPLU_result = "New Item thru PLU Code";
 		return addItemPLU_result;
 	}
@@ -92,9 +102,12 @@ public class GUILogic {
 	}
 	
 	// This will switch to the Payment Panel
-	public void buttonR9_CustomerWantsToPay() {
+	public void buttonR9_CustomerWantsToPay(int total) {
         System.out.println("buttonR9_CustomerWantsToPay!");
-        
+
+
+
+
 	}
 	
 //----------------------------------------------------------------
@@ -131,8 +144,11 @@ public class GUILogic {
 	public String buttonB1_CustomerScansBarcodedProduct_MainScanner() {
         System.out.println("buttonB1_CustomerScansBarcodedProduct_MainScanner");
         //Example Code Here 
-        // Logic Here 
-        String addItemB1_result = "New Barcoded Product thru Main Scanner";
+        //Logic Here
+		//for testing
+		screen.getSoftware().addToOrderTotal(BigDecimal.TEN);
+
+        String addItemB1_result = Integer.toString(this.getTotal());
 		return addItemB1_result;
 	}
 	
@@ -152,15 +168,43 @@ public class GUILogic {
 		return addItemB3_result;
 	}
 	
-	
-	
-	
+	public void payment_buttonB1_CustomerPaysWithDebitSwipe(int total) throws IOException {
+		screen.payViaSwipe("debit");
+	}
 
-	
-	
-	
-	
-	
+	public void payment_buttonB2_CustomerPaysWithCreditSwipe(int total) throws IOException {
+		screen.payViaSwipe("credit");
+	}
+
+	public void payment_buttonB4_CustomerPaysWithDebitTap(int total) throws IOException {
+		screen.payViaTap("debit");
+	}
+
+	public void payment_buttonB5_CustomerPaysWithCreditTap(int total) throws IOException {
+		screen.payViaTap("credit");
+	}
+
+	public boolean payment_CustomerPaysWithCreditInsert(int total, String PIN) throws IOException {
+		try {
+			screen.payViaInsert("credit", PIN);
+		}
+		catch (InvalidPINException e)
+		{
+			return false;
+		}
+		if (getTotal() == 0)
+			return true;
+		return false;
+	}
+
+	public boolean payment_CustomerPaysWithDebitInsert(int total, String PIN) throws IOException {
+		screen.payViaInsert("debit", PIN);
+
+		if (getTotal() == 0 )
+			return true;
+		return false;
+	}
+
 	
 	
 //----------------------------------------------------------------
@@ -204,8 +248,9 @@ public class GUILogic {
 	}
 	
 	public int getTotal() {
-		System.out.println("The total is "+total);
-		return total;
+		//System.out.println("The total is "+total);
+		//return total;
+		return screen.getSoftware().getOrderTotal().intValue();
 	}
 	
 	public void addtoTotal(int meow) {
@@ -216,6 +261,23 @@ public class GUILogic {
 	public void subtractTotal(int meow) {
 		total = total - meow;
 		System.out.println("The total is "+total);
+	}
+
+	//TODO: finish implementing banknote and coin payment
+	public void PayBanknoteValFive() {
+
+	}
+
+	public void PayBanknoteValTen() {
+	}
+
+	public void PayBanknoteValTwenty() {
+	}
+
+	public void PayBanknoteValFifty() {
+	}
+
+	public void PayBanknoteValHundred() {
 	}
 }
 

@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Test;
 import powerutility.PowerGrid;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -62,14 +64,14 @@ public class TouchScreenTest {
 
     @Test
     public void payByBanknotetest() {
-        touchScreen.payByBanknote();
+        touchScreen.insertBanknote();
         assertFalse(checkout.banknoteValidator.isDisabled());
         assertTrue(checkout.banknoteValidator.isActivated());
     }
 
     @Test
-    public void payBySwipe() {
-        touchScreen.payByCard();
+    public void payBySwipe() throws IOException {
+        touchScreen.payViaSwipe("debit");
         assertFalse(checkout.cardReader.isDisabled());
         assertFalse(checkout.printer.isDisabled());
     }

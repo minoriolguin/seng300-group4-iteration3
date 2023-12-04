@@ -96,7 +96,8 @@ public class SelfCheckoutSimulation extends JFrame {
 	                software.turnOn();
 	                TouchScreen touchscreen = new TouchScreen(software);
 	                GUILogic guiLogic = new GUILogic(touchscreen);
-	                RunGUI gui = new RunGUI(guiLogic); 
+	                RunGUI gui = new RunGUI(guiLogic);
+					//bronze_station.getScreen().getFrame().setContentPane(gui);
 	                break;
 	            case 2:
 	                System.out.println("Button Clicked");
