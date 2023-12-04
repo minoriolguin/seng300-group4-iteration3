@@ -537,10 +537,10 @@ public class Software {
 		        // First, validate the format of the membership number
 		        if (membershipValidator.isValid(membershipNumber)) {
 		            // Convert the string to an integer for database lookup
-		            int memberId = Integer.parseInt(membershipNumber);
+		            // int memberId = Integer.parseInt(membershipNumber);
 
 		            // Check if the member exists in the database
-		            if (membershipDatabase.memberExists(memberId)) {
+		            if (membershipDatabase.memberExists(membershipNumber)) {
 		                // Process the valid membership number
 		                System.out.println("Membership number is valid and found in the database.");
 		                // TODO: Link to customer session, update points, etc.
