@@ -27,14 +27,14 @@ public class PopulateProductDatabases {
 	private static String randomBarcodedProduct() {
 		String[] products = {"Apple", "Banana", "Orange", "Potato", "Carrot", "Broccoli", "Spinach", "Tomatoes", "Cucumber",
 							"Onion", "Cucumber", "Bell peppers", "Strawberries", "Avocado", "Watermelon", "Kale", "Mango",
-							"Lemon", "Lime", "Cauliflower", "Grapes", "Blackberries", "Pomegramate", "Zuchinni", "Eggplant"};
+							"Lemon", "Lime", "Cauliflower", "Grapes", "Blackberries", "Pomegramate", "Zuchinni"};
 		
 		int randomIndex = (int) (Math.random() * products.length);
         return products[randomIndex];
 	}	
 
 	private static String randomPLUProduct() {
-		String[] products = {"Milk", "Eggs", "Bread", "Chicken", "Rice","Cheese", "Pasta", "Pants", "Chicken", "Coffee",
+		String[] products = {"Milk", "Eggs", "Bread", "Chicken", "Rice","Cheese", "Pasta", "Chicken", "Coffee",
 							"Ground beef", "Yogurt", "Cereal", "Salmon", "Cereal", "Juice", "Cookies", "Ice Cream",
 							"Salad", "Rice", "Butter", "Candy", "Sugar", "Jam", "Ham"};
 
@@ -43,7 +43,7 @@ public class PopulateProductDatabases {
 	}
 	
 	private static Barcode generateRandomBarcode() {
-		Numeral[] randomDigits = new Numeral[12]; // Assuming 12-digit barcodes
+		Numeral[] randomDigits = new Numeral[8]; // Assuming 12-digit barcodes
 
 		for (int i = 0; i < 12; i++) {
 			// Generate a random numeral between 0 and 9 (inclusive)
@@ -58,7 +58,7 @@ public class PopulateProductDatabases {
 	private static PriceLookUpCode generateRandomPLU() {
 		String randomDigits = ""; // Assuming 12-digit barcodes
 
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 5; i++) {
 			// Generate a random numeral between 0 and 9 (inclusive)
 			int randomValue = (int) (Math.random() * 10);
 			randomDigits = randomDigits + String.valueOf(randomValue);
