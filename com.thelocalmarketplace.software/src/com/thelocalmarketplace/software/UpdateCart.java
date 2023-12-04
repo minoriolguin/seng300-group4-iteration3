@@ -1,39 +1,28 @@
- /**
- *Project 3 Iteration Group 4
+  /**
+ *Project, Iteration 3, Group 4
  *  Group Members:
- * - Julie Kim 10123567
- * - Aryaman Sandhu 30017164
- * - Arcleah Pascual 30056034
- * - Aoi Ueki 30179305
- * - Ernest Shukla 30156303
- * - Shawn Hanlon 10021510
- * - Jaimie Marchuk 30112841
- * - Sofia Rubio 30113733
- * - Maria Munoz 30175339
- * - Anne Lumumba 30171346
- * - Nathaniel Dafoe 30181948
- * - Arvin Bolbolanardestani 30165484
- * - Anthony Chan 30174703
- * - Marvellous Chukwukelu 30197270
- * - Farida Elogueil 30171114
- * - Ahmed Elshabasi 30188386
- * - Shawn Hanlon 10021510
- * - Steven Huang 30145866
- * - Nada Mohamed 30183972
- * - Jon Mulyk 30093143
- * - Althea Non 30172442
- * - Minori Olguin 30035923
- * - Kelly Osena 30074352
- * - Muhib Qureshi 30076351
- * - Sofia Rubio 30113733
- * - Muzammil Saleem 30180889
- * - Steven Susorov 30197973
- * - Lydia Swiegers 30174059
- * - Elizabeth Szentmiklossy 30165216
- * - Anthony Tolentino 30081427
- * - Johnny Tran 30140472
- * - Kaylee Xiao 30173778
- */
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
 
 package com.thelocalmarketplace.software;
 
@@ -202,29 +191,87 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
         BigDecimal price = BigDecimal.valueOf(product.getPrice());
         software.addToOrderTotal(price);
     }
+
+
+    /**
+     * @param product either PLU or Barcoded
+     *                sends to correct remove method
+     */
+    public void removeItem(Product product)
+    {
+        if(product instanceof BarcodedProduct)
+        {
+            this.removeBarcodedProduct(((BarcodedProduct) product));
+        }
+        else if(product instanceof PLUCodedProduct)
+        {
+            this.removePLUCodedProduct((PLUCodedProduct) product);
+        }
+    }
     
     /**
      * Removes an item from the cart.
      *
-     * @param product The 'BarcodedProduct'to be removed.
+     * @param product The 'BarcodedProduct' to be removed.
      */
-    public void removeItem(Product product) {
+    public void removeBarcodedProduct(BarcodedProduct product) {
+        if (software.getProductsInOrder().containsKey(product)) {
+            software.blockCustomer();
+            BigDecimal price;
+            price = BigDecimal.valueOf(product.getPrice());
+            software.getBarcodedProductsInOrder().remove(product);
+            software.subtractFromOrderTotal(price);
+
+            int numberInOrder = 0;
+            for (BarcodedProduct inOrder : software.getBarcodedProductsInOrder()) {
+                if (inOrder.equals(product))
+                    numberInOrder++;
+            }
+            if (numberInOrder == 0) {
+                software.getBarcodedProductsInOrder().remove(product);
+                if (software.getBaggedProducts().containsKey(product)) {
+                    software.getBaggedProducts().remove(product);
+                    software.setExpectedTotalWeight(software.weightDiscrepancy.massOfOwnBags);
+                    for (Product bagged : software.getBaggedProducts().keySet()) {
+                        Mass baggedMass = software.getProductsInOrder().get(bagged);
+                        software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(baggedMass));
+                    }
+                }
+                else
+                    software.attendant.verifyItemRemovedFromOrder();
+
+            } else {
+                Mass productsWeight = new Mass(product.getExpectedWeight() * (double) numberInOrder);
+                software.getProductsInOrder().replace(product, productsWeight);
+                if (software.getBaggedProducts().containsKey(product)) {
+                    software.getBaggedProducts().replace(product, productsWeight);
+                    software.setExpectedTotalWeight(software.weightDiscrepancy.massOfOwnBags);
+                    for (Product bagged : software.getBaggedProducts().keySet()) {
+                        Mass baggedMass = software.getProductsInOrder().get(bagged);
+                        software.setExpectedTotalWeight(software.getExpectedTotalWeight().sum(baggedMass));
+                    }
+                }
+                else
+                    software.attendant.verifyItemRemovedFromOrder();
+            }
+        }
+    }
+
+    /**
+     * @param product PLU product to be removed
+     *                you can't remove part of a PLU product the whole thing must be removed
+     */
+    public void removePLUCodedProduct(PLUCodedProduct product) {
         if(software.getProductsInOrder().containsKey(product)){
             software.blockCustomer();
             BigDecimal price;
-            if (product.isPerUnit()) {
-                price = BigDecimal.valueOf(product.getPrice());
-                software.getBarcodedProductsInOrder().remove(product);
-            }
-            else {
-                price = BigDecimal.valueOf(product.getPrice() * ((software.getProductsInOrder().get(product).inGrams().longValue()) / 1000));
-                software.getPluCodedProductsInOrder().remove(product);
-            }
+            price = BigDecimal.valueOf(product.getPrice() * ((software.getProductsInOrder().get(product).inGrams().longValue()) / 1000));
+            software.getPluCodedProductsInOrder().remove(product);
             software.subtractFromOrderTotal(price);
             software.getProductsInOrder().remove(product);
             software.weightDiscrepancy.notifyRemoveItemFromScale();
-            // When item is removed isWeightDiscrepancy auto called and if
-            // weight corrected station enabled
+                // When item is removed isWeightDiscrepancy auto called and if
+                // weight corrected station enabled
             if (software.getBaggedProducts().containsKey(product)) {
                 software.getBaggedProducts().remove(product);
                 //Resets the expected weight to zero plus weight of added bags
@@ -238,7 +285,6 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
                 software.attendant.verifyItemRemovedFromOrder();
         }
     }
-    
     /**
      * Perform a text search for a product description
      * 

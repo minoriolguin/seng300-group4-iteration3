@@ -1,15 +1,28 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
 
 package com.thelocalmarketplace.GUI;
 
@@ -17,6 +30,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import com.jjjwelectronics.card.InvalidPINException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
@@ -36,7 +50,6 @@ public class GUILogic {
 
 		this.screen = t;
 	}
-	
 //----------------------------------------------------------------
 //Start Session Panel, 
 	
@@ -77,8 +90,8 @@ public class GUILogic {
         //Logic Here
 	}
 	
-	public void buttonR6_BLANK() {
-        System.out.println("buttonR6_BLANK");       
+	public void buttonR6_CustomerSelectsLanguage() {
+        System.out.println("buttonR6_CustomerSelectsLanguage");       
         //Logic Here
 	}
 	
@@ -108,6 +121,8 @@ public class GUILogic {
 	// This will switch to the Payment Panel
 	public void buttonR9_CustomerWantsToPay(int total) {
         System.out.println("buttonR9_CustomerWantsToPay!");
+
+
 
 
 	}
