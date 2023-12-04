@@ -158,14 +158,6 @@ public class GUILogic {
 		return addItemB2_result;
 	}
 	
-	public String buttonB3_CustomerScansBarcodedProduct_RFIDTag() {
-        System.out.println("buttonB3_CustomerScansBarcodedProduct_RFIDTag");
-        //Example Code Here 
-        // Logic Here 
-        String addItemB3_result = "New Barcoded Product thru RFID Tag";
-		return addItemB3_result;
-	}
-	
 	
 	
 	
