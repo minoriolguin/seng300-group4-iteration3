@@ -1,43 +1,28 @@
- /**
- *Project, Iteration 3, Group 4
- *  Group Members:
- * - Arvin Bolbolanardestani / 30165484
- * - Anthony Chan / 30174703
- * - Marvellous Chukwukelu / 30197270
- * - Farida Elogueil / 30171114
- * - Ahmed Elshabasi / 30188386
- * - Shawn Hanlon / 10021510
- * - Steven Huang / 30145866
- * - Nada Mohamed / 30183972
- * - Jon Mulyk / 30093143
- * - Althea Non / 30172442
- * - Minori Olguin / 30035923
- * - Kelly Osena / 30074352
- * - Muhib Qureshi / 30076351
- * - Sofia Rubio / 30113733
- * - Muzammil Saleem / 30180889
- * - Steven Susorov / 30197973
- * - Lydia Swiegers / 30174059
- * - Elizabeth Szentmiklossy / 30165216
- * - Anthony Tolentino / 30081427
- * - Johnny Tran / 30140472
- * - Kaylee Xiao / 30173778 
- **/
+// Project 2 Iteration Group 3
+//Julie Kim 10123567
+//Aryaman Sandhu 30017164
+//Arcleah Pascual 30056034
+//Aoi Ueki 30179305
+//Ernest Shukla 30156303
+//Shawn Hanlon 10021510
+//Jaimie Marchuk 30112841
+//Sofia Rubio 30113733
+//Maria Munoz 30175339
+//Anne Lumumba 30171346
+//Nathaniel Dafoe 30181948
 
 package com.thelocalmarketplace.GUI;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 
-import com.jjjwelectronics.card.InvalidPINException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
+import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
-
-
-
 
 /*
  * This is where Project 3 Logic will be entered 
@@ -45,11 +30,15 @@ import com.thelocalmarketplace.software.TouchScreen;
  * GUI code) and Panels
  */
 public class GUILogic {
-	public TouchScreen screen;
-	public GUILogic(TouchScreen t) {
 
+	public TouchScreen screen;
+	private Attendant attendant;
+	private RunGUI gui;
+	public GUILogic(TouchScreen t) {
 		this.screen = t;
+		attendant = new Attendant(t.getSoftware());
 	}
+	
 //----------------------------------------------------------------
 //Start Session Panel, 
 	
@@ -85,9 +74,11 @@ public class GUILogic {
         //Logic Here
 	}
 	
+	//signal for attendant to help the customer and set attended to false--> attendant window opens
 	public void buttonR5_CustomerWantstoRemoveItem() {
         System.out.println("buttonR5_CustomerWantstoRemoveItem"); 
-        //Logic Here
+        screen.signalForAttendant();
+        attendant.setAttendedToFalse();
 	}
 	
 	public void buttonR6_CustomerSelectsLanguage() {
@@ -98,13 +89,18 @@ public class GUILogic {
 	/*
 	 * return the string that will be displayed in GUI "Receipt"
 	 */
+    
 	public String buttonR7_CustomerAddsItem_PLUCode() {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
-        //Logic Here
-        //Example Code Here
-
-        String addItemPLU_result = "New Item thru PLU Code";
-		return addItemPLU_result;
+        PriceLookUpCode pluCode = new PriceLookUpCode(EnterPLU.textPLUcode);
+       
+        PLUCodedProduct found = ProductDatabases.PLU_PRODUCT_DATABASE.get(pluCode);
+        long price = found.getPrice();
+        String description = found.getDescription();
+        screen.selectAddPLUProduct(pluCode);
+        
+        return description;
+		
 	}
 	
 	/*
@@ -119,12 +115,9 @@ public class GUILogic {
 	}
 	
 	// This will switch to the Payment Panel
-	public void buttonR9_CustomerWantsToPay(int total) {
+	public void buttonR9_CustomerWantsToPay() {
         System.out.println("buttonR9_CustomerWantsToPay!");
-
-
-
-
+        
 	}
 	
 //----------------------------------------------------------------
@@ -161,11 +154,8 @@ public class GUILogic {
 	public String buttonB1_CustomerScansBarcodedProduct_MainScanner() {
         System.out.println("buttonB1_CustomerScansBarcodedProduct_MainScanner");
         //Example Code Here 
-        //Logic Here
-		//for testing
-		screen.getSoftware().addToOrderTotal(BigDecimal.TEN);
-
-        String addItemB1_result = Integer.toString(this.getTotal());
+        // Logic Here 
+        String addItemB1_result = "New Barcoded Product thru Main Scanner";
 		return addItemB1_result;
 	}
 	
@@ -177,51 +167,15 @@ public class GUILogic {
 		return addItemB2_result;
 	}
 	
-	public String buttonB3_CustomerScansBarcodedProduct_RFIDTag() {
-        System.out.println("buttonB3_CustomerScansBarcodedProduct_RFIDTag");
-        //Example Code Here 
-        // Logic Here 
-        String addItemB3_result = "New Barcoded Product thru RFID Tag";
-		return addItemB3_result;
-	}
 	
-	public void payment_buttonB1_CustomerPaysWithDebitSwipe(int total) throws IOException {
-		screen.payViaSwipe("debit");
-	}
+	
+	
 
-	public void payment_buttonB2_CustomerPaysWithCreditSwipe(int total) throws IOException {
-		screen.payViaSwipe("credit");
-	}
-
-	public void payment_buttonB4_CustomerPaysWithDebitTap(int total) throws IOException {
-		screen.payViaTap("debit");
-	}
-
-	public void payment_buttonB5_CustomerPaysWithCreditTap(int total) throws IOException {
-		screen.payViaTap("credit");
-	}
-
-	public boolean payment_CustomerPaysWithCreditInsert(int total, String PIN) throws IOException {
-		try {
-			screen.payViaInsert("credit", PIN);
-		}
-		catch (InvalidPINException e)
-		{
-			return false;
-		}
-		if (getTotal() == 0)
-			return true;
-		return false;
-	}
-
-	public boolean payment_CustomerPaysWithDebitInsert(int total, String PIN) throws IOException {
-		screen.payViaInsert("debit", PIN);
-
-		if (getTotal() == 0 )
-			return true;
-		return false;
-	}
-
+	
+	
+	
+	
+	
 	
 	
 //----------------------------------------------------------------
@@ -265,9 +219,8 @@ public class GUILogic {
 	}
 	
 	public int getTotal() {
-		//System.out.println("The total is "+total);
-		//return total;
-		return screen.getSoftware().getOrderTotal().intValue();
+		System.out.println("The total is "+total);
+		return total;
 	}
 	
 	public void addtoTotal(int meow) {
@@ -278,23 +231,6 @@ public class GUILogic {
 	public void subtractTotal(int meow) {
 		total = total - meow;
 		System.out.println("The total is "+total);
-	}
-
-	//TODO: finish implementing banknote and coin payment
-	public void PayBanknoteValFive() {
-
-	}
-
-	public void PayBanknoteValTen() {
-	}
-
-	public void PayBanknoteValTwenty() {
-	}
-
-	public void PayBanknoteValFifty() {
-	}
-
-	public void PayBanknoteValHundred() {
 	}
 }
 
