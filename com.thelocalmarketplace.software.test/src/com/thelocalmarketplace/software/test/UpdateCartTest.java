@@ -381,7 +381,7 @@ public class UpdateCartTest {
      * The test checks if the weights are correctly aggregated for identical scanned products.
      */
     @Test
-    public void testAddSameScannedProuductTwice() {
+    public void testAddSameScannedProductTwiceThenRemove1Bagged() {
     	// Set up the initial conditions
     	software.startSession();
         software.touchScreen.skip = false;
@@ -395,6 +395,35 @@ public class UpdateCartTest {
         // Verify that the weights are correctly aggregated for the identical scanned products
         assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getProductsInOrder().get(barcodedProduct1));
         assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getBaggedProducts().get(barcodedProduct1));
+
+
+        //remove 1 of the items
+        software.updateCart.removeItem(barcodedProduct1);
+        hardware.getBaggingArea().removeAnItem(bar1ItemCopied);
+        assertEquals(software.getOrderTotal(), bar1price);
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        assertFalse(software.isBlocked());
+    }
+
+    @Test
+    public void testAddSameScannedProductTwiceThenRemove1() {
+        // Set up the initial conditions
+        software.startSession();
+        software.touchScreen.skip = true;
+
+        // Add the same scanned product twice
+        software.updateCart.addScannedProduct(barcode1);
+        software.updateCart.addScannedProduct(barcode1);
+
+        //remove 1 of the items
+        software.updateCart.removeItem(barcodedProduct1);
+        assertEquals(software.getOrderTotal(), bar1price);
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        // attendant verifies item removed and customer unblocked
+        software.attendant.verifyItemRemovedFromOrder();
+        assertFalse(software.isBlocked());
     }
     
     /**
@@ -422,6 +451,7 @@ public class UpdateCartTest {
         assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getBaggedProducts().get(PLUProduct1));
         assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getProductsInOrder().get(PLUProduct1));
     }
+
     
     /**
      * JUnit test case for text search functionality with barcoded products.
