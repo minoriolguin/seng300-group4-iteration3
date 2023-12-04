@@ -1,39 +1,29 @@
  /**
- *Project 3 Iteration Group 4
+ *Project, Iteration 3, Group 4
  *  Group Members:
- * - Julie Kim 10123567
- * - Aryaman Sandhu 30017164
- * - Arcleah Pascual 30056034
- * - Aoi Ueki 30179305
- * - Ernest Shukla 30156303
- * - Shawn Hanlon 10021510
- * - Jaimie Marchuk 30112841
- * - Sofia Rubio 30113733
- * - Maria Munoz 30175339
- * - Anne Lumumba 30171346
- * - Nathaniel Dafoe 30181948
- * - Arvin Bolbolanardestani 30165484
- * - Anthony Chan 30174703
- * - Marvellous Chukwukelu 30197270
- * - Farida Elogueil 30171114
- * - Ahmed Elshabasi 30188386
- * - Shawn Hanlon 10021510
- * - Steven Huang 30145866
- * - Nada Mohamed 30183972
- * - Jon Mulyk 30093143
- * - Althea Non 30172442
- * - Minori Olguin 30035923
- * - Kelly Osena 30074352
- * - Muhib Qureshi 30076351
- * - Sofia Rubio 30113733
- * - Muzammil Saleem 30180889
- * - Steven Susorov 30197973
- * - Lydia Swiegers 30174059
- * - Elizabeth Szentmiklossy 30165216
- * - Anthony Tolentino 30081427
- * - Johnny Tran 30140472
- * - Kaylee Xiao 30173778
- */
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software;
 
 
@@ -112,6 +102,7 @@ public class Software {
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 	public final CoinStorageUnit coinStorage;
+	public final  BanknoteStorageUnit bankNoteStorage;
 	
 	/**
      * A boolean variable that keeps track of whether a customer needs attention.
@@ -145,6 +136,7 @@ public class Software {
 			this.coinDispensers = bronze.getCoinDispensers();
 			this.reusableBagDispenser = bronze.getReusableBagDispenser();
 			this.coinStorage = bronze.getCoinStorage();
+			this.bankNoteStorage = bronze.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -161,6 +153,7 @@ public class Software {
 			this.coinDispensers = silver.getCoinDispensers();
 			this.reusableBagDispenser = silver.getReusableBagDispenser();
 			this.coinStorage = silver.getCoinStorage();
+			this.bankNoteStorage = silver.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -177,6 +170,7 @@ public class Software {
 			this.coinDispensers = gold.getCoinDispensers();
 			this.reusableBagDispenser = gold.getReusableBagDispenser();
 			this.coinStorage = gold.getCoinStorage();
+			this.bankNoteStorage = gold.getBanknoteStorage();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -192,6 +186,7 @@ public class Software {
 			this.coinDispensers = hardware.getCoinDispensers();
 			this.reusableBagDispenser = hardware.getReusableBagDispenser();
 			this.coinStorage = hardware.getCoinStorage();
+			this.bankNoteStorage = hardware.getBanknoteStorage();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -211,6 +206,7 @@ public class Software {
 
 
 		//Initialize Product Lists and Weight Limit
+		PopulateProductDatabases.populateDatabases();
 		productsInOrder = new HashMap<>();
 		barcodedProductsInOrder = new ArrayList<>();
 		pluCodedProductsInOrder = new ArrayList<>();
@@ -503,7 +499,9 @@ public class Software {
 	public BanknoteDispensationSlot getBanknoteDispenser() {
 		return banknoteDispenser;
 	}
-
+	public BanknoteStorageUnit getBankNoteStorage() {
+		return bankNoteStorage;
+	}
 	/**
 	 * Retrieves the coin tray of the self-checkout station.
 	 *
@@ -539,10 +537,10 @@ public class Software {
 		        // First, validate the format of the membership number
 		        if (membershipValidator.isValid(membershipNumber)) {
 		            // Convert the string to an integer for database lookup
-		            int memberId = Integer.parseInt(membershipNumber);
+		            // int memberId = Integer.parseInt(membershipNumber);
 
 		            // Check if the member exists in the database
-		            if (membershipDatabase.memberExists(memberId)) {
+		            if (membershipDatabase.memberExists(membershipNumber)) {
 		                // Process the valid membership number
 		                System.out.println("Membership number is valid and found in the database.");
 		                // TODO: Link to customer session, update points, etc.
@@ -603,6 +601,7 @@ public class Software {
 	    if (needsAttention == true) {
 	    	attendant.setAttendedToFalse();
 	        attendant.respondToCustomer();
+	        
 	    } else {
 	        // Nothing should happen here since this should never happen
 	    }

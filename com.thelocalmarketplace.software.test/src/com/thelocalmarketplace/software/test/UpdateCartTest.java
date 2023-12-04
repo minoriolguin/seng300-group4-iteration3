@@ -1,40 +1,32 @@
  /**
- *Project 3 Iteration Group 4
+ *Project, Iteration 3, Group 4
  *  Group Members:
- * - Julie Kim 10123567
- * - Aryaman Sandhu 30017164
- * - Arcleah Pascual 30056034
- * - Aoi Ueki 30179305
- * - Ernest Shukla 30156303
- * - Shawn Hanlon 10021510
- * - Jaimie Marchuk 30112841
- * - Sofia Rubio 30113733
- * - Maria Munoz 30175339
- * - Anne Lumumba 30171346
- * - Nathaniel Dafoe 30181948
- * - Arvin Bolbolanardestani 30165484
- * - Anthony Chan 30174703
- * - Marvellous Chukwukelu 30197270
- * - Farida Elogueil 30171114
- * - Ahmed Elshabasi 30188386
- * - Shawn Hanlon 10021510
- * - Steven Huang 30145866
- * - Nada Mohamed 30183972
- * - Jon Mulyk 30093143
- * - Althea Non 30172442
- * - Minori Olguin 30035923
- * - Kelly Osena 30074352
- * - Muhib Qureshi 30076351
- * - Sofia Rubio 30113733
- * - Muzammil Saleem 30180889
- * - Steven Susorov 30197973
- * - Lydia Swiegers 30174059
- * - Elizabeth Szentmiklossy 30165216
- * - Anthony Tolentino 30081427
- * - Johnny Tran 30140472
- * - Kaylee Xiao 30173778
- */
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
 
+/**
+ * This class contains JUnit tests for the UpdateCart class in the Self Checkout System.
+ **/
 package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Item;
@@ -380,7 +372,7 @@ public class UpdateCartTest {
      * The test checks if the weights are correctly aggregated for identical scanned products.
      */
     @Test
-    public void testAddSameScannedProuductTwice() {
+    public void testAddSameScannedProductTwiceThenRemove1Bagged() {
     	// Set up the initial conditions
     	software.startSession();
         software.touchScreen.skip = false;
@@ -394,6 +386,35 @@ public class UpdateCartTest {
         // Verify that the weights are correctly aggregated for the identical scanned products
         assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getProductsInOrder().get(barcodedProduct1));
         assertEquals(bar1Item.getMass().sum(bar1ItemCopied.getMass()), software.getBaggedProducts().get(barcodedProduct1));
+
+
+        //remove 1 of the items
+        software.updateCart.removeItem(barcodedProduct1);
+        hardware.getBaggingArea().removeAnItem(bar1ItemCopied);
+        assertEquals(software.getOrderTotal(), bar1price);
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        assertFalse(software.isBlocked());
+    }
+
+    @Test
+    public void testAddSameScannedProductTwiceThenRemove1() {
+        // Set up the initial conditions
+        software.startSession();
+        software.touchScreen.skip = true;
+
+        // Add the same scanned product twice
+        software.updateCart.addScannedProduct(barcode1);
+        software.updateCart.addScannedProduct(barcode1);
+
+        //remove 1 of the items
+        software.updateCart.removeItem(barcodedProduct1);
+        assertEquals(software.getOrderTotal(), bar1price);
+        assertTrue(software.getProductsInOrder().containsKey(barcodedProduct1));
+        assertTrue(software.getBarcodedProductsInOrder().contains(barcodedProduct1));
+        // attendant verifies item removed and customer unblocked
+        software.attendant.verifyItemRemovedFromOrder();
+        assertFalse(software.isBlocked());
     }
     
     /**
@@ -421,6 +442,7 @@ public class UpdateCartTest {
         assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getBaggedProducts().get(PLUProduct1));
         assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getProductsInOrder().get(PLUProduct1));
     }
+
     
     /**
      * JUnit test case for text search functionality with barcoded products.

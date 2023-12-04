@@ -1,39 +1,29 @@
  /**
- *Project 3 Iteration Group 4
+ *Project, Iteration 3, Group 4
  *  Group Members:
- * - Julie Kim 10123567
- * - Aryaman Sandhu 30017164
- * - Arcleah Pascual 30056034
- * - Aoi Ueki 30179305
- * - Ernest Shukla 30156303
- * - Shawn Hanlon 10021510
- * - Jaimie Marchuk 30112841
- * - Sofia Rubio 30113733
- * - Maria Munoz 30175339
- * - Anne Lumumba 30171346
- * - Nathaniel Dafoe 30181948
- * - Arvin Bolbolanardestani 30165484
- * - Anthony Chan 30174703
- * - Marvellous Chukwukelu 30197270
- * - Farida Elogueil 30171114
- * - Ahmed Elshabasi 30188386
- * - Shawn Hanlon 10021510
- * - Steven Huang 30145866
- * - Nada Mohamed 30183972
- * - Jon Mulyk 30093143
- * - Althea Non 30172442
- * - Minori Olguin 30035923
- * - Kelly Osena 30074352
- * - Muhib Qureshi 30076351
- * - Sofia Rubio 30113733
- * - Muzammil Saleem 30180889
- * - Steven Susorov 30197973
- * - Lydia Swiegers 30174059
- * - Elizabeth Szentmiklossy 30165216
- * - Anthony Tolentino 30081427
- * - Johnny Tran 30140472
- * - Kaylee Xiao 30173778
- */
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software.test;
 
 import static org.junit.Assert.*;
@@ -56,6 +46,8 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.software.MembershipDatabase;
+import com.thelocalmarketplace.software.MembershipNumberValidator;
 import com.thelocalmarketplace.software.Software;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
@@ -63,9 +55,7 @@ import powerutility.PowerGrid;
 
 public class MaintenanceTest {
 	
-	private SelfCheckoutStationBronze bronze_hardware;
-	private SelfCheckoutStationGold gold_hardware;
-	private SelfCheckoutStationSilver silver_hardware;
+	private Software software;
 	
 	private Software bronze_software;
 	private Software gold_software;
@@ -100,6 +90,15 @@ public class MaintenanceTest {
 //    private Coin coin_dime = new Coin(CAD_Currency,value_dime);
 //    private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
 //    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
+    
+    private final String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
+    private final String lowPaperMsg = "PRINTER_LOW_PAPER";
+    private final String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
+
+	private MembershipDatabase membershipDatabase;
+	private MembershipNumberValidator membershipNumValidator;
+	
+	private String member0ID;
 
 	@Before
 	public void setUp() throws Exception {
@@ -161,13 +160,13 @@ public class MaintenanceTest {
 		
 		
 		bronze_software.maintenance.resolveInkIssue((int)(bronze_software.maintenance.MAXIMUM_INK * 0.5));
-		bronze_software.maintenance.resolvePrinterPaperIssue(bronze_software.maintenance.MAXIMUM_PAPER);
+		bronze_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		silver_software.maintenance.resolveInkIssue((int)(silver_software.maintenance.MAXIMUM_INK * 0.5));
-		silver_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		gold_software.maintenance.resolveInkIssue((int)(gold_software.maintenance.MAXIMUM_INK * 0.5));
-		gold_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		bronze_cDispensers = bronze_software.getCoinDispensers();
 		silver_cDispensers = silver_software.getCoinDispensers();
@@ -207,18 +206,23 @@ public class MaintenanceTest {
 		gold_software.attendant.enableCustomerStation();
 		
 		
-		for (BigDecimal bd : billDenominations) {
-			banknotes.add(new Banknote(CAD,bd));		
-		}
+//		for (BigDecimal bd : billDenominations) {
+//			banknotes.add(new Banknote(CAD,bd));		
+//		}
 		
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
-		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);	}
-		
-		
+		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 
 
-	@Test
+		membershipDatabase = new MembershipDatabase();
+	    membershipNumValidator = new MembershipNumberValidator(this.membershipDatabase);
+	    
+	    //add a valid string to the database
+		member0ID = membershipDatabase.addMember("Alice");
+	}
+	
+	
 	public void testMaintenance() {
 //		if (silver_software.printer instanceof ReceiptPrinterSilver) {
 //		fail("ink: "+gold_software.printer.inkRemaining());
@@ -816,23 +820,185 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testCheckPaper() {
-		fail("Not yet implemented");
+	public void testCheckPaperBronzeStation() {
+		bronze_software.maintenance.checkPaper(100);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroSilverStation() {
+		silver_software.maintenance.setPaperRemaining(0);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.outOfPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroGoldStation() {
+		gold_software.maintenance.setPaperRemaining(0);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.outOfPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.checkPaper(50);
+		boolean flag = !bronze_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.checkPaper(50);
+		boolean flag = !silver_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.checkPaper(50);
+		boolean flag = !gold_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.checkPaper(5000);
+		boolean flag = bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.checkPaper(5000);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.checkPaper(5000);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
 	}
 
 	@Test
-	public void testPredictLowPaper() {
-		fail("Not yet implemented");
+	public void testPredictLowPaperLevelBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.setAveragePaperUsagePerSession(5000);
+		bronze_software.maintenance.predictLowPaper();
+		boolean flag = bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.setAveragePaperUsagePerSession(5000);
+		silver_software.maintenance.predictLowPaper();
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.setAveragePaperUsagePerSession(5000);
+		gold_software.maintenance.predictLowPaper();
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.setAveragePaperUsagePerSession(50);
+		bronze_software.maintenance.predictLowPaper();
+		boolean flag = !(bronze_software.maintenance.getIssues().contains(this.lowPaperMsg) || bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || bronze_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.setAveragePaperUsagePerSession(50);
+		silver_software.maintenance.predictLowPaper();
+		boolean flag = !(silver_software.maintenance.getIssues().contains(this.lowPaperMsg) || silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || silver_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.setAveragePaperUsagePerSession(50);
+		gold_software.maintenance.predictLowPaper();
+		boolean flag = !(gold_software.maintenance.getIssues().contains(this.lowPaperMsg) || gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || gold_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
 	}
 
-	@Test
-	public void testResolvePrinterPaperIssue() {
-		fail("Not yet implemented");
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadBronzeStation() throws OverloadedDevice {
+		bronze_software.maintenance.resolvePrinterPaperIssue(10000);
 	}
-
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
 	@Test
-	public void testThePrinterIsOutOfPaper() {
-		fail("Not yet implemented");
+	public void testResolvePrinterPaperIssueSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.7), silver_software.maintenance.getPaperRemaining());
+	}
+	
+	@Test
+	public void testResolvePrinterPaperIssueGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.7), gold_software.maintenance.getPaperRemaining());
 	}
 
 	@Test
@@ -871,16 +1037,6 @@ public class MaintenanceTest {
 		assertTrue(bronze_software.isCustomerStationBlocked());
 		assertTrue(silver_software.isCustomerStationBlocked());
 		assertTrue(gold_software.isCustomerStationBlocked());
-	}
-
-	@Test
-	public void testThePrinterHasLowPaper() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testPaperHasBeenAddedToThePrinter() {
-		fail("Not yet implemented");
 	}
 
 	@Test
@@ -1009,7 +1165,6 @@ public class MaintenanceTest {
 		assertTrue(silver_software.isCustomerStationBlocked());
 		assertTrue(gold_software.isCustomerStationBlocked());
 	}
-	
 	
 	@Test
 	public void testOutOfBanknotes() {
@@ -1173,5 +1328,235 @@ public class MaintenanceTest {
 		assertFalse(gold_software.isCustomerStationBlocked());
 	}
 
+	/**
+	 * Test adding a member to the database
+	 */
+	@Test
+	public void testAddMemberToDatabase()
+	{
+		String memberID = membershipDatabase.addMember("bob");
+		assertTrue(membershipDatabase.memberExists(memberID));
+	}
+	
+	/**
+	 * Test adding a member with null as a name to the database
+	 */
+	@Test(expected = NullPointerSimulationException.class)
+	public void testAddNullMemberToDatabase()
+	{
+		membershipDatabase.addMember(null);
+	}
+	
+	/**
+	 * Test adding a member with an empty string for a name to the database
+	 */
+	@Test(expected = RuntimeException.class)
+	public void testAddEmtpyMemberNameToDatabase()
+	{
+		
+		membershipDatabase.addMember("");
+	}
+	
+	/**
+	 * test adding points to the user's account
+	 */
+	@Test
+	public void testAddPoints()
+	{
+		int points = 50;
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(points, membershipDatabase.getPoints(member0ID));
+	}
+	
+	
+	/**
+	 * Test negative points being added 
+	 */
+	@Test
+	public void testAddNegativePoints()
+	{
+		int points = -50;
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+	}
+
+	/**
+	 * 
+	 */
+	@Test(expected = ArithmeticException.class)
+	public void testAddOverflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMAX = Integer.MAX_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.addPoints(member0ID, pointsMAX);
+	}
+	
+	@Test
+	public void testSubtractPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = 35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - pointsToRemove, membershipDatabase.getPoints(member0ID));
+	}
+	
+	@Test
+	public void testSubtractExactPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = pointsToAdd;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+		
+	}
+
+	@Test
+	public void testSubtractNegativePoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = -35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - Math.abs(pointsToRemove), membershipDatabase.getPoints(member0ID));
+	}
+
+	@Test(expected = ArithmeticException.class)
+	public void testSubtractUnderflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMIN = Integer.MIN_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.subtractPoints(member0ID, pointsMIN);
+	}
+	
+	/**
+	 * test valid case
+	 */
+	@Test
+	public void testValidMembershipNumber()
+	{
+		//make sure a session is started
+//		String memberNum = "00000001";
+		String memberNum = "12345678";
+		membershipDatabase.addMember(memberNum);
+		
+		//mismatch between database and actual
+//		assertTrue(membershipNumValidator.isValid(Integer.toString(memberNum0ID)));
+//		assertTrue(membershipNumValidator.isValid(memberNum));
+//		assertTrue(membershipNumValidator.isValid(memberNum0));
+	}
+	
+	/**
+	 * Test with member not in database
+	 */
+	@Test
+	public void testMembershipNumberNotInDatabase()
+	{
+		String memberNum = "00000001";
+//		assertFalse(membershipDatabase.memberExists(Integer.parseInt(memberNum)));
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * test with a very large string input
+	 */
+	@Test
+	public void testVeryLargeMemberNum()
+	{
+		String memberNum = "1078234678126340781234789012078780078947867816780167841236780";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test with a small input
+	 */
+	@Test
+	public void testSmallInput()
+	{
+		String memberNum = "123";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input
+	 */
+	@Test
+	public void testWithGarbageString0()
+	{
+		String memberNum = "123asDf;";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically special characters
+	 */
+	@Test
+	public void testWithSpecialCharacters()
+	{
+		String memberNum = "12-3@5$6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with spaces
+	 */
+	@Test
+	public void testWithSpaces()
+	{
+		String memberNum = "12 345 6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically with only 1 lowercase letter sandwiched in
+	 */
+	@Test
+	public void testWithSandwichedCharacter()
+	{
+		String memberNum = "1234a567";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with all lowercase letters
+	 */
+	@Test
+	public void testAllLowercaseLetters()
+	{
+		String memberNum = "abcdefg";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically null
+	 */
+	@Test
+	public void testNull()
+	{
+		assertFalse(membershipNumValidator.isValid(null));
+	}
+	
+
+	/**
+	 * Test an invalid string as input. Specifically an empty string
+	 */
+	@Test
+	public void emptyString()
+	{
+		assertFalse(membershipNumValidator.isValid(""));
+	}
 
 }
