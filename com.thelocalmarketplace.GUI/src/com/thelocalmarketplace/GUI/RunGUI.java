@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.thelocalmarketplace.software.PayByCard;
+import com.thelocalmarketplace.software.TouchScreen;
 import com.jjjwelectronics.card.Card;
 
 public class RunGUI extends JFrame implements logicObserver {
@@ -44,6 +45,8 @@ public class RunGUI extends JFrame implements logicObserver {
     // For logic testing - delete after all GUI is done
     private int total;
     private JLabel totalLabel;
+    private EnterPLU plu;
+    
     
     //This is what allows Logic to happen when I click a button
 	private GUILogic guiLogicInstance;
@@ -81,6 +84,8 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(createCashCoinPanel(), "cashCoinPanel");
         cardPanel.add(new SelectLanguage(this), "selectLanguage");
         cardPanel.add(new EnterMembershipNumber(this), "enterMembership");
+        cardPanel.add(new EnterPLU(this), "enterPLU");
+        cardPanel.add(new ItemAddedFrame(this), "itemAddedFrame");
 //        cardPanel.add(createNumberPad(), "numpadPanel");
         add(cardPanel);
         
@@ -235,7 +240,7 @@ public class RunGUI extends JFrame implements logicObserver {
             	//PROJ3 : Something needs to happen when customer wants to create membership
             }
         });
-        
+   
         JButton button3 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
         		+ "Call<br>Attendant</div></html>");
         button3.addActionListener(new ActionListener() {
@@ -245,6 +250,7 @@ public class RunGUI extends JFrame implements logicObserver {
             	// PROJ3: Customer gets blocked until Attendant clears
             }
         });
+    
         
         JButton button4 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
         		+ "Add<br>Own Bags</div></html>");
@@ -282,9 +288,10 @@ public class RunGUI extends JFrame implements logicObserver {
         button7.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	String addItemPLU_result = guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode();
-            	addNewLabel(addItemPLU_result);
-
+            	switchPanels("enterPLU");
+//            	String addItemPLU_result = guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode();
+//            	addNewLabel(addItemPLU_result);
+            	
             }
         });
         JButton button8 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
@@ -292,6 +299,7 @@ public class RunGUI extends JFrame implements logicObserver {
         button8.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	
             	String addItemVC_result = guiLogicInstance.buttonR8_CustomerAddsItem_VisualCatalogue();
             	addNewLabel(addItemVC_result);
             }
@@ -423,7 +431,7 @@ public class RunGUI extends JFrame implements logicObserver {
      * Part 5
      * This is for Left Panel/Checkout (Add product to Receipt)
      */
-    private void addNewLabel(String text) {
+    public void addNewLabel(String text) {
         JLabel label = new JLabel(text);
         labelList.add(label);
         leftPanel.add(label);
@@ -435,7 +443,7 @@ public class RunGUI extends JFrame implements logicObserver {
      * Part 5
      * This is for Left Panel/Checkout (Remove product from Receipt)
      */
-    private void removeLastLabel() {
+    public void removeLastLabel() {
         if (!labelList.isEmpty()) {
             JLabel removedLabel = labelList.remove(labelList.size() - 1);
             leftPanel.remove(removedLabel);

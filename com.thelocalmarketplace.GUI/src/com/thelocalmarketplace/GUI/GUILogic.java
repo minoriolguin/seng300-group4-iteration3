@@ -18,6 +18,9 @@ import java.util.List;
 
 
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
 
@@ -30,6 +33,7 @@ public class GUILogic {
 
 	public TouchScreen screen;
 	private Attendant attendant;
+	private RunGUI gui;
 	public GUILogic(TouchScreen t) {
 		this.screen = t;
 		attendant = new Attendant(t.getSoftware());
@@ -85,12 +89,18 @@ public class GUILogic {
 	/*
 	 * return the string that will be displayed in GUI "Receipt"
 	 */
+    
 	public String buttonR7_CustomerAddsItem_PLUCode() {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
-        //Logic Here
-        //Example Code Here 
-        String addItemPLU_result = "New Item thru PLU Code";
-		return addItemPLU_result;
+        PriceLookUpCode pluCode = new PriceLookUpCode(EnterPLU.textPLUcode);
+       
+        PLUCodedProduct found = ProductDatabases.PLU_PRODUCT_DATABASE.get(pluCode);
+        long price = found.getPrice();
+        String description = found.getDescription();
+        screen.selectAddPLUProduct(pluCode);
+        
+        return description;
+		
 	}
 	
 	/*
