@@ -50,7 +50,9 @@ public class VirtualKeyboard {
     private JPanel resultArea= new JPanel(new GridLayout(4,5,20,20));
     private Software software;
     
-    
+    /** 
+     * Function initialize the VirtualKeyboard frame and add appropriate component
+      **/
 
     public void run(Software s) {
         JFrame frame = new JFrame("Virtual Keyboard");
@@ -63,10 +65,6 @@ public class VirtualKeyboard {
         JScrollPane inputScrollPane = new JScrollPane(inputArea);
         frame.add(inputScrollPane, BorderLayout.NORTH);
         
-//        resultArea = new JTextArea();
-//        resultArea.setEditable(false);
-//        JScrollPane resultScrollPane = new JScrollPane(resultArea);
-//        frame.add(resultScrollPane, BorderLayout.CENTER);
        
         frame.add(resultArea,BorderLayout.CENTER);
 
@@ -75,7 +73,10 @@ public class VirtualKeyboard {
 
         frame.setVisible(true);
     }
-
+    /** 
+     * Function to instantiate the keyboard panel and fill it with buttons specified in keys.
+     * Returns the JPanel
+      **/
     private JPanel createKeyboardPanel() {
         JPanel keyboardPanel = new JPanel(new GridLayout(4, 13));
 
@@ -94,7 +95,9 @@ public class VirtualKeyboard {
 
         return keyboardPanel;
     }
-
+    /** 
+     * Function to handle what happens when one of keyboard button is pressed
+      **/
     private class KeyboardButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -109,14 +112,24 @@ public class VirtualKeyboard {
                     break;
                 case "Space":
                     inputArea.append(" ");
+                    
                     break;
                 case "Enter":
+                	resultArea.removeAll();
+                	resultArea.revalidate();
+                	resultArea.repaint();
+                	
                 	ArrayList<Product> searchResult = software.updateCart.textSearch(inputArea.getText());
                 	updateResultArea(searchResult);
                     break;
                 
                 default:
-                    inputArea.append(buttonText);
+                	if(inputArea.getText().isBlank()) {
+                		inputArea.append(buttonText);
+                	}
+                	else{
+                		inputArea.append(buttonText.toLowerCase());
+                	}
                     break;
             }
 
@@ -124,10 +137,12 @@ public class VirtualKeyboard {
         }
         
         
-
+        /** 
+         * Function to update the display area when enter is hit
+          **/
         private void updateResultArea(ArrayList<Product> result) {
             for(Product item: result) {
-            	int i =1;
+            	
             	if (!item.isPerUnit()) {
             		PLUCodedProduct product = (PLUCodedProduct)item;
             		 JButton button = new JButton(product.getDescription());
@@ -146,7 +161,10 @@ public class VirtualKeyboard {
 	           		 resultArea.repaint();
 	            	}
             }
-        }
+        }	
+        /** 
+         * Updates customer product shopping cart when clicked
+          **/
         private void handleProductClicked(Product item){
         	software.updateCart.addProduct(item);
         }
