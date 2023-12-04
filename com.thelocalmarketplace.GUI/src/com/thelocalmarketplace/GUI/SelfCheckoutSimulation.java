@@ -43,13 +43,17 @@ public class SelfCheckoutSimulation extends JFrame {
 	    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
 	    private SelfCheckoutStationBronze bronze_station;
 	    private SelfCheckoutStationGold gold_station;
-	    private SelfCheckoutStationSilver silver_staiton;
+	    private SelfCheckoutStationSilver silver_station;
+	    private Software software;
+	    private TouchScreen touchScreen;
+	    private GUILogic guiLogic;
+	    private RunGUI gui;
 	 public SelfCheckoutSimulation(SelfCheckoutStationBronze b, SelfCheckoutStationGold g, SelfCheckoutStationSilver s ) {
 		 	
 	    
 	        bronze_station = b;
 	        gold_station = g;
-	        silver_staiton = s;
+	        silver_station = s;
 	        
 	        // Set frame properties
 	        setTitle("Selfcheckout Station Simulation");
@@ -91,20 +95,25 @@ public class SelfCheckoutSimulation extends JFrame {
 	 private void handleButtonClick(int buttonNumber) {
 	        switch (buttonNumber) {
 	            case 1:
-	                System.out.println("Meow");
-	                Software software = new Software(bronze_station);
+	                software = new Software(bronze_station);
 	                software.turnOn();
-	                TouchScreen touchscreen = new TouchScreen(software);
-	                GUILogic guiLogic = new GUILogic(touchscreen);
-	                RunGUI gui = new RunGUI(guiLogic); 
+	                 touchScreen = new TouchScreen(software);
+	                 guiLogic = new GUILogic(touchScreen);
+	                 gui = new RunGUI(guiLogic); 
 	                break;
 	            case 2:
-	                System.out.println("Button Clicked");
-	                //insert Logic
+	            	software = new Software(gold_station);
+	                software.turnOn();
+	                 touchScreen = new TouchScreen(software);
+	                 guiLogic = new GUILogic(touchScreen);
+	                 gui = new RunGUI(guiLogic);
 	                break;
 	            case 3:
-	                System.out.println("Button Clicked");
-	                //insert Logic
+	            	software = new Software(silver_station);
+	                software.turnOn();
+	                 touchScreen = new TouchScreen(software);
+	                 guiLogic = new GUILogic(touchScreen);
+	                 gui = new RunGUI(guiLogic);
 	                break;
 	            
 	        }

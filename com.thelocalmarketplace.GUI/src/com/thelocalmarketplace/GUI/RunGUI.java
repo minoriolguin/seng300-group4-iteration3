@@ -50,7 +50,7 @@ public class RunGUI extends JFrame implements logicObserver {
      */
     private void SelfCheckoutGUI() {
     	//Frame Size
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 800);
         setLocation(0,0);
         
