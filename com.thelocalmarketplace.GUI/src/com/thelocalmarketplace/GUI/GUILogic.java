@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.jjjwelectronics.card.InvalidPINException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.TouchScreen;
@@ -31,10 +32,6 @@ import com.thelocalmarketplace.software.TouchScreen;
  * GUI code) and Panels
  */
 public class GUILogic {
-	public TouchScreen screen;
-	public GUILogic(TouchScreen t) {
-		this.screen = t;
-	}
 	
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -76,8 +73,8 @@ public class GUILogic {
         //Logic Here
 	}
 	
-	public void buttonR6_BLANK() {
-        System.out.println("buttonR6_BLANK");       
+	public void buttonR6_CustomerSelectsLanguage() {
+        System.out.println("buttonR6_CustomerSelectsLanguage");       
         //Logic Here
 	}
 	
@@ -107,6 +104,8 @@ public class GUILogic {
 	// This will switch to the Payment Panel
 	public void buttonR9_CustomerWantsToPay(int total) {
         System.out.println("buttonR9_CustomerWantsToPay!");
+
+
 
 
 	}
