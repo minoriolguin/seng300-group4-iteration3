@@ -1,8 +1,13 @@
 package com.thelocalmarketplace.software;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Scanner;
 
 import com.jjjwelectronics.Mass;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
+import com.tdc.banknote.Banknote;
 
 public class Attendant implements WeightDiscrepancyListener {
 
@@ -130,6 +135,7 @@ public class Attendant implements WeightDiscrepancyListener {
             } else if (response.equalsIgnoreCase("No")) {
             	System.out.println("Please attend to the customer and "
             			+ "then enter 'Yes' to continue.");
+            	break;
             } else {
                 System.out.println("Invalid response. Please enter Yes or No.");
             }
@@ -149,5 +155,26 @@ public class Attendant implements WeightDiscrepancyListener {
 	public void AddItemToScale() {
 		// TODO Auto-generated method stub
 		
+	}
+	/** 
+	 * Method for attendant to refill bank notes till full capacity
+	 * **/
+	public void refillBankNotes() {
+		Banknote banknote = new Banknote(Currency.getInstance("CAD"),new BigDecimal("5.00"));
+		while(software.getBankNoteStorage().hasSpace()) {
+			try {
+				software.getBankNoteStorage().receive(banknote);
+			} catch (DisabledException | CashOverloadException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	/** 
+	 * Method for attendant to empty all bank notes in the station storage
+	 * **/
+	public void emptyBankNotes() {
+		software.getBankNoteStorage().unload();
+		System.out.println(software.getBankNoteStorage().getBanknoteCount());
 	}
 }

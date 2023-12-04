@@ -76,7 +76,7 @@ public class TouchScreenTest {
     
     @Test
     public void testRemoveSelectedBarcodedProduct() {
-        touchScreen.removeSelectedBarcodedProduct(product);
+        touchScreen.removeProduct(product);
         assertFalse(checkout.getBarcodedProductsInOrder().contains(product));
     }
 
@@ -92,7 +92,7 @@ public class TouchScreenTest {
     @Test
     public void testBagsAdded() {
         touchScreen.selectAddOwnBags();
-        touchScreen.bagsAdded();
+        touchScreen.selectBagsAdded();
         assertFalse(checkout.mainScanner.isDisabled());
         assertFalse(checkout.handHeldScanner.isDisabled());
         assertFalse(checkout.weightDiscrepancy.expectOwnBagsToBeAdded);

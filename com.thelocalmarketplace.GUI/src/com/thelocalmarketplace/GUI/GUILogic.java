@@ -15,19 +15,6 @@ package com.thelocalmarketplace.GUI;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.thelocalmarketplace.software.AbstractPayByCash;
-import com.thelocalmarketplace.software.MembershipDatabase;
-import com.thelocalmarketplace.software.MembershipNumberValidator;
-import com.thelocalmarketplace.software.MembershipScanner;
-import com.thelocalmarketplace.software.Software;
-import com.thelocalmarketplace.software.PayByCard;
-import com.thelocalmarketplace.software.PayByBanknote;
-import com.thelocalmarketplace.software.PayByCoin;
-import com.thelocalmarketplace.software.PrintReceipt;
-import com.thelocalmarketplace.software.PurchaseBags;
-import com.thelocalmarketplace.software.UpdateCart;
-import com.thelocalmarketplace.software.WeightDiscrepancy;
-import com.jjjwelectronics.card.Card.CardData;
 
 
 /*
@@ -36,8 +23,6 @@ import com.jjjwelectronics.card.Card.CardData;
  * GUI code) and Panels
  */
 public class GUILogic {
-	private Software software;
-	private CardData data;
 	
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -64,6 +49,9 @@ public class GUILogic {
 	public void buttonR3_CustomerCallsAttendant() {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
+        screen.signalForAttendant();
+        AttendantFrame attendant_frame = new AttendantFrame(screen);
+        attendant_frame.show();
 	}
 	
 	public void buttonR4_CustomerAddsOwnBag() {
