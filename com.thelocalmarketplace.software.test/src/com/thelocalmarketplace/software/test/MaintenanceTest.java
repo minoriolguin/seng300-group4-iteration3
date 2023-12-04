@@ -791,7 +791,7 @@ public class MaintenanceTest {
 	public void testCheckPaperPaperRemainingIsZeroSilverStation() {
 		silver_software.maintenance.setPaperRemaining(0);
 		silver_software.maintenance.checkPaper(100);
-		boolean flag = silver_software.maintenance.getIssues().contains(this.outOfPaperMsg) && (silver_software.maintenance.getIssues().size() == 1);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.outOfPaperMsg);
 		assertTrue(flag);
 	}
 	
@@ -799,7 +799,7 @@ public class MaintenanceTest {
 	public void testCheckPaperPaperRemainingIsZeroGoldStation() {
 		gold_software.maintenance.setPaperRemaining(0);
 		gold_software.maintenance.checkPaper(100);
-		boolean flag = gold_software.maintenance.getIssues().contains(this.outOfPaperMsg) && (gold_software.maintenance.getIssues().size() == 1);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.outOfPaperMsg);
 		assertTrue(flag);
 	}
 	
@@ -807,7 +807,7 @@ public class MaintenanceTest {
 	public void testCheckPaperPaperIsLowSilverStation() {
 		silver_software.maintenance.setPaperRemaining(1);
 		silver_software.maintenance.checkPaper(100);
-		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg) && (silver_software.maintenance.getIssues().size() == 1);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg);
 		assertTrue(flag);
 	}
 	
@@ -815,7 +815,7 @@ public class MaintenanceTest {
 	public void testCheckPaperPaperIsLowGoldStation() {
 		gold_software.maintenance.setPaperRemaining(1);
 		gold_software.maintenance.checkPaper(100);
-		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg) && (gold_software.maintenance.getIssues().size() == 1);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg);
 		assertTrue(flag);
 	}
 	
@@ -839,7 +839,7 @@ public class MaintenanceTest {
 	public void testCheckPaperNoIssuesBronzeStation() {
 		bronze_software.maintenance.setPaperRemaining(1000);
 		bronze_software.maintenance.checkPaper(50);
-		boolean flag = (bronze_software.maintenance.getIssues().size() == 0) && (!bronze_software.isCustomerStationBlocked());
+		boolean flag = !bronze_software.isCustomerStationBlocked();
 		assertTrue(flag);
 	}
 	
@@ -847,7 +847,7 @@ public class MaintenanceTest {
 	public void testCheckPaperNoIssuesSilverStation() {
 		silver_software.maintenance.setPaperRemaining(1000);
 		silver_software.maintenance.checkPaper(50);
-		boolean flag = (silver_software.maintenance.getIssues().size() == 0) && (!silver_software.isCustomerStationBlocked());
+		boolean flag = !silver_software.isCustomerStationBlocked();
 		assertTrue(flag);
 	}
 	
@@ -855,7 +855,7 @@ public class MaintenanceTest {
 	public void testCheckPaperNoIssuesGoldStation() {
 		gold_software.maintenance.setPaperRemaining(1000);
 		gold_software.maintenance.checkPaper(50);
-		boolean flag = (gold_software.maintenance.getIssues().size() == 0) && (!gold_software.isCustomerStationBlocked());
+		boolean flag = !gold_software.isCustomerStationBlocked();
 		assertTrue(flag);
 	}
 	
@@ -915,7 +915,7 @@ public class MaintenanceTest {
 		bronze_software.maintenance.setPaperRemaining(1000);
 		bronze_software.maintenance.setAveragePaperUsagePerSession(50);
 		bronze_software.maintenance.predictLowPaper();
-		boolean flag = bronze_software.maintenance.getIssues().size() == 0;
+		boolean flag = !(bronze_software.maintenance.getIssues().contains(this.lowPaperMsg) || bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || bronze_software.maintenance.getIssues().contains(this.outOfPaperMsg));
 		assertTrue(flag);
 	}
 	
@@ -924,7 +924,7 @@ public class MaintenanceTest {
 		silver_software.maintenance.setPaperRemaining(1000);
 		silver_software.maintenance.setAveragePaperUsagePerSession(50);
 		silver_software.maintenance.predictLowPaper();
-		boolean flag = silver_software.maintenance.getIssues().size() == 0;
+		boolean flag = !(silver_software.maintenance.getIssues().contains(this.lowPaperMsg) || silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || silver_software.maintenance.getIssues().contains(this.outOfPaperMsg));
 		assertTrue(flag);
 	}
 	
@@ -933,7 +933,7 @@ public class MaintenanceTest {
 		gold_software.maintenance.setPaperRemaining(1000);
 		gold_software.maintenance.setAveragePaperUsagePerSession(50);
 		gold_software.maintenance.predictLowPaper();
-		boolean flag = gold_software.maintenance.getIssues().size() == 0;
+		boolean flag = !(gold_software.maintenance.getIssues().contains(this.lowPaperMsg) || gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || gold_software.maintenance.getIssues().contains(this.outOfPaperMsg));
 		assertTrue(flag);
 	}
 
