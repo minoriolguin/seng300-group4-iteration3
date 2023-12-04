@@ -28,7 +28,7 @@ public class VirtualKeyboard {
 
     public void run(Software s) {
         JFrame frame = new JFrame("Virtual Keyboard");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(700, 700);
         frame.setLayout(new BorderLayout());
         software = s;
