@@ -111,9 +111,9 @@ public class AttendantFrame {
             	
                 System.out.println("Lookup Product");
                 //insert logic
-                VirtualKeyboard keyboard = new VirtualKeyboard();
-                keyboard.run(screen.getSoftware());
-                break;
+               // VirtualKeyboard keyboard = new VirtualKeyboard();
+               // keyboard.run(screen.getSoftware());
+                //break;
             case 2:
             	//still need to attend to customer
             	attendant.setAttendedToFalse();
@@ -122,14 +122,12 @@ public class AttendantFrame {
                 //verify that the item was removed
                 screen.removeProduct(product);
                 
+                attendant.overRideWeightDiscrepancy();
+                
                 screen.displayRemoveItemFromBaggingArea();
                 
                 attendant.verifyItemRemovedFromOrder();
-                //set attended to true
-               // attendant.respondToCustomer();
-                
-                
-               
+                attendant.enableCustomerStation();
                 //insert Logic
                 break;
             case 3:
