@@ -64,7 +64,7 @@ public class TouchScreenTest {
 
     @Test
     public void payByBanknotetest() {
-        touchScreen.payByBanknote();
+        touchScreen.insertBanknote();
         assertFalse(checkout.banknoteValidator.isDisabled());
         assertTrue(checkout.banknoteValidator.isActivated());
     }

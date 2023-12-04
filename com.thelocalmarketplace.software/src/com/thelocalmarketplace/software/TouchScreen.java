@@ -2,7 +2,9 @@ package com.thelocalmarketplace.software;
 
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
+import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
@@ -11,6 +13,7 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * The {@code TouchScreen} class represents the touch screen interface in a self-checkout system.
@@ -38,6 +41,7 @@ public class TouchScreen implements WeightDiscrepancyListener {
 
     private Card DebitCard = new Card("debit", "4567890", "Jane",
             "908", "3579", true, true);
+    private Currency CAD;
 
     private Boolean cardsRegistered = false;
 
@@ -83,7 +87,9 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Initiates the payment process using banknotes.
      * Enables and activates the banknote validator and enables the printer.
      */
-    public void payByBanknote () {
+    private void payByBanknote () {
+        CAD = Currency.getInstance("CAD");
+        Coin.DEFAULT_CURRENCY = CAD;
         if (!software.getProductsInOrder().isEmpty()){
             software.banknoteValidator.enable();
             software.banknoteValidator.activate();
@@ -91,6 +97,11 @@ public class TouchScreen implements WeightDiscrepancyListener {
         }
         else
             displayNoItemsInCart();
+    }
+    //TODO: finish implementing banknote and coin payment
+    public void insertBanknote()
+    {
+        payByBanknote();
     }
     
     /**
@@ -127,6 +138,25 @@ public class TouchScreen implements WeightDiscrepancyListener {
             software.cardReader.tap(DebitCard);
     }
 
+    public void payViaInsert(String type, String pin) throws IOException{
+        payByCard();
+        if (type.equals("credit"))
+            try {
+                software.cardReader.insert(CreditCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+        else
+            try {
+                software.cardReader.insert(DebitCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+    }
 
 
     /**
