@@ -61,6 +61,10 @@ public class MaintenanceTest {
 	private Software gold_software;
 	private Software silver_software;
 	
+	private SelfCheckoutStationBronze bronze_hardware;
+	private SelfCheckoutStationSilver silver_hardware;
+	private SelfCheckoutStationGold gold_hardware;
+	
 	private Map<BigDecimal, ICoinDispenser> bronze_cDispensers;
 	private Map<BigDecimal, ICoinDispenser> silver_cDispensers;
 	private Map<BigDecimal, ICoinDispenser> gold_cDispensers;
