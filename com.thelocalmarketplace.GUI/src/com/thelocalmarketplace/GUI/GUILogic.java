@@ -31,8 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import com.jjjwelectronics.card.InvalidPINException;
+import com.jjjwelectronics.EmptyDevice;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.TouchScreen;
 
@@ -79,9 +78,19 @@ public class GUILogic {
         attendant_frame.show();
 	}
 	
-	public void buttonR4_CustomerAddsOwnBag() {
-        System.out.println("buttonR4_CustomerAddsOwnBag"); 
+	public void buttonR4_CustomerAddsBag() {
+        System.out.println("buttonR4_CustomerAddsBag"); 
         //Logic Here
+        screen.selectAddOwnBags();
+        try {
+			screen.purchaseBags(total);
+		} catch (EmptyDevice e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        screen.selectBagsAdded();
+        BagPanel bag_panel = new BagPanel(screen);
+        bag_panel.show();
 	}
 	
 	public void buttonR5_CustomerWantstoRemoveItem() {

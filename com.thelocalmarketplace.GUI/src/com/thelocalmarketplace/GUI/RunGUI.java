@@ -480,13 +480,12 @@ public class RunGUI extends JFrame implements logicObserver {
         });
         
         JButton button4 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add<br>Own Bags</div></html>");
+        		+ "Add<br>Bags</div></html>");
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	guiLogicInstance.buttonR4_CustomerAddsOwnBag();
-            	AddOwnBagGUI addOwnBagPanel = new AddOwnBagGUI();
-            	addOverlayPanel(addOwnBagPanel);
+            	guiLogicInstance.buttonR4_CustomerAddsBag();
+            	// PROJ3: Customer Adds Bags to Scale
             }
         });
         
