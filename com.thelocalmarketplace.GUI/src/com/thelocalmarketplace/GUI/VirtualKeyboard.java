@@ -23,7 +23,7 @@ public class VirtualKeyboard {
     private JTextArea inputArea;
     private JPanel resultArea= new JPanel(new GridLayout(4,5,20,20));
     private Software software;
-
+    
     
 
     public void run(Software s) {
@@ -36,7 +36,7 @@ public class VirtualKeyboard {
         inputArea.setEditable(false);
         JScrollPane inputScrollPane = new JScrollPane(inputArea);
         frame.add(inputScrollPane, BorderLayout.NORTH);
-
+        
 //        resultArea = new JTextArea();
 //        resultArea.setEditable(false);
 //        JScrollPane resultScrollPane = new JScrollPane(resultArea);
@@ -96,27 +96,34 @@ public class VirtualKeyboard {
 
         
         }
+        
+        
 
         private void updateResultArea(ArrayList<Product> result) {
             for(Product item: result) {
-            	//PLU Product
+            	int i =1;
             	if (!item.isPerUnit()) {
             		PLUCodedProduct product = (PLUCodedProduct)item;
             		 JButton button = new JButton(product.getDescription());
+            		 button.addActionListener(e->handleProductClicked(product));
             		 resultArea.add(button);
             		 resultArea.revalidate();
             		 resultArea.repaint();
             	}
+            	// Barcoded Product
             	else {
             		BarcodedProduct product = (BarcodedProduct)item;
 	           		 JButton button = new JButton(product.getDescription());
+	           		 button.addActionListener(e->handleProductClicked(product));
 	           		 resultArea.add(button);
 	           		 resultArea.revalidate();
 	           		 resultArea.repaint();
 	            	}
             }
         }
-
+        private void handleProductClicked(Product item){
+        	software.updateCart.addProduct(item);
+        }
 		
     }
 }
