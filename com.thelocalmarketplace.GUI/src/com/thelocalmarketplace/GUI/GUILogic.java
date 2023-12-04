@@ -33,6 +33,7 @@ import com.thelocalmarketplace.software.TouchScreen;
 public class GUILogic {
 	public TouchScreen screen;
 	public GUILogic(TouchScreen t) {
+
 		this.screen = t;
 	}
 	
