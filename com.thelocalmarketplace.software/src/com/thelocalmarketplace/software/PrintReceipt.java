@@ -74,6 +74,8 @@ public class PrintReceipt {
      */
     public void print(){
 
+        pluInCart = software.getPluCodedProductsInOrder();
+        barcodedProductsInCart = software.getBarcodedProductsInOrder();
         // print the start template
         printLine(startString);
         // print a line for each item in the cart

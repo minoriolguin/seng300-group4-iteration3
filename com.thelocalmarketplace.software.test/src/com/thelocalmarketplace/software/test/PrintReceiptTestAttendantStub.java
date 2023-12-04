@@ -15,28 +15,21 @@ package com.thelocalmarketplace.software.test;
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
 import com.jjjwelectronics.OverloadedDevice;
-import com.jjjwelectronics.printer.ReceiptPrinterBronze;
-import com.jjjwelectronics.printer.ReceiptPrinterGold;
-import com.jjjwelectronics.printer.ReceiptPrinterListener;
-import com.jjjwelectronics.printer.ReceiptPrinterSilver;
+import com.jjjwelectronics.printer.*;
 
 public class PrintReceiptTestAttendantStub implements ReceiptPrinterListener {
     // interacts with a cell on the attendant's screen that will inform them which printer is out (unless there is a hardware update)
     // for the stub only, the printer will be  remembered
-    ReceiptPrinterBronze printerBronze;
-    ReceiptPrinterSilver printerSilver;
-    ReceiptPrinterGold printerGold;
-    int outOfPaperCounter = 0;
-    int outOfInkCounter = 0;
+    IReceiptPrinter printerGold;
+    boolean outOfPaper;
+    boolean outOfInk;
 
-    public PrintReceiptTestAttendantStub(ReceiptPrinterBronze p) {
-    	this.printerBronze = p;
-    }
-    public PrintReceiptTestAttendantStub(ReceiptPrinterSilver p) {
-        this.printerSilver = p;
-    }
-    public PrintReceiptTestAttendantStub(ReceiptPrinterGold p) {
+
+
+    public PrintReceiptTestAttendantStub(IReceiptPrinter p) {
         this.printerGold = p;
+        this.outOfInk = false;
+        this.outOfPaper = false;
     }
 
     /**
@@ -44,14 +37,9 @@ public class PrintReceiptTestAttendantStub implements ReceiptPrinterListener {
      */
     @Override
     public void thePrinterIsOutOfPaper() {
-        outOfPaperCounter++;
+        outOfPaper = true;
         try {
-            if (printerBronze != null)
-                printerBronze.addPaper(1);
-            else if (printerSilver != null)
-                printerSilver.addPaper(1);
-            else if (printerGold != null)
-                printerGold.addPaper(1);
+            printerGold.addPaper(1);
         } catch (OverloadedDevice e) {
             System.out.println("Cannot add more paper, the printer is full.");
         }
@@ -62,14 +50,9 @@ public class PrintReceiptTestAttendantStub implements ReceiptPrinterListener {
      */
     @Override
     public void thePrinterIsOutOfInk() {
-        outOfInkCounter++;
+        outOfInk = true;
         try {
-            if (printerBronze != null)
-                printerBronze.addInk(1);
-            else if (printerSilver != null)
-                printerSilver.addInk(1);
-            else if (printerGold != null)
-                printerGold.addInk(1);
+            printerGold.addInk(1);
         } catch (OverloadedDevice e) {
             System.out.println("Cannot add more ink, the printer is full.");
         }
