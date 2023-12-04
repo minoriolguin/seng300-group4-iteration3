@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,8 @@ public class RunGUI extends JFrame implements logicObserver {
     private JPanel cardPanel;
     private CardLayout cardLayout;
     // For logic testing - delete after all GUI is done
-    private int total;
+    private int total = 10;
+    private int change;
     private JLabel totalLabel;
     
     //This is what allows Logic to happen when I click a button
@@ -266,6 +268,7 @@ public class RunGUI extends JFrame implements logicObserver {
             public void actionPerformed(ActionEvent e) {
             	String addItemPLU_result = guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode();
             	addNewLabel(addItemPLU_result);
+                openNumPadPanel();
 
             }
         });
@@ -283,7 +286,8 @@ public class RunGUI extends JFrame implements logicObserver {
         button9.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	guiLogicInstance.buttonR9_CustomerWantsToPay();
+
+            	guiLogicInstance.buttonR9_CustomerWantsToPay(total);
                 switchPanels("paymentPanel");
             }
         });
@@ -501,7 +505,7 @@ public class RunGUI extends JFrame implements logicObserver {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        JLabel TY_changeLabel = new JLabel("Your change is "+total+"!");
+        JLabel TY_changeLabel = new JLabel("Your change is "+guiLogicInstance.screen.getSoftware().getOrderTotal()+"!");
         TY_changeLabel.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -535,6 +539,11 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    guiLogicInstance.payment_buttonB1_CustomerPaysWithDebitSwipe(total);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 switchPanels("thankYouPanel");
             }
         });
@@ -542,7 +551,12 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                switchPanels("thankYouPanel"); 
+                try {
+                    guiLogicInstance.payment_buttonB1_CustomerPaysWithDebitSwipe(total);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                switchPanels("thankYouPanel");
             }
         });
         JButton payment_button3 = new JButton("DEBIT (Insert Card)");

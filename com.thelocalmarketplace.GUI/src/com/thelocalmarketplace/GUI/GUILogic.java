@@ -13,6 +13,7 @@
 
 package com.thelocalmarketplace.GUI;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +85,8 @@ public class GUILogic {
 	public String buttonR7_CustomerAddsItem_PLUCode() {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
         //Logic Here
-        //Example Code Here 
+        //Example Code Here
+
         String addItemPLU_result = "New Item thru PLU Code";
 		return addItemPLU_result;
 	}
@@ -101,9 +103,10 @@ public class GUILogic {
 	}
 	
 	// This will switch to the Payment Panel
-	public void buttonR9_CustomerWantsToPay() {
+	public void buttonR9_CustomerWantsToPay(int total) {
         System.out.println("buttonR9_CustomerWantsToPay!");
-        //Logic Here
+
+
 	}
 	
 //----------------------------------------------------------------
@@ -161,15 +164,22 @@ public class GUILogic {
 		return addItemB3_result;
 	}
 	
-	
-	
-	
+	public void payment_buttonB1_CustomerPaysWithDebitSwipe(int total) throws IOException {
+		screen.payViaSwipe("debit");
+	}
 
-	
-	
-	
-	
-	
+	public void payment_buttonB2_CustomerPaysWithCreditSwipe(int total) throws IOException {
+		screen.payViaSwipe("credit");
+	}
+
+	public void payment_buttonB4_CustomerPaysWithDebitTap(int total) throws IOException {
+		screen.payViaTap("debit");
+	}
+
+	public void payment_buttonB5_CustomerPaysWithCreditTap(int total) throws IOException {
+		screen.payViaTap("credit");
+	}
+
 	
 	
 //----------------------------------------------------------------
