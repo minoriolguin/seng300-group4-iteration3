@@ -64,6 +64,10 @@ public class MaintenanceTest {
 //    private Coin coin_dime = new Coin(CAD_Currency,value_dime);
 //    private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
 //    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
+    
+    private final String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
+    private final String lowPaperMsg = "PRINTER_LOW_PAPER";
+    private final String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
 
 	@Before
 	public void setUp() throws Exception {
@@ -125,13 +129,13 @@ public class MaintenanceTest {
 		
 		
 		bronze_software.maintenance.resolveInkIssue((int)(bronze_software.maintenance.MAXIMUM_INK * 0.5));
-		bronze_software.maintenance.resolvePrinterPaperIssue(bronze_software.maintenance.MAXIMUM_PAPER);
+		bronze_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		silver_software.maintenance.resolveInkIssue((int)(silver_software.maintenance.MAXIMUM_INK * 0.5));
-		silver_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		gold_software.maintenance.resolveInkIssue((int)(gold_software.maintenance.MAXIMUM_INK * 0.5));
-		gold_software.maintenance.resolvePrinterPaperIssue(silver_software.maintenance.MAXIMUM_PAPER);
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(bronze_software.maintenance.MAXIMUM_PAPER * 0.5));
 		
 		bronze_cDispensers = bronze_software.getCoinDispensers();
 		silver_cDispensers = silver_software.getCoinDispensers();
@@ -171,15 +175,14 @@ public class MaintenanceTest {
 		gold_software.attendant.enableCustomerStation();
 		
 		
-		for (BigDecimal bd : billDenominations) {
-			banknotes.add(new Banknote(CAD,bd));		
-		}
+//		for (BigDecimal bd : billDenominations) {
+//			banknotes.add(new Banknote(CAD,bd));		
+//		}
 		
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
-		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);	}
-		
-		
+		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+	}
 
 
 	@Test
@@ -780,23 +783,185 @@ public class MaintenanceTest {
 	}
 
 	@Test
-	public void testCheckPaper() {
-		fail("Not yet implemented");
+	public void testCheckPaperBronzeStation() {
+		bronze_software.maintenance.checkPaper(100);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroSilverStation() {
+		silver_software.maintenance.setPaperRemaining(0);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.outOfPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperRemainingIsZeroGoldStation() {
+		gold_software.maintenance.setPaperRemaining(0);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.outOfPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperPaperIsLowGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperMsg);
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1);
+		silver_software.maintenance.checkPaper(100);
+		boolean flag = silver_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperStationIsBlockedGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1);
+		gold_software.maintenance.checkPaper(100);
+		boolean flag = gold_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.checkPaper(50);
+		boolean flag = !bronze_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.checkPaper(50);
+		boolean flag = !silver_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperNoIssuesGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.checkPaper(50);
+		boolean flag = !gold_software.isCustomerStationBlocked();
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.checkPaper(5000);
+		boolean flag = bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.checkPaper(5000);
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testCheckPaperLowPaperSoonGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.checkPaper(5000);
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
 	}
 
 	@Test
-	public void testPredictLowPaper() {
-		fail("Not yet implemented");
+	public void testPredictLowPaperLevelBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.setAveragePaperUsagePerSession(5000);
+		bronze_software.maintenance.predictLowPaper();
+		boolean flag = bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (bronze_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.setAveragePaperUsagePerSession(5000);
+		silver_software.maintenance.predictLowPaper();
+		boolean flag = silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (silver_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.setAveragePaperUsagePerSession(5000);
+		gold_software.maintenance.predictLowPaper();
+		boolean flag = gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) && (gold_software.isCustomerStationBlocked());
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesBronzeStation() {
+		bronze_software.maintenance.setPaperRemaining(1000);
+		bronze_software.maintenance.setAveragePaperUsagePerSession(50);
+		bronze_software.maintenance.predictLowPaper();
+		boolean flag = !(bronze_software.maintenance.getIssues().contains(this.lowPaperMsg) || bronze_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || bronze_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesSilverStation() {
+		silver_software.maintenance.setPaperRemaining(1000);
+		silver_software.maintenance.setAveragePaperUsagePerSession(50);
+		silver_software.maintenance.predictLowPaper();
+		boolean flag = !(silver_software.maintenance.getIssues().contains(this.lowPaperMsg) || silver_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || silver_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
+	}
+	
+	@Test
+	public void testPredictLowPaperLevelNoIssuesGoldStation() {
+		gold_software.maintenance.setPaperRemaining(1000);
+		gold_software.maintenance.setAveragePaperUsagePerSession(50);
+		gold_software.maintenance.predictLowPaper();
+		boolean flag = !(gold_software.maintenance.getIssues().contains(this.lowPaperMsg) || gold_software.maintenance.getIssues().contains(this.lowPaperSoonMsg) || gold_software.maintenance.getIssues().contains(this.outOfPaperMsg));
+		assertTrue(flag);
 	}
 
-	@Test
-	public void testResolvePrinterPaperIssue() {
-		fail("Not yet implemented");
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadBronzeStation() throws OverloadedDevice {
+		bronze_software.maintenance.resolvePrinterPaperIssue(10000);
 	}
-
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
+	@Test(expected = RuntimeException.class)
+	public void testResolvePrinterPaperIssueOverloadGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue(10000);
+	}
+	
 	@Test
-	public void testThePrinterIsOutOfPaper() {
-		fail("Not yet implemented");
+	public void testResolvePrinterPaperIssueSilverStation() throws OverloadedDevice {
+		silver_software.maintenance.resolvePrinterPaperIssue((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(silver_software.maintenance.MAXIMUM_PAPER * 0.7), silver_software.maintenance.getPaperRemaining());
+	}
+	
+	@Test
+	public void testResolvePrinterPaperIssueGoldStation() throws OverloadedDevice {
+		gold_software.maintenance.resolvePrinterPaperIssue((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.2));
+		assertEquals((int)(gold_software.maintenance.MAXIMUM_PAPER * 0.7), gold_software.maintenance.getPaperRemaining());
 	}
 
 	@Test
@@ -835,16 +1000,6 @@ public class MaintenanceTest {
 		assertTrue(bronze_software.isCustomerStationBlocked());
 		assertTrue(silver_software.isCustomerStationBlocked());
 		assertTrue(gold_software.isCustomerStationBlocked());
-	}
-
-	@Test
-	public void testThePrinterHasLowPaper() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testPaperHasBeenAddedToThePrinter() {
-		fail("Not yet implemented");
 	}
 
 	@Test
