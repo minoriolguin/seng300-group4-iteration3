@@ -1,0 +1,13 @@
+{
+    "java.project.sourcePaths": [
+        "com.thelocalmarketplace.software/src",
+        "com.thelocalmarketplace.software.test/src",
+        "com.thelocalmarketplace.software",
+        "com.thelocalmarketplace.hardware_0.3/powerutility",
+        "com.thelocalmarketplace.hardware_0.3/com.tdc",
+        "com.thelocalmarketplace.hardware_0.3/com.jjjwelectronics",
+        "com.thelocalmarketplace.hardware_0.3/biz.rfid",
+        "com.thelocalmarketplace.hardware_0.3",
+        "com.tdc"
+    ]
+}
