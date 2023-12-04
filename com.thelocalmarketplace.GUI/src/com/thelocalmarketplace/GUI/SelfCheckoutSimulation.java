@@ -43,13 +43,13 @@ public class SelfCheckoutSimulation extends JFrame {
 	    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
 	    private SelfCheckoutStationBronze bronze_station;
 	    private SelfCheckoutStationGold gold_station;
-	    private SelfCheckoutStationSilver silver_staiton;
+	    private SelfCheckoutStationSilver silver_station;
 	 public SelfCheckoutSimulation(SelfCheckoutStationBronze b, SelfCheckoutStationGold g, SelfCheckoutStationSilver s ) {
 		 	
 	    
 	        bronze_station = b;
 	        gold_station = g;
-	        silver_staiton = s;
+	        silver_station = s;
 	        
 	        // Set frame properties
 	        setTitle("Selfcheckout Station Simulation");
@@ -61,8 +61,8 @@ public class SelfCheckoutSimulation extends JFrame {
 
 	        // Create three buttons
 	        String[] buttonTitles = {"Bronze Station",
-					"Gold Station",
-					"Silver Station"
+					"Silver Station",
+					"Gold Station"
 					 };
 
 	        // Array of button listeners
@@ -92,6 +92,7 @@ public class SelfCheckoutSimulation extends JFrame {
 	        switch (buttonNumber) {
 	            case 1:
 	                System.out.println("Meow");
+	             
 	                Software software = new Software(bronze_station);
 	                software.turnOn();
 	                TouchScreen touchscreen = new TouchScreen(software);
@@ -100,11 +101,21 @@ public class SelfCheckoutSimulation extends JFrame {
 	                break;
 	            case 2:
 	                System.out.println("Button Clicked");
-	                //insert Logic
+	                System.out.println("silver");
+	                Software softwareS= new Software(silver_station);
+	                softwareS.turnOn();
+	                TouchScreen touchscreenS= new TouchScreen(softwareS);
+	                GUILogic guiLogicS = new GUILogic(touchscreenS);
+	                RunGUI guiS = new RunGUI(guiLogicS); 
 	                break;
 	            case 3:
 	                System.out.println("Button Clicked");
-	                //insert Logic
+	                System.out.println("gold");
+	                Software softwareG= new Software(gold_station);
+	                softwareG.turnOn();
+	                TouchScreen touchscreenG= new TouchScreen(softwareG);
+	                GUILogic guiLogicG = new GUILogic(touchscreenG);
+	                RunGUI guiG = new RunGUI(guiLogicG);
 	                break;
 	            
 	        }

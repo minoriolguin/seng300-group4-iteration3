@@ -17,12 +17,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.Attendant;
+import com.thelocalmarketplace.software.TouchScreen;
+
 /*
  * This is where Project 3 Logic will be entered 
  * Please do not insert Logic into RunGUI (which should only contain
  * GUI code) and Panels
  */
 public class GUILogic {
+
+	public TouchScreen screen;
+	private Attendant attendant;
+	public GUILogic(TouchScreen t) {
+		this.screen = t;
+		attendant = new Attendant(t.getSoftware());
+	}
 	
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -59,9 +70,11 @@ public class GUILogic {
         //Logic Here
 	}
 	
+	//signal for attendant to help the customer and set attended to false--> attendant window opens
 	public void buttonR5_CustomerWantstoRemoveItem() {
         System.out.println("buttonR5_CustomerWantstoRemoveItem"); 
-        //Logic Here
+        screen.signalForAttendant();
+        attendant.setAttendedToFalse();
 	}
 	
 	public void buttonR6_CustomerSelectsLanguage() {
@@ -142,14 +155,6 @@ public class GUILogic {
         // Logic Here 
         String addItemB2_result = "New Barcoded Product thru Handheld Scanner";
 		return addItemB2_result;
-	}
-	
-	public String buttonB3_CustomerScansBarcodedProduct_RFIDTag() {
-        System.out.println("buttonB3_CustomerScansBarcodedProduct_RFIDTag");
-        //Example Code Here 
-        // Logic Here 
-        String addItemB3_result = "New Barcoded Product thru RFID Tag";
-		return addItemB3_result;
 	}
 	
 	

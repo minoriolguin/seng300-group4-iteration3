@@ -38,6 +38,7 @@ public class AttendantFrame {
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
+	private boolean attended;
 	private Attendant attendant;
 	public Product product;
 	public TouchScreen screen;
@@ -64,7 +65,7 @@ public class AttendantFrame {
         JPanel bottomPanel = new JPanel(new GridLayout(5, 2));
         // Array of button titles
         String[] buttonTitles = {"Lookup Product",
-        						"Remove Product",
+        						"Remove Item",
         						"Refill Coins", 
         						 "Empty Coins", 
         						 "Refill Banknotes", 
@@ -108,27 +109,23 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
-            	
-                System.out.println("Lookup Product");
+
+                System.out.println("LookUp Product");
                 //insert logic
                 VirtualKeyboard keyboard = new VirtualKeyboard();
                 keyboard.run(screen.getSoftware());
                 break;
             case 2:
-            	//still need to attend to customer
-            	attendant.setAttendedToFalse();
-                //remove item from the scale/bagging area- system is disabled
+
+                System.out.println("Remove Item");
+                attendant.setAttendedToFalse();
+                attendant.disableCustomerStation();
                 screen.RemoveItemFromScale();
-                //verify that the item was removed
-                screen.removeProduct(product);
-                
-                screen.displayRemoveItemFromBaggingArea();
-                
                 attendant.verifyItemRemovedFromOrder();
-                //set attended to true
-               // attendant.respondToCustomer();
-                
-                
+
+                attended = true;
+                attendant.respondToCustomer();
+                attendant.enableCustomerStation();
                
                 //insert Logic
                 break;
