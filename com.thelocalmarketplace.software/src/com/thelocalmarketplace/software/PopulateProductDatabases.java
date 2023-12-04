@@ -9,7 +9,7 @@ import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 public class PopulateProductDatabases {
 
-	private PopulateProductDatabases() {}	
+	private PopulateProductDatabases() { }	
 	private static int onesCounter = 0;
 	private static int tensCounter = 0;
 	
