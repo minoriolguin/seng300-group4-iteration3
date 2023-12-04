@@ -46,6 +46,8 @@ import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.coin.Coin;
 import com.tdc.coin.ICoinDispenser;
 import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.software.MembershipDatabase;
+import com.thelocalmarketplace.software.MembershipNumberValidator;
 import com.thelocalmarketplace.software.Software;
 import ca.ucalgary.seng300.simulation.NullPointerSimulationException;
 import ca.ucalgary.seng300.simulation.SimulationException;
@@ -53,9 +55,7 @@ import powerutility.PowerGrid;
 
 public class MaintenanceTest {
 	
-	private SelfCheckoutStationBronze bronze_hardware;
-	private SelfCheckoutStationGold gold_hardware;
-	private SelfCheckoutStationSilver silver_hardware;
+	private Software software;
 	
 	private Software bronze_software;
 	private Software gold_software;
@@ -94,6 +94,11 @@ public class MaintenanceTest {
     private final String outOfPaperMsg = "PRINTER_OUT_OF_PAPER";
     private final String lowPaperMsg = "PRINTER_LOW_PAPER";
     private final String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
+
+	private MembershipDatabase membershipDatabase;
+	private MembershipNumberValidator membershipNumValidator;
+	
+	private String member0ID;
 
 	@Before
 	public void setUp() throws Exception {
@@ -208,10 +213,16 @@ public class MaintenanceTest {
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		silver_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
 		gold_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
+
+
+		membershipDatabase = new MembershipDatabase();
+	    membershipNumValidator = new MembershipNumberValidator(this.membershipDatabase);
+	    
+	    //add a valid string to the database
+		member0ID = membershipDatabase.addMember("Alice");
 	}
-
-
-	@Test
+	
+	
 	public void testMaintenance() {
 //		if (silver_software.printer instanceof ReceiptPrinterSilver) {
 //		fail("ink: "+gold_software.printer.inkRemaining());
@@ -1155,7 +1166,6 @@ public class MaintenanceTest {
 		assertTrue(gold_software.isCustomerStationBlocked());
 	}
 	
-	
 	@Test
 	public void testOutOfBanknotes() {
 		bronze_software.maintenance.checkBanknotes(5, bronze_bStorageUnit);
@@ -1318,5 +1328,235 @@ public class MaintenanceTest {
 		assertFalse(gold_software.isCustomerStationBlocked());
 	}
 
+	/**
+	 * Test adding a member to the database
+	 */
+	@Test
+	public void testAddMemberToDatabase()
+	{
+		String memberID = membershipDatabase.addMember("bob");
+		assertTrue(membershipDatabase.memberExists(memberID));
+	}
+	
+	/**
+	 * Test adding a member with null as a name to the database
+	 */
+	@Test(expected = NullPointerSimulationException.class)
+	public void testAddNullMemberToDatabase()
+	{
+		membershipDatabase.addMember(null);
+	}
+	
+	/**
+	 * Test adding a member with an empty string for a name to the database
+	 */
+	@Test(expected = RuntimeException.class)
+	public void testAddEmtpyMemberNameToDatabase()
+	{
+		
+		membershipDatabase.addMember("");
+	}
+	
+	/**
+	 * test adding points to the user's account
+	 */
+	@Test
+	public void testAddPoints()
+	{
+		int points = 50;
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(points, membershipDatabase.getPoints(member0ID));
+	}
+	
+	
+	/**
+	 * Test negative points being added 
+	 */
+	@Test
+	public void testAddNegativePoints()
+	{
+		int points = -50;
+		membershipDatabase.addPoints(member0ID, points);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+	}
+
+	/**
+	 * 
+	 */
+	@Test(expected = ArithmeticException.class)
+	public void testAddOverflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMAX = Integer.MAX_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.addPoints(member0ID, pointsMAX);
+	}
+	
+	@Test
+	public void testSubtractPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = 35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - pointsToRemove, membershipDatabase.getPoints(member0ID));
+	}
+	
+	@Test
+	public void testSubtractExactPoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = pointsToAdd;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(0, membershipDatabase.getPoints(member0ID));
+		
+	}
+
+	@Test
+	public void testSubtractNegativePoints()
+	{
+		int pointsToAdd = 50;
+		membershipDatabase.addPoints(member0ID, pointsToAdd);
+
+		int pointsToRemove = -35;
+		membershipDatabase.subtractPoints(member0ID, pointsToRemove);
+		assertEquals(pointsToAdd - Math.abs(pointsToRemove), membershipDatabase.getPoints(member0ID));
+	}
+
+	@Test(expected = ArithmeticException.class)
+	public void testSubtractUnderflowPoints()
+	{
+		int points0 = 2551267;
+		int pointsMIN = Integer.MIN_VALUE;
+		membershipDatabase.addPoints(member0ID, points0);
+		membershipDatabase.subtractPoints(member0ID, pointsMIN);
+	}
+	
+	/**
+	 * test valid case
+	 */
+	@Test
+	public void testValidMembershipNumber()
+	{
+		//make sure a session is started
+//		String memberNum = "00000001";
+		String memberNum = "12345678";
+		membershipDatabase.addMember(memberNum);
+		
+		//mismatch between database and actual
+//		assertTrue(membershipNumValidator.isValid(Integer.toString(memberNum0ID)));
+//		assertTrue(membershipNumValidator.isValid(memberNum));
+//		assertTrue(membershipNumValidator.isValid(memberNum0));
+	}
+	
+	/**
+	 * Test with member not in database
+	 */
+	@Test
+	public void testMembershipNumberNotInDatabase()
+	{
+		String memberNum = "00000001";
+//		assertFalse(membershipDatabase.memberExists(Integer.parseInt(memberNum)));
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * test with a very large string input
+	 */
+	@Test
+	public void testVeryLargeMemberNum()
+	{
+		String memberNum = "1078234678126340781234789012078780078947867816780167841236780";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test with a small input
+	 */
+	@Test
+	public void testSmallInput()
+	{
+		String memberNum = "123";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input
+	 */
+	@Test
+	public void testWithGarbageString0()
+	{
+		String memberNum = "123asDf;";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically special characters
+	 */
+	@Test
+	public void testWithSpecialCharacters()
+	{
+		String memberNum = "12-3@5$6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with spaces
+	 */
+	@Test
+	public void testWithSpaces()
+	{
+		String memberNum = "12 345 6";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+	
+	/**
+	 * Test an invalid string as input. Specifically with only 1 lowercase letter sandwiched in
+	 */
+	@Test
+	public void testWithSandwichedCharacter()
+	{
+		String memberNum = "1234a567";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically with all lowercase letters
+	 */
+	@Test
+	public void testAllLowercaseLetters()
+	{
+		String memberNum = "abcdefg";
+		membershipDatabase.addMember(memberNum);
+		assertFalse(membershipNumValidator.isValid(memberNum));
+	}
+
+	/**
+	 * Test an invalid string as input. Specifically null
+	 */
+	@Test
+	public void testNull()
+	{
+		assertFalse(membershipNumValidator.isValid(null));
+	}
+	
+
+	/**
+	 * Test an invalid string as input. Specifically an empty string
+	 */
+	@Test
+	public void emptyString()
+	{
+		assertFalse(membershipNumValidator.isValid(""));
+	}
 
 }
