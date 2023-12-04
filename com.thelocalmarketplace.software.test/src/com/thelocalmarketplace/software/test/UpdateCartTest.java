@@ -1,8 +1,6 @@
-/**
- * This class contains JUnit tests for the UpdateCart class in the Self Checkout System.
- * Project 3 Iteration Group 4
- *
- * Group Members:
+ /**
+ *Project 3 Iteration Group 4
+ *  Group Members:
  * - Julie Kim 10123567
  * - Aryaman Sandhu 30017164
  * - Arcleah Pascual 30056034
@@ -36,6 +34,7 @@
  * - Johnny Tran 30140472
  * - Kaylee Xiao 30173778
  */
+
 package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Item;
