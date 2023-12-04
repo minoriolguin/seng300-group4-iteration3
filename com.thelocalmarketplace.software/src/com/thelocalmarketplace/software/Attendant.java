@@ -135,6 +135,7 @@ public class Attendant implements WeightDiscrepancyListener {
             } else if (response.equalsIgnoreCase("No")) {
             	System.out.println("Please attend to the customer and "
             			+ "then enter 'Yes' to continue.");
+            	break;
             } else {
                 System.out.println("Invalid response. Please enter Yes or No.");
             }

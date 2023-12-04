@@ -27,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Attendant;
 import com.thelocalmarketplace.software.TouchScreen;
 
@@ -38,6 +39,7 @@ public class AttendantFrame {
 	// It assumes that there is only one SelfCheckoutStation right now 
 	private JFrame attend_frame;
 	private Attendant attendant;
+	public Product product;
 	public TouchScreen screen;
     public AttendantFrame(TouchScreen s) {
     	screen = s;
@@ -118,17 +120,23 @@ public class AttendantFrame {
                 //remove item from the scale/bagging area- system is disabled
                 screen.RemoveItemFromScale();
                 //verify that the item was removed
+                screen.removeProduct(product);
+                
+                screen.displayRemoveItemFromBaggingArea();
+                
                 attendant.verifyItemRemovedFromOrder();
                 //set attended to true
-                attendant.respondToCustomer();
-                //enable customer to use the station again.
-                attendant.enableCustomerStation();
+               // attendant.respondToCustomer();
+                
+                
                
                 //insert Logic
                 break;
             case 3:
                 System.out.println("Refill Coins");
-                //insert Logic
+                attendant.setAttendedToFalse();
+                attendant.disableCustomerStation();
+                attendant.refillBankNotes();
                 break;
             case 4:
                 System.out.println("Empty Coins");
