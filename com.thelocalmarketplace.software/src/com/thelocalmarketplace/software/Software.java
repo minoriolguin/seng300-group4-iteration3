@@ -180,6 +180,7 @@ public class Software {
 
 
 		//Initialize Product Lists and Weight Limit
+		PopulateProductDatabases.populateDatabases();
 		productsInOrder = new HashMap<>();
 		barcodedProductsInOrder = new ArrayList<>();
 		pluCodedProductsInOrder = new ArrayList<>();
