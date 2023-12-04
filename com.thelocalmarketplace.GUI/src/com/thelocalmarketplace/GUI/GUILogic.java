@@ -32,7 +32,10 @@ import com.thelocalmarketplace.software.TouchScreen;
  * GUI code) and Panels
  */
 public class GUILogic {
-	
+	public TouchScreen screen;
+	public GUILogic(TouchScreen t) {
+		this.screen = t;
+	}
 //----------------------------------------------------------------
 //Start Session Panel, 
 	
