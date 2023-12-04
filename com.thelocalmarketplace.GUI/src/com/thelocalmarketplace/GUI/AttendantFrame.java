@@ -27,21 +27,30 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.software.Attendant;
+import com.thelocalmarketplace.software.TouchScreen;
+
 public class AttendantFrame {
 	 
 	JLabel totalLabel;
 	
     // Attendant Frame --------------------------------------BEGIN
 	// It assumes that there is only one SelfCheckoutStation right now 
-	
-    public void AttendantFrame() {
-        JFrame attend_frame = new JFrame("Attendant Screen");
+	private JFrame attend_frame;
+	private Attendant attendant;
+	public Product product;
+	public TouchScreen screen;
+    public AttendantFrame(TouchScreen s) {
+    	screen = s;
+    	attendant = new Attendant(s.getSoftware());
+        attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
-        attend_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         attend_frame.setLocation(1000, 0); // Adjust the coordinates as needed
 
         // Top Panel (Text: Meow)
-        JPanel topPanel = createLabelPanel("Meow", 450, 150); 
+        JPanel topPanel = createLabelPanel("Attendant", 450, 150); 
         attend_frame.add(topPanel, BorderLayout.NORTH);
 
         // Middle Panel (Single Button)
@@ -54,14 +63,14 @@ public class AttendantFrame {
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new GridLayout(5, 2));
         // Array of button titles
-        String[] buttonTitles = {"Button 1", 
-        						 "Button 2", 
-        						 "Button 3", 
-        						 "Button 4", 
-        						 "Button 5", 
-                                 "Button 6", 
-                                 "Button 7", 
-                                 "Button 8", 
+        String[] buttonTitles = {"Lookup Product",
+        						"Remove Product",
+        						"Refill Coins", 
+        						 "Empty Coins", 
+        						 "Refill Banknotes", 
+        						 "Empty Banknotes", 
+        						 "Add Reciept Paper", 
+                                 "Add Reciept Ink",  
                                  "Button 9", 
                                  "Button 10"};
 
@@ -99,37 +108,58 @@ public class AttendantFrame {
     private void handleButtonClick(int buttonNumber) {
         switch (buttonNumber) {
             case 1:
-                System.out.println("Meow");
+            	
+                System.out.println("Lookup Product");
                 //insert logic
+                VirtualKeyboard keyboard = new VirtualKeyboard();
+                keyboard.run(screen.getSoftware());
                 break;
             case 2:
-                System.out.println("Button Clicked");
+            	//still need to attend to customer
+            	attendant.setAttendedToFalse();
+                //remove item from the scale/bagging area- system is disabled
+                screen.RemoveItemFromScale();
+                //verify that the item was removed
+                screen.removeProduct(product);
+                
+                screen.displayRemoveItemFromBaggingArea();
+                
+                attendant.verifyItemRemovedFromOrder();
+                //set attended to true
+               // attendant.respondToCustomer();
+                
+                
+               
                 //insert Logic
                 break;
             case 3:
-                System.out.println("Button Clicked");
-                //insert Logic
+                System.out.println("Refill Coins");
+                attendant.setAttendedToFalse();
+                attendant.disableCustomerStation();
+                attendant.refillBankNotes();
                 break;
             case 4:
-                System.out.println("Button Clicked");
+                System.out.println("Empty Coins");
                 //insert Logic
                 break;
             case 5:
-                System.out.println("Button Clicked");
-                //insert Logic
+                System.out.println("Refill Banknotes");
+                attendant.refillBankNotes();
                 break;
             case 6:
-                System.out.println("Button Clicked");
-                //insert Logic
+                System.out.println("Empty Banknotes");
+                attendant.emptyBankNotes();
                 break;
             case 7:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Paper");
                 //insert Logic
                 break;
             case 8:
-                System.out.println("Button Clicked");
+                System.out.println("Add Receipt Ink");
                 //insert Logic
                 break;
+                
+                //do we wanna do a button that block/unblock customer?
             case 9:
                 System.out.println("Button Clicked");
                 //insert Logic
@@ -150,5 +180,9 @@ public class AttendantFrame {
         label.setFont(new Font("Arial", Font.BOLD, 18));
         panel.add(label, gbc);
         return panel;
+    }
+    
+    public void show() {
+    	attend_frame.setVisible(true);
     }
 }
