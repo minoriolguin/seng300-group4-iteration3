@@ -29,6 +29,7 @@ package com.thelocalmarketplace.software;
 
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
+import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.banknote.BanknoteValidatorObserver;
 
@@ -93,7 +94,11 @@ public class PayByBanknote extends AbstractPayByCash implements BanknoteValidato
      */
     @Override
     public void goodBanknote(BanknoteValidator validator, Currency currency, BigDecimal denomination) {
-        pay(currency, denomination);
+        try {
+			pay(currency, denomination);
+		} catch (NoCashAvailableException e) {
+			System.out.println("No Cash Available " + e);
+		}
     }
 
     /**
