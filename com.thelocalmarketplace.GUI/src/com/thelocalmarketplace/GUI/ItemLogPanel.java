@@ -22,8 +22,7 @@
  * - Anthony Tolentino / 30081427
  * - Johnny Tran / 30140472
  * - Kaylee Xiao / 30173778 
- **// 30173778 
-`**/
+ **/
 
 package com.thelocalmarketplace.GUI;
 

@@ -38,8 +38,14 @@ import java.math.BigDecimal;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.thelocalmarketplace.hardware.BarcodedProduct;
+import com.thelocalmarketplace.hardware.PLUCodedProduct;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.PayByCard;
+import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.scanner.Barcode;
 import com.thelocalmarketplace.software.TouchScreen;
 
 import javax.swing.Action;
@@ -51,9 +57,10 @@ public class RunGUI extends JFrame implements logicObserver {
     // for receipt building on GUI 
 	private List<JLabel> labelList = new ArrayList<>();
 	// Paneling on GUI
-    private JPanel leftPanel;
+    private static JPanel leftPanel;
     private JPanel cardPanel;
-    public JLabel custTotalLabel;
+    public static JLabel custTotalLabel;
+    public static JLabel weightTotal;
     public String cardTypeInserted;
     private CardLayout cardLayout;
     // For logic testing - delete after all GUI is done
@@ -63,7 +70,7 @@ public class RunGUI extends JFrame implements logicObserver {
     public boolean continueSim = true;
     
     //This is what allows Logic to happen when I click a button
-	private GUILogic guiLogicInstance;
+	private static GUILogic guiLogicInstance;
     
     //For Testing Purposes - to run GUI 
     public RunGUI() {
@@ -100,7 +107,8 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(createCashCoinPanel(), "cashCoinPanel");
 
         cardPanel.add(createInsertPINPanel(),"insertPINPanel");
-
+        cardPanel.add(mainScannerAddItemPanel(),"mainScanner");
+        cardPanel.add(miniScannerAddItemPanel(),"miniScanner");
         cardPanel.add(new SelectLanguage(this), "selectLanguage");
         cardPanel.add(new EnterMembershipNumber(this), "enterMembership");
 
@@ -114,7 +122,58 @@ public class RunGUI extends JFrame implements logicObserver {
         setVisible(true);
 
     }
-
+    /** 
+     * Function simulates user scanning a milk carton with the main scanner
+     **/
+    private JPanel mainScannerAddItemPanel() {
+    	JPanel panel = new JPanel(new GridLayout(3,1));
+    	JLabel label = new JLabel("Customer Adds:");
+    	JLabel item = new JLabel("Milk");
+    	JButton addButton = new JButton("SCAN WITH MAIN SCANNER");
+    	addButton.addActionListener(e->{
+    		Numeral[] testBarcode = new Numeral[4];
+            testBarcode[0] = Numeral.nine;
+            testBarcode[1] = Numeral.five;
+            testBarcode[2] = Numeral.eight;
+            testBarcode[3] = Numeral.eight;
+            Barcode milkBarcode = new Barcode(testBarcode);
+            BarcodedProduct milkProduct = new BarcodedProduct(milkBarcode, "Milk", 5, 11);
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(milkBarcode,milkProduct);
+            guiLogicInstance.screen.getSoftware().updateCart.addScannedProduct(milkBarcode);
+           setOrderTotal(guiLogicInstance.getTotal());
+           setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
+           updateOrderList();
+    		switchPanels("AddItemsPanel");
+    	});
+    	panel.add(label);
+    	panel.add(item);
+    	panel.add(addButton);
+    	return panel;
+    	}
+    private JPanel miniScannerAddItemPanel() {
+    	JPanel panel = new JPanel(new GridLayout(3,1));
+    	JLabel label = new JLabel("Customer Adds:");
+    	JLabel item = new JLabel("Build it yourself basketball net");
+    	JButton addButton = new JButton("SCAN WITH HANDHELD SCANNER");
+    	addButton.addActionListener(e->{
+    		Numeral[] testBarcode = new Numeral[2];
+    		testBarcode[0] = Numeral.zero;
+            testBarcode[1] = Numeral.one;
+            Barcode selfAssembleBasketballHoop = new Barcode(testBarcode);
+            BarcodedProduct basketballHoop = new BarcodedProduct(selfAssembleBasketballHoop, "Basketball Hoop", 150, 400);
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(selfAssembleBasketballHoop,basketballHoop);
+            guiLogicInstance.screen.getSoftware().updateCart.addScannedProduct(selfAssembleBasketballHoop);
+           setOrderTotal(guiLogicInstance.getTotal());
+           setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
+           updateOrderList();
+    		switchPanels("AddItemsPanel");
+    	});
+    	panel.add(label);
+    	panel.add(item);
+    	panel.add(addButton);
+    	return panel;
+    	}
+  
     private JPanel createInsertPINPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -275,7 +334,7 @@ public class RunGUI extends JFrame implements logicObserver {
             System.exit(0);
         }
     }
-    
+   
     /*
      * The Panel for Checkout (MAIN) 
      * There are additional parts that made this layout 
@@ -314,8 +373,8 @@ public class RunGUI extends JFrame implements logicObserver {
 
         // Top Right Panel (Weight Display)
         JPanel topRightPanel = createLabelPanel("Top right Panel", 500, 20);
-        JLabel topRightLabel = new JLabel("Weight Goes Here");
-        topRightPanel.add(topRightLabel);
+        weightTotal = new JLabel("Weight Goes Here");
+        topRightPanel.add(weightTotal);
         gbc.gridx = 2;  // Adjust the gridx to place it to the right
         gbc.gridy = 0;
         gbc.weightx = 0.5;  // Adjust the weightx to control the width ratio
@@ -342,8 +401,27 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(mainPanel, "yourFrameClass2");
         return mainPanel;
     }
-    public void setOrderTotal(int orderTotal){
+    /*
+     * Functions for updating total price, weight and List of orders
+     */
+    public static void setOrderTotal(int orderTotal){
         custTotalLabel.setText("Total is: " + orderTotal);
+    }
+    public static void setWeight(BigDecimal weightInGrams) {
+    	weightTotal.setText("Total Weight is: "+ weightInGrams);
+    }
+    public static void updateOrderList() {
+    	leftPanel.removeAll();
+    	for(PLUCodedProduct item: guiLogicInstance.screen.getSoftware().getPluCodedProductsInOrder()) {
+    	JLabel itemLabel = new JLabel("Product Name: "+item.getDescription() +"," +" Cost: "+ item.getPrice());
+    	leftPanel.add(itemLabel);
+    	}
+    	for(BarcodedProduct item:guiLogicInstance.screen.getSoftware().getBarcodedProductsInOrder()) {
+    		JLabel itemLabel = new JLabel("Product Name: "+item.getDescription() +"," +" Cost: "+ item.getPrice());
+        	leftPanel.add(itemLabel);
+    	}
+    	leftPanel.revalidate();
+    	leftPanel.repaint();
     }
     /*
      * The Panel for Checkout (MAIN) 
@@ -520,9 +598,11 @@ public class RunGUI extends JFrame implements logicObserver {
         @Override
         public void actionPerformed(ActionEvent e) {
             //TODO: this functionality here adds $10 to order, strictly for testing payments
-        	String addItem_result = guiLogicInstance.buttonB1_CustomerScansBarcodedProduct_MainScanner();
-        	addNewLabel(addItem_result);
-
+//        	String addItem_result = guiLogicInstance.buttonB1_CustomerScansBarcodedProduct_MainScanner();
+//        	addNewLabel(addItem_result);
+        	// ADD A BARCODED ITEM
+        	switchPanels("mainScanner");
+        	
         	}
         });
         
@@ -531,8 +611,7 @@ public class RunGUI extends JFrame implements logicObserver {
         bot_button2.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-        	String addItem_result = guiLogicInstance.buttonB2_CustomerScansBarcodedProduct_HandheldScanner();
-        	addNewLabel(addItem_result);
+        	switchPanels("miniScanner");
             }
         });
         
@@ -688,7 +767,7 @@ public class RunGUI extends JFrame implements logicObserver {
         TY_receiptLabel.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridy = 1;
         panel.add(TY_receiptLabel, gbc);
-        touchScreen.printReceipt();
+        //touchScreen.printReceipt();
         
 
         JButton exitButton = new JButton("Exit");
