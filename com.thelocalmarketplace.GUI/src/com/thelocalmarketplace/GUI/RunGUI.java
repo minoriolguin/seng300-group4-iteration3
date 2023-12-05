@@ -413,6 +413,7 @@ public class RunGUI extends JFrame implements logicObserver {
     public static void updateOrderList() {
     	leftPanel.removeAll();
     	for(PLUCodedProduct item: guiLogicInstance.software.getPluCodedProductsInOrder()) {
+    	
     	JLabel itemLabel = new JLabel("Product Name: "+item.getDescription() +"," +" Cost: "+ item.getPrice());
     	leftPanel.add(itemLabel);
     	}

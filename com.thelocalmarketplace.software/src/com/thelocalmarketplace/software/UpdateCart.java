@@ -111,7 +111,6 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     public void addPLUProduct(PLUCodedProduct product){
     	 // System: Blocks the self-checkout station from further customer interaction.
     	software.blockCustomer();
-        weightDiscrepancy.notifyAddItemToScale();
     	// Add product to Hashmap, with detected weight on scale.
         if(software.getProductsInOrder().containsKey(product))
             software.getProductsInOrder().replace(product,software.getProductsInOrder().get(product).sum(currentMassOnScanner));
@@ -159,7 +158,6 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
     public void addScannedProduct(Barcode barcode) {
         //2. System: Blocks the self-checkout station from further customer interaction.
         software.blockCustomer();
-        weightDiscrepancy.notifyAddItemToScale();
         //3. System: Determines the characteristics (weight and cost) of the product associated with the
         //barcode.
         BarcodedProduct product = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
