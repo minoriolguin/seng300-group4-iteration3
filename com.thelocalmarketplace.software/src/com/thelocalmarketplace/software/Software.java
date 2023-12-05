@@ -342,16 +342,6 @@ public class Software {
             setPendingMaintenance(true);
         } else {
             disableHardwareComponents();
-            
-            baggingAreaScale.disable();
-            scannerScale.disable();
-            handHeldScanner.disable();
-            mainScanner.disable();
-            banknoteValidator.disable();
-            coinValidator.disable();
-            cardReader.disable();
-            banknoteDispenser.disable();
-            printer.disable();
             customerStationBlock = true;
         }
     }
