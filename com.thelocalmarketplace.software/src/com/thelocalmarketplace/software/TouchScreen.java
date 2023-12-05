@@ -32,6 +32,7 @@ import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+import com.tdc.NoCashAvailableException;
 import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
@@ -68,10 +69,10 @@ public class TouchScreen implements WeightDiscrepancyListener {
     public boolean skip;
 
     private Card CreditCard = new Card("credit", "234567", "John",
-            "245", "7429", true, true);
+            "245", "1234", true, true);
 
     private Card DebitCard = new Card("debit", "4567890", "Jane",
-            "908", "3579", true, true);
+            "908", "1234", true, true);
     private Currency CAD;
 
     private Boolean cardsRegistered = false;
@@ -152,9 +153,10 @@ public class TouchScreen implements WeightDiscrepancyListener {
             displayNoItemsInCart();
     }
     //TODO: finish implementing banknote and coin payment
-    public void insertBanknote()
-    {
+    public void insertBanknote(BigDecimal denomination) throws NoCashAvailableException {
         payByBanknote();
+        software.payByBanknote.pay(CAD,denomination);
+
     }
     
     /**
@@ -163,8 +165,8 @@ public class TouchScreen implements WeightDiscrepancyListener {
      */
     private void payByCard () {
         if (!cardsRegistered) {
-            software.payByCard.addCardData("credit", "234567", "John", calendar, "245", 120);
-            software.payByCard.addCardData("debit", "4567890", "Jane", calendar, "908", 210);
+            software.payByCard.addCardData("credit", "234567", "John", calendar, "245", 1000);
+            software.payByCard.addCardData("debit", "4567890", "Jane", calendar, "908", 1000);
             cardsRegistered = true;
         }
         if (!software.getProductsInOrder().isEmpty()) {

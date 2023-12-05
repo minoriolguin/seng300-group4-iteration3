@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
@@ -61,12 +62,16 @@ public class RunGUI extends JFrame implements logicObserver {
     private JPanel cardPanel;
     public static JLabel custTotalLabel;
     public static JLabel weightTotal;
+
     public String cardTypeInserted;
     private CardLayout cardLayout;
     // For logic testing - delete after all GUI is done
-    private int total = 10;
+    private int total;
     private int change;
+    private int finalBill;
     private JLabel totalLabel;
+    private JLabel paymentTotal;
+    private JLabel TY_changeLabel;
     public boolean continueSim = true;
     
     //This is what allows Logic to happen when I click a button
@@ -81,7 +86,6 @@ public class RunGUI extends JFrame implements logicObserver {
     public RunGUI(GUILogic guiLogicInstance) {
         this.guiLogicInstance = guiLogicInstance;
         SelfCheckoutGUI();
-
 
     }
     
@@ -140,9 +144,9 @@ public class RunGUI extends JFrame implements logicObserver {
             BarcodedProduct milkProduct = new BarcodedProduct(milkBarcode, "Milk", 5, 11);
             ProductDatabases.BARCODED_PRODUCT_DATABASE.put(milkBarcode,milkProduct);
             guiLogicInstance.screen.getSoftware().updateCart.addScannedProduct(milkBarcode);
-           setOrderTotal(guiLogicInstance.getTotal());
-           setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
-           updateOrderList();
+            setOrderTotal(guiLogicInstance.getTotal());
+            setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
+            updateOrderList();
     		switchPanels("AddItemsPanel");
     	});
     	panel.add(label);
@@ -782,7 +786,7 @@ public class RunGUI extends JFrame implements logicObserver {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        JLabel TY_changeLabel = new JLabel("Your change is "+guiLogicInstance.getTotal()+"!");
+        TY_changeLabel = new JLabel("Your change is " + change + "!");
         TY_changeLabel.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -799,6 +803,7 @@ public class RunGUI extends JFrame implements logicObserver {
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                finalBill = 0;
                 switchPanels("welcomePanel");
             }
         });
@@ -897,6 +902,7 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button7.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                finalBill += guiLogicInstance.getTotal();
                 switchPanels("cashBillPanel");
             }
         });
@@ -904,6 +910,7 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button8.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                finalBill += guiLogicInstance.getTotal();
                 switchPanels("cashCoinPanel");
             }
         });
@@ -967,6 +974,7 @@ public class RunGUI extends JFrame implements logicObserver {
 
     //Screen 3.B Payment Panel (Coin Bill) 
     private JPanel createCashBillPanel() {
+
         JPanel CoinBillPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -975,47 +983,88 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guiLogicInstance.PayBanknoteValFive();
+                try {
+                    guiLogicInstance.PayBanknoteValFive();
+                } catch (NoCashAvailableException ex) {
+                    throw new RuntimeException(ex);
+                }
                 System.out.println("5.00");
+                total += 5;
+                setPaymentTotalLabel(Integer.toString(total));
             }
         });
         JButton payment_button2 = new JButton("$10.00");
         payment_button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guiLogicInstance.PayBanknoteValTen();
+                try {
+                    guiLogicInstance.PayBanknoteValTen();
+                } catch (NoCashAvailableException ex) {
+                    throw new RuntimeException(ex);
+                }
                 System.out.println("10.00");
+                total += 10;
+                setPaymentTotalLabel(Integer.toString(total));
             }
         });
         JButton payment_button3 = new JButton("$20.00");
         payment_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guiLogicInstance.PayBanknoteValTwenty();
+                try {
+                    guiLogicInstance.PayBanknoteValTwenty();
+                } catch (NoCashAvailableException ex) {
+                    throw new RuntimeException(ex);
+                }
                 System.out.println("20.00");
+                total += 20;
+                setPaymentTotalLabel(Integer.toString(total));
             }
         });
         JButton payment_button4 = new JButton("$50.00");
         payment_button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guiLogicInstance.PayBanknoteValFifty();
+                try {
+                    guiLogicInstance.PayBanknoteValFifty();
+                } catch (NoCashAvailableException ex) {
+                    throw new RuntimeException(ex);
+                }
                 System.out.println("50.00");
+                total += 50;
+                setPaymentTotalLabel(Integer.toString(total));
             }
         });
-        JButton payment_button5 = new JButton("100.00");
+        JButton payment_button5 = new JButton("$100.00");
         payment_button5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("10.00");
+                try {
+                    guiLogicInstance.PayBanknoteValHundred();
+                } catch (NoCashAvailableException ex) {
+                    throw new RuntimeException(ex);
+                }
+                System.out.println("100.00");
+                total += 100;
+                setPaymentTotalLabel(Integer.toString(total));
             }
         });
         JButton payment_button6 = new JButton("Pay for Order");
         payment_button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guiLogicInstance.PayBanknoteValHundred();
-                switchPanels("thankYouPanel");
+                if (total == finalBill) {
+                    switchPanels("thankYouPanel");
+                    total = 0;
+                    setPaymentTotalLabel(Integer.toString(total));
+                }
+                else if (total > finalBill) {
+                    change = total - finalBill;
+                    setChangeLabel(Integer.toString(change));
+                    switchPanels("thankYouPanel");
+                    total = 0;
+
+                }
             }
         });
         JButton payment_button7 = new JButton("Back to Checkout/Add More Items");
@@ -1025,37 +1074,55 @@ public class RunGUI extends JFrame implements logicObserver {
                 switchPanels("AddItemsPanel");
             }
         });
+
+        paymentTotal = new JLabel("Paid: " + total);
+
         gbc.gridx = 0; gbc.gridy = 0;
+        CoinBillPanel.add(paymentTotal, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
         payment_button1.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button1, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0; gbc.gridy = 2;
         payment_button2.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button2, gbc);
         
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0; gbc.gridy = 3;
         payment_button3.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button3, gbc);
-        
-        gbc.gridx = 0; gbc.gridy = 3;
+
+        gbc.gridx = 0; gbc.gridy = 4;
         payment_button4.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button4, gbc);
         
-        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.gridx = 0; gbc.gridy = 5;
         payment_button5.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button5, gbc);
         
-        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.gridx = 0; gbc.gridy = 6;
         payment_button6.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button6, gbc);
         
-        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridx = 0; gbc.gridy = 7;
         payment_button7.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button7, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 8;
+
         
         return CoinBillPanel;        
     }
-    
+
+    public void setPaymentTotalLabel(String payment)
+    {
+        paymentTotal.setText("Paid: " + payment);
+    }
+
+    public void setChangeLabel(String change)
+    {
+        TY_changeLabel.setText("Your change is $" + change + "!");
+    }
     //Screen 3 Payment Panel (Coin Coin)
     private JPanel createCashCoinPanel() {
         

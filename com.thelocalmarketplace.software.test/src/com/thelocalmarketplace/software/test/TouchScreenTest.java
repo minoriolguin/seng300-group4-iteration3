@@ -28,6 +28,7 @@ package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.scanner.Barcode;
+import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.SelfCheckoutStationGold;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
@@ -39,6 +40,7 @@ import org.junit.Test;
 import powerutility.PowerGrid;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -77,8 +79,8 @@ public class TouchScreenTest {
     }
 
     @Test
-    public void payByBanknotetest() {
-        touchScreen.insertBanknote();
+    public void payByBanknotetest() throws NoCashAvailableException {
+        touchScreen.insertBanknote(BigDecimal.ONE);
         assertFalse(checkout.banknoteValidator.isDisabled());
         assertTrue(checkout.banknoteValidator.isActivated());
     }
