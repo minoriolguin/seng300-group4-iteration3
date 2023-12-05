@@ -135,14 +135,9 @@ public class SelfCheckoutSimulation extends JFrame {
 	        switch (buttonNumber) {
 	            case 1:
 	                System.out.println("Start Session");
-					hardware = new SelfCheckoutStationGold();
-					software = Software.getInstance(hardware);
-					software.turnOn();
-					//software.maintenance.resolveInkIssue(1000);
-					//software.maintenance.resolvePrinterPaperIssue(1000);
-	                TouchScreen touchscreen = software.touchScreen;
-	                GUILogic guiLogic = new GUILogic(software);
-	                RunGUI gui = new RunGUI(guiLogic);
+					CreateThread thread = new CreateThread();
+					Thread newThread = new Thread(thread);
+					newThread.start();
 					//bronze_station.getScreen().getFrame().setContentPane(gui);
 	            case 2:
 	                System.out.println("Button Clicked");

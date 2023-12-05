@@ -48,9 +48,13 @@ public class test {
 		SelfCheckoutStationGold	gold = new SelfCheckoutStationGold();
 		SelfCheckoutStationSilver silver= new SelfCheckoutStationSilver();
 	    	//To open GUI 
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(new Runnable()  {
         	
-            SelfCheckoutSimulation simulation = new SelfCheckoutSimulation();
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				SelfCheckoutSimulation simulation = new SelfCheckoutSimulation();
+			}
     });
 	}
 }
