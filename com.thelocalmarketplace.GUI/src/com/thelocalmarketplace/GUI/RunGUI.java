@@ -73,6 +73,9 @@ public class RunGUI extends JFrame implements logicObserver {
     private JLabel paymentTotal;
     private JLabel TY_changeLabel;
     public boolean continueSim = true;
+    private JLabel setCoin;
+    private int orderTotal;
+    private JLabel updateAmount;
     
     //This is what allows Logic to happen when I click a button
 	private static GUILogic guiLogicInstance;
@@ -115,6 +118,7 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(miniScannerAddItemPanel(),"miniScanner");
         cardPanel.add(new SelectLanguage(this), "selectLanguage");
         cardPanel.add(new EnterMembershipNumber(this), "enterMembership");
+        cardPanel.add(createCoinEndPanel(), "coinEndPanel");
 
 //        cardPanel.add(createNumberPad(), "numpadPanel");
         add(cardPanel);
@@ -803,6 +807,7 @@ public class RunGUI extends JFrame implements logicObserver {
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 finalBill = 0;
                 switchPanels("welcomePanel");
             }
@@ -904,6 +909,7 @@ public class RunGUI extends JFrame implements logicObserver {
             public void actionPerformed(ActionEvent e) {
                 finalBill += guiLogicInstance.getTotal();
                 switchPanels("cashBillPanel");
+
             }
         });
         JButton payment_button8 = new JButton("Cash (Coins)");
@@ -912,6 +918,7 @@ public class RunGUI extends JFrame implements logicObserver {
             public void actionPerformed(ActionEvent e) {
                 finalBill += guiLogicInstance.getTotal();
                 switchPanels("cashCoinPanel");
+
             }
         });
         JButton payment_button9 = new JButton("Leave Without Paying");
@@ -1114,6 +1121,7 @@ public class RunGUI extends JFrame implements logicObserver {
         return CoinBillPanel;        
     }
 
+
     public void setPaymentTotalLabel(String payment)
     {
         paymentTotal.setText("Paid: " + payment);
@@ -1123,59 +1131,91 @@ public class RunGUI extends JFrame implements logicObserver {
     {
         TY_changeLabel.setText("Your change is $" + change + "!");
     }
+
     //Screen 3 Payment Panel (Coin Coin)
     private JPanel createCashCoinPanel() {
         
         JPanel CoinBillPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
+        
+        JLabel warningLabel = new JLabel();
+        updateAmount = new JLabel("Total Paid $ ");
 
         JButton payment_button1 = new JButton("$0.05");
         payment_button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	warningLabel.setText("");
             	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.05"));
+            	coinTotal += 0.05;
                 System.out.println("$0.05");
+                updateAmount(Double.toString(coinTotal));
             }
         });
         JButton payment_button2 = new JButton("$0.10");
         payment_button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	warningLabel.setText("");
                	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.10"));
+               	coinTotal += 0.10;
                 System.out.println("$0.10");
+                updateAmount(Double.toString(coinTotal));
             }
         });
         JButton payment_button3 = new JButton("$0.25");
         payment_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	warningLabel.setText("");
             	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.25"));
+            	coinTotal += 0.25;
                 System.out.println("$0.25");
+                updateAmount(Double.toString(coinTotal));
             }
         });
         JButton payment_button4 = new JButton("$1.00");
         payment_button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	warningLabel.setText("");
             	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("1.00"));
+            	coinTotal += 1.00;
                 System.out.println("1.00");
+                updateAmount(Double.toString(coinTotal));
             }
         });
         JButton payment_button5 = new JButton("$2.00");
         payment_button5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	warningLabel.setText("");
             	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("2.00"));
+            	coinTotal += 2.00;
                 System.out.println("$2.00");
+                updateAmount(Double.toString(coinTotal));
             }
         });
         JButton payment_button6 = new JButton("Pay for Order");
         payment_button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	guiLogicInstance.payment_CustomerCompletesCoinPayment();
-                switchPanels("thankYouPanel");
+            	if (coinTotal < orderTotal ) {
+            		warningLabel.setText("Must Enter Greater or Full Amount Before Clicking");
+            	} else if (coinTotal == orderTotal) {
+            		double coinChange = 0;
+            		setCoinLabel(Double.toString(coinChange));
+            		guiLogicInstance.payment_CustomerCompletesCoinPayment();
+            		switchPanels("coinEndPanel");
+            		coinTotal = 0;
+            	} else if (coinTotal > orderTotal){
+            		double coinChange = coinTotal - orderTotal;
+            		setCoinLabel(Double.toString(coinChange));
+            		guiLogicInstance.payment_CustomerCompletesCoinPayment();
+            		switchPanels("coinEndPanel");
+            		coinTotal = 0;
+            	}
             }
         });
         JButton payment_button7 = new JButton("Back to Checkout/Add More Items");
@@ -1213,8 +1253,59 @@ public class RunGUI extends JFrame implements logicObserver {
         payment_button7.setPreferredSize(new Dimension(150,150));
         CoinBillPanel.add(payment_button7, gbc);
         
+        gbc.gridx = 0; gbc.gridy = 7;
+        updateAmount.setPreferredSize(new Dimension(150,150));
+        CoinBillPanel.add(updateAmount, gbc);
+        
+        gbc.gridx = 0; gbc.gridy = 8;
+        warningLabel.setPreferredSize(new Dimension(150,150));
+        CoinBillPanel.add(warningLabel, gbc);
+        
         return CoinBillPanel;        
     }
+    
+    
+    public void setCoinLabel(String amount) {
+    	setCoin.setText("Your change is $" + amount +"!");
+    }
+    
+    public void updateAmount(String amount) {
+    	updateAmount.setText("Total Paid $ " + amount);
+    }
+    
+    // Screen LAST Thank You Panel Coin
+    private JPanel createCoinEndPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        setCoin = new JLabel("Your change is $" + change +"!");
+        setCoin.setFont(new Font("Arial", Font.BOLD, 18));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(setCoin, gbc);
+
+        JLabel TY_receiptLabel = new JLabel("Please Take Your Receipt.");
+        TY_receiptLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        gbc.gridy = 1;
+        panel.add(TY_receiptLabel, gbc);
+        //touchScreen.printReceipt();
+        
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchPanels("welcomePanel");
+            }
+        });
+        gbc.gridy = 2;
+        panel.add(exitButton, gbc);
+
+        return panel;
+    }
+    
+    
     
     /*c
      * NumberPad Pop Up Part 2/3 
