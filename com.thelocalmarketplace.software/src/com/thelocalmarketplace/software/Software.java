@@ -180,6 +180,7 @@ public class Software {
 			this.bankNoteStorage = gold.getBanknoteStorage();
 			this.coinSlot = gold.getCoinSlot();
 		} else {
+			this.station = hardware;
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
 			this.handHeldScanner = hardware.getHandheldScanner();
@@ -634,4 +635,9 @@ public class Software {
 	public CoinSlot getCoinSlot() {
 		return coinSlot;
 	}
+	public AbstractSelfCheckoutStation getHardware(){
+		return station;
+	}
 }
+
+
