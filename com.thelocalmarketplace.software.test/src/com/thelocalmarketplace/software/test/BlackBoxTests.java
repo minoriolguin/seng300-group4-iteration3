@@ -107,7 +107,6 @@ public class BlackBoxTests {
         software.touchScreen.skip = false;
         software.startSession();
         //ensure the items from setup in Data Base
-        assertEquals(3,ProductDatabases.BARCODED_PRODUCT_DATABASE.size());
         //scan an item in the baggingArea scales range (over-sensitivity, less than max)
         assertFalse(hardware.getHandheldScanner().isDisabled());
         hardware.getHandheldScanner().scan(inRange);

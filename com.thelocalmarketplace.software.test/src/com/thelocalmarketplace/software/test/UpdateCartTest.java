@@ -443,6 +443,40 @@ public class UpdateCartTest {
         assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getProductsInOrder().get(PLUProduct1));
     }
 
+    @Test
+    public void testAddSamePLUproductTwiceThenRemove() {
+        // Set up the initial conditions
+        software.startSession();;
+        software.touchScreen.skip = false;
+
+        // Add the same PLU-coded product twice
+        hardware.getScanningArea().addAnItem(PLUProduct1item);
+        software.updateCart.addPLUProduct(PLUProduct1);
+        hardware.getScanningArea().removeAnItem(PLUProduct1item);
+        hardware.getBaggingArea().addAnItem(PLUProduct1item);
+
+        hardware.getScanningArea().addAnItem(PLUProduct1itemCopy);
+        software.updateCart.addPLUProduct(PLUProduct1);
+        hardware.getScanningArea().removeAnItem(PLUProduct1itemCopy);
+        hardware.getBaggingArea().addAnItem(PLUProduct1itemCopy);
+
+        // Verify that the weights are correctly aggregated for the identical PLU-coded products
+        assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getBaggedProducts().get(PLUProduct1));
+        assertEquals(PLUProduct1item.getMass().sum(PLUProduct1itemCopy.getMass()), software.getProductsInOrder().get(PLUProduct1));
+
+        software.updateCart.removeItem(PLUProduct1);
+        hardware.getBaggingArea().removeAnItem(PLUProduct1item);
+        hardware.getBaggingArea().removeAnItem(PLUProduct1itemCopy);
+
+        assertTrue(software.getProductsInOrder().isEmpty());
+        assertEquals(BigDecimal.ZERO,software.getOrderTotal());
+        assertTrue(software.getPluCodedProductsInOrder().isEmpty());
+        assertTrue(software.getBaggedProducts().isEmpty());
+
+    }
+
+
+
     
     /**
      * JUnit test case for text search functionality with barcoded products.

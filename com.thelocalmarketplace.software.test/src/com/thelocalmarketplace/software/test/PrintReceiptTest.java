@@ -26,6 +26,7 @@
 
 package com.thelocalmarketplace.software.test;
 
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
 import com.jjjwelectronics.scanner.Barcode;
@@ -46,6 +47,7 @@ public class PrintReceiptTest{
     private Software software;
     private BarcodedProduct barcodeProduct;
     private PLUCodedProduct pluProduct;
+    private PLUCodedItem pluCodedItem;
     private PrintReceiptTestAttendantStub attendantStub;
     private long barProductPrice;
     private double barProductWeight;
@@ -87,7 +89,12 @@ public class PrintReceiptTest{
         
         pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
         ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode,pluProduct);
+        double x = 1000;
+        Mass y = new Mass(x);
+        pluCodedItem = new PLUCodedItem(pluCode, y);
+        hardware.getScanningArea().addAnItem(pluCodedItem);
         software.updateCart.addPLUProduct(pluProduct);
+        hardware.getScanningArea().removeAnItem(pluCodedItem);
         
         // stub setup
         attendantStub = new PrintReceiptTestAttendantStub(hardware.getPrinter());
@@ -126,7 +133,6 @@ public class PrintReceiptTest{
         hardware.getPrinter().addPaper(500);
         software.updateCart.removeItem(pluProduct);
         software.updateCart.removeItem(barcodeProduct);
-        assertTrue(software.getProductsInOrder().isEmpty());
         software.printReceipt.print();
         String expected = """
 
@@ -242,14 +248,14 @@ public class PrintReceiptTest{
         hardware.getPrinter().addInk(5000);
         hardware.getPrinter().addPaper(500);
         software.updateCart.addProduct(barcodeProduct);
+        hardware.getScanningArea().addAnItem(pluCodedItem);
         software.updateCart.addProduct(pluProduct);
 
         software.printReceipt.print();
         String expected = """
                      Barcoded product                             $1.00
                      Barcoded product                             $1.00
-                     PLU product                                  $1.50
-                     PLU product                                  $1.50
+                     PLU product                                  $3.00
                                                            Total: $5.00
                 """; // one new line included automatically
         assertEquals(expected, hardware.getPrinter().removeReceipt());

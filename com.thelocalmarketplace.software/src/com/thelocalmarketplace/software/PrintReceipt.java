@@ -247,7 +247,9 @@ public class PrintReceipt {
         retStr += ph;
 
         // product price
-        BigDecimal price = BigDecimal.valueOf(product.getPrice()).divide(BigDecimal.valueOf(100));
+        long tempPrice = ((software.getProductsInOrder().get(product).inGrams().longValue())/1000) * product.getPrice();
+        // Convert price to type 'BigDecimal'
+        BigDecimal price = BigDecimal.valueOf(tempPrice).divide(BigDecimal.valueOf(100));
         totalPrice = totalPrice.add(price);
         ph = new StringBuilder(currencyFormat.format(price));
         // fill the left space up to 12.

@@ -116,7 +116,8 @@ public class UpdateCart implements BarcodeScannerListener, ElectronicScaleListen
             software.getProductsInOrder().replace(product,software.getProductsInOrder().get(product).sum(currentMassOnScanner));
         else
             software.getProductsInOrder().put(product,currentMassOnScanner);
-        software.getPluCodedProductsInOrder().add(product);
+        if (!software.getPluCodedProductsInOrder().contains(product))
+            software.getPluCodedProductsInOrder().add(product);
         //Dealing With Heavy Item
         if(software.touchScreen.skipBaggingItem()) {
             software.attendant.notifySkipBagging();
