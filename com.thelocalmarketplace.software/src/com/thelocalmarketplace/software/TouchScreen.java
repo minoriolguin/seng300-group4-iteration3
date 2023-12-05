@@ -27,14 +27,13 @@
 package com.thelocalmarketplace.software;
 
 import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.Item;
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
 import com.tdc.coin.Coin;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
-import com.thelocalmarketplace.hardware.Product;
+import com.thelocalmarketplace.hardware.*;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 import java.io.IOException;
@@ -196,9 +195,13 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * think about making this class ScannerScale listener so when item is on
      * scale the "key in PLU code buttons are displayed"
      */
-    public void selectAddPLUProduct(PriceLookUpCode code){
+    public void selectAddPLUProduct(PriceLookUpCode code, Mass weight){
+        PLUCodedItem item;
         if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
+            item = new PLUCodedItem(code, weight);
+            software.baggingAreaScale.addAnItem(item);
             PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+
             software.updateCart.addProduct(product);
         }
         else

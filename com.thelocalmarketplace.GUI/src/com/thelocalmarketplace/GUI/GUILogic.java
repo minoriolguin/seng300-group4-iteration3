@@ -13,10 +13,12 @@
 
 package com.thelocalmarketplace.GUI;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 
+import com.jjjwelectronics.Mass;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
@@ -30,6 +32,8 @@ import com.thelocalmarketplace.software.TouchScreen;
  * GUI code) and Panels
  */
 public class GUILogic {
+
+	public Mass testMass = new Mass(100000);
 
 	public TouchScreen screen;
 	private Attendant attendant;
@@ -90,14 +94,14 @@ public class GUILogic {
 	 * return the string that will be displayed in GUI "Receipt"
 	 */
     
-	public String buttonR7_CustomerAddsItem_PLUCode() {
+	public String buttonR7_CustomerAddsItem_PLUCode(String plu) {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
-        PriceLookUpCode pluCode = new PriceLookUpCode(EnterPLU.textPLUcode);
-       
+        PriceLookUpCode pluCode = new PriceLookUpCode(plu);
+
         PLUCodedProduct found = ProductDatabases.PLU_PRODUCT_DATABASE.get(pluCode);
         long price = found.getPrice();
         String description = found.getDescription();
-        screen.selectAddPLUProduct(pluCode);
+        screen.selectAddPLUProduct(pluCode, testMass);
         
         return description;
 		

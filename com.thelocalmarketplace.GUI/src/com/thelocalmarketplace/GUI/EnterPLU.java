@@ -22,11 +22,12 @@ public class EnterPLU extends JPanel{
     JTextField textField = new JTextField();
     
     RunGUI instance;
+    GUILogic guiLogicInstance;
     public static String textPLUcode;
     
-	public EnterPLU(RunGUI instance) {
+	public EnterPLU(RunGUI instance, GUILogic guiLogicInstance) {
 		this.instance = instance;
-		
+		this.guiLogicInstance = guiLogicInstance;
 		textField.setPreferredSize(new Dimension(100, 40));
 		textField.setAlignmentX(CENTER_ALIGNMENT);
 		textPanel.add(textField);
@@ -71,8 +72,9 @@ public class EnterPLU extends JPanel{
                 textField.setText("");
             } else if (buttonText.equals("Enter")){
             		textPLUcode = textField.getText();
-            		//guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode(code);
-				instance.switchPanels("itemAddedFrame"); 
+            		guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode(textPLUcode);
+
+				instance.switchPanels("itemAddedFrame");
 				textPLUcode = "";
 				textField.setText("");	
             } else {

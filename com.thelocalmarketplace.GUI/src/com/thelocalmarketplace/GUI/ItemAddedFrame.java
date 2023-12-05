@@ -27,11 +27,13 @@ public class ItemAddedFrame extends JPanel{
 	private RunGUI instance;
 	private GUILogic guiLogicInstance;
 	private EnterPLU plu;
+
+	public JLabel product;
 	
 	public ItemAddedFrame(RunGUI instance, GUILogic guiLogicInstance) {
 		
 		this.guiLogicInstance = guiLogicInstance;
-		String item = guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode();
+		String item = "no items yet";
 		//Top Panel
 		JPanel topPanel = createLabelPanel("Item Added", 400, 100); 
         
@@ -39,7 +41,7 @@ public class ItemAddedFrame extends JPanel{
         JPanel middlePanel = new JPanel(new BorderLayout());
         middlePanel.setSize(400, 200); 
         
-        JLabel product = new JLabel(item);
+		product = new JLabel(item);
         product.setHorizontalAlignment(SwingConstants.CENTER);
         product.setVerticalAlignment(SwingConstants.CENTER);
         product.setFont(new Font("Arial", Font.BOLD, 16));
@@ -66,6 +68,11 @@ public class ItemAddedFrame extends JPanel{
 		add(bottomPanel, BorderLayout.SOUTH);
 		
 	
+	}
+
+	public void setItemLabel()
+	{
+		product.setText(guiLogicInstance.buttonR7_CustomerAddsItem_PLUCode("00000"));
 	}
 	
     private JPanel createLabelPanel(String labelText, int width, int height) {

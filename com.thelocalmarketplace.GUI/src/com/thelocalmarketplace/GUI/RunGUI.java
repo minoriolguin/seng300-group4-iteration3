@@ -84,7 +84,7 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(createCashCoinPanel(), "cashCoinPanel");
         cardPanel.add(new SelectLanguage(this), "selectLanguage");
         cardPanel.add(new EnterMembershipNumber(this), "enterMembership");
-        cardPanel.add(new EnterPLU(this), "enterPLU");
+        cardPanel.add(new EnterPLU(this, this.guiLogicInstance), "enterPLU");
         //TODO: error happens from here
         cardPanel.add(new ItemAddedFrame(this, this.guiLogicInstance), "itemAddedFrame");
 //        cardPanel.add(createNumberPad(), "numpadPanel");
