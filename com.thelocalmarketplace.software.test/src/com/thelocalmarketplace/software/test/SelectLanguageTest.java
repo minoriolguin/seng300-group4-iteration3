@@ -40,7 +40,7 @@ public class SelectLanguageTest {
    
     @Before
     public void SetUp() {
-        selectLanguage = new SelectLanguage();
+        //selectLanguage = new SelectLanguage();
     }
 
     @Test
