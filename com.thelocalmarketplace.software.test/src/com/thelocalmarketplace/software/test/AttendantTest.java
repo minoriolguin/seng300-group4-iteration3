@@ -79,7 +79,7 @@ public class AttendantTest {
         assertEquals(testMass, checkout.getExpectedTotalWeight());
     }
     
-    @Test //excepted exception???
+    @Test 
     public void testDisableCustomerStationWhileSessionActive() {
     	checkout.startSession();
     	attendant.disableCustomerStation();

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.card.InvalidPINException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.TouchScreen;
 

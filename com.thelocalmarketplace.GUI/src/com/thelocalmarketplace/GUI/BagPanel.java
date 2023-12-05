@@ -9,13 +9,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 import com.jjjwelectronics.EmptyDevice;
@@ -31,6 +29,7 @@ public class BagPanel {
    private JButton removeBagButton = new JButton("Remove Bag");
    private JButton backButton = new JButton("Back");
    private JLabel bagCounter = new JLabel();
+   private int bagWeight;
 
    public BagPanel(TouchScreen s) {
        screen = s;
@@ -51,14 +50,14 @@ public class BagPanel {
        bagCounter.setPreferredSize(new Dimension(50, 50));
        bag_panel.add(bagCounter, BorderLayout.NORTH);
        
-       
        getAddOwnBagButton().addActionListener(new ActionListener() {
     	   @Override
     	   public void actionPerformed(ActionEvent e) {
     		   screen.selectAddOwnBags();
 	           int count = Integer.parseInt(bagCounter.getText());
 	           bagCounter.setText(Integer.toString(count + 1));
-	           addBagSimulation();
+	           setBagWeight(addBagSimulation());
+	           screen.selectAddOwnBags();
 	           screen.selectBagsAdded();
     	   }
     	});
@@ -68,7 +67,6 @@ public class BagPanel {
        addOwnBagButton.setBackground(new Color(137, 221, 255));
        addOwnBagButton.setBounds(980, 495, 280, 55);
        bag_panel.add(addOwnBagButton);
-       
 
     	getPurchaseBagsButton().addActionListener(new ActionListener() {
     	   @Override
@@ -121,7 +119,8 @@ public class BagPanel {
 	
    	}
    
-   public void addBagSimulation() {
+   public int addBagSimulation() {
+	   bagWeight = 0;
 	   JFrame add_own_bag_frame = new JFrame();
 	   JPanel add_own_bag_panel = new JPanel();
 	   JLabel bagWeightPromptLabel = new JLabel("<html><p>Select how heavy your bag  is: "
@@ -148,7 +147,7 @@ public class BagPanel {
 	   lightBagButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e)
 		    {	
-		    	screen.AddItemToScale();
+		    	bagWeight = 100;
 		    	add_own_bag_frame.dispose();
 		    }
 		});
@@ -156,13 +155,15 @@ public class BagPanel {
 	   heavyBagButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e)
 		    {
-		    	screen.AddItemToScale();
-		    	screen.weightOverLimit();
-		    	
+		    	bagWeight = 300;
 		    	add_own_bag_frame.dispose();
 		    }
 		});
-	   
+	   return bagWeight;
+   }
+   
+   public int getBagWeight() {
+	   return bagWeight;
    }
    
    public JButton getAddOwnBagButton() {
@@ -179,6 +180,10 @@ public class BagPanel {
    
    public JButton getBackButton() {
 	   return backButton;
+   }
+ 
+   public void setBagWeight(int bagWeight) {
+	this.bagWeight = bagWeight;
    }
    
    public void setAddOwnBagButton(JButton addOwnBagButton) {
