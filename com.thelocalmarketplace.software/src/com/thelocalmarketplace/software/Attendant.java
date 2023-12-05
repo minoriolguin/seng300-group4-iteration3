@@ -31,6 +31,7 @@ import java.util.Currency;
 import java.util.Scanner;
 
 import com.jjjwelectronics.Mass;
+import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
 import com.tdc.banknote.Banknote;
@@ -182,6 +183,7 @@ public class Attendant implements WeightDiscrepancyListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
 	/** 
 	 * Method for attendant to refill bank notes till full capacity
 	 * **/
@@ -196,12 +198,39 @@ public class Attendant implements WeightDiscrepancyListener {
 			}
 		}
 	}
+	
 	/** 
 	 * Method for attendant to empty all bank notes in the station storage
 	 * **/
 	public void emptyBankNotes() {
 		software.getBankNoteStorage().unload();
 		System.out.println(software.getBankNoteStorage().getBanknoteCount());
+	}
+	
+	/** 
+	 * Method for attendant to refill paper till full capacity
+	 * **/
+	public void refillPaper() {
+		try {
+			software.maintenance.resolvePrinterPaperIssue((int)(software.maintenance.MAXIMUM_PAPER - software.maintenance.getPaperRemaining()));
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+		} catch(OverloadedDevice e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/** 
+	 * Method for attendant to refill ink till full capacity
+	 * **/
+	public void refillInk() {
+		try {
+			software.maintenance.resolveInkIssue((int)(software.maintenance.MAXIMUM_INK - software.maintenance.getInkRemaining()));
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+		} catch(OverloadedDevice e) {
+			e.printStackTrace();
+		}
 	}
 }
 

@@ -176,11 +176,15 @@ public class AttendantFrame {
                 break;
             case 7:
                 System.out.println("Add Receipt Paper");
-                //insert Logic
+                //System.out.println(attendant.software.maintenance.getPaperRemaining());
+                attendant.refillPaper();
+                //System.out.println(attendant.software.maintenance.getPaperRemaining());
                 break;
             case 8:
                 System.out.println("Add Receipt Ink");
-                //insert Logic
+                //System.out.println(attendant.software.maintenance.getPaperRemaining());
+                attendant.refillInk();
+                //System.out.println(attendant.software.maintenance.getPaperRemaining());
                 break;
                 
                 //do we wanna do a button that block/unblock customer?
