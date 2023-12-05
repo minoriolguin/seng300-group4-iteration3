@@ -162,6 +162,17 @@ public class GUILogic {
         String addItemB1_result = "addItemPopUp_button3_BLANK - Extra Button";
 		return addItemB1_result;
 	}
+
+//----------------------------------------------------------------
+// Attendant LookUp Product Panel
+
+	public String buttonL1_AttendantLookUpProduct_PLUCode() {
+		System.out.println("buttonL1_AttendantLookUpProduct_PLUCode");
+		// Example Code Here
+		// Logic Here
+		String addItemB1_result = "Attendant Look Up Product thru PLU Code";
+		return addItemB1_result;
+	}
 	
 //----------------------------------------------------------------
 //Add Items Panel 	
