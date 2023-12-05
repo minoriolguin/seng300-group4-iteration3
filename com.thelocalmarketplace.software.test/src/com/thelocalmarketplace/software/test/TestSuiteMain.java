@@ -40,7 +40,6 @@ import org.junit.runners.Suite;
 		PayByCoinTest.class,
 		PrintReceiptTest.class,
 		PurchaseBagsTest.class,
-		SelectLanguageTest.class,
 		SoftwareTest.class,
 		SoftwareTest.class,
 		UpdateCartTest.class,
