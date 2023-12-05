@@ -153,6 +153,7 @@ public class AttendantFrame {
             case 2:
             	// Call removeItemCall function
             	removeItemCall();
+            	
            
                 break;
             case 3:
@@ -311,6 +312,9 @@ public class AttendantFrame {
     		middlePanel.removeAll();
     		middlePanel.revalidate();
         	middlePanel.repaint();
+        	RunGUI.setOrderTotal(screen.getSoftware().getOrderTotal().intValue());
+        	RunGUI.setWeight(screen.getSoftware().getExpectedTotalWeight().inGrams());
+        	RunGUI.updateOrderList();
     		
     	});
     	middlePanel.add(finished);

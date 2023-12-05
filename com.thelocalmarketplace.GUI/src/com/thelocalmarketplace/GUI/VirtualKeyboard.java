@@ -49,7 +49,6 @@ public class VirtualKeyboard {
     private JTextArea inputArea;
     private JPanel resultArea= new JPanel(new GridLayout(4,5,20,20));
     private Software software;
-    
     /** 
      * Function initialize the VirtualKeyboard frame and add appropriate component
       **/
@@ -167,6 +166,9 @@ public class VirtualKeyboard {
           **/
         private void handleProductClicked(Product item){
         	software.updateCart.addProduct(item);
+        	RunGUI.setOrderTotal(software.getOrderTotal().intValue());
+        	RunGUI.setWeight(software.getExpectedTotalWeight().inGrams());
+        	RunGUI.updateOrderList();
         }
 		
     }
