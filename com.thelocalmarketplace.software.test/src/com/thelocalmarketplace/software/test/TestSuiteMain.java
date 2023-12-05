@@ -31,15 +31,19 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)				
 @Suite.SuiteClasses({
-	AbstractPayByCashTest.class,
-	AttendantTest.class,
-	PayByBanknoteTest.class,
-	PayByCoinTest.class,
-//	PayBySwipeTest.class
-	PrintReceiptTest.class,
-//	SoftwareTest.class,
-	UpdateCartTest.class,
-	SignalAttendantTest.class,
-	WeightDiscrepancyTest.class,
+		AbstractPayByCashTest.class,
+		AttendantTest.class,
+		BlackBoxTests.class,
+		MaintenanceTest.class,
+		PayByBanknoteTest.class,
+		PayByCardTest.class,
+		PayByCoinTest.class,
+		PrintReceiptTest.class,
+		PurchaseBagsTest.class,
+		SelectLanguageTest.class,
+		SoftwareTest.class,
+		SoftwareTest.class,
+		UpdateCartTest.class,
+		WeightDiscrepancyTest.class,
 })
 public class TestSuiteMain {}
