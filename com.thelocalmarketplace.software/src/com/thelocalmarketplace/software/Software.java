@@ -1,26 +1,29 @@
-/**
- * Arvin Bolbolanardestani / 30165484
-Anthony Chan / 30174703
-Marvellous Chukwukelu / 30197270
-Farida Elogueil / 30171114
-Ahmed Elshabasi / 30188386
-Shawn Hanlon / 10021510
-Steven Huang / 30145866
-Nada Mohamed / 30183972
-Jon Mulyk / 30093143
-Althea Non / 30172442
-Minori Olguin / 30035923
-Kelly Osena / 30074352
-Muhib Qureshi / 30076351
-Sofia Rubio / 30113733
-Muzammil Saleem / 30180889
-Steven Susorov / 30197973
-Lydia Swiegers / 30174059
-Elizabeth Szentmiklossy / 30165216
-Anthony Tolentino / 30081427
-Johnny Tran / 30140472
-Kaylee Xiao / 30173778
- */
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software;
 
 
@@ -37,6 +40,7 @@ import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
 import com.tdc.banknote.BanknoteDispensationSlot;
+import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
@@ -94,8 +98,11 @@ public class Software {
 
 	public Mass allowableBagWeight;
 	public final BanknoteDispensationSlot banknoteDispenser;
+	public final BanknoteStorageUnit banknoteStorageUnit;
 	public final CoinTray coinTray;
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
+	public final CoinStorageUnit coinStorage;
+	public final  BanknoteStorageUnit bankNoteStorage;
 	
 	/**
      * A boolean variable that keeps track of whether a customer needs attention.
@@ -123,10 +130,13 @@ public class Software {
 			this.coinValidator = bronze.getCoinValidator();
 			this.cardReader = bronze.getCardReader();
 			this.banknoteDispenser = bronze.getBanknoteOutput();
+			this.banknoteStorageUnit = bronze.getBanknoteStorage();
 			this.coinTray = bronze.getCoinTray();
 			this.printer = bronze.getPrinter();
 			this.coinDispensers = bronze.getCoinDispensers();
 			this.reusableBagDispenser = bronze.getReusableBagDispenser();
+			this.coinStorage = bronze.getCoinStorage();
+			this.bankNoteStorage = bronze.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -137,10 +147,13 @@ public class Software {
 			this.coinValidator = silver.getCoinValidator();
 			this.cardReader = silver.getCardReader();
 			this.banknoteDispenser = silver.getBanknoteOutput();
+			this.banknoteStorageUnit = silver.getBanknoteStorage();
 			this.coinTray = silver.getCoinTray();
 			this.printer = silver.getPrinter();
 			this.coinDispensers = silver.getCoinDispensers();
 			this.reusableBagDispenser = silver.getReusableBagDispenser();
+			this.coinStorage = silver.getCoinStorage();
+			this.bankNoteStorage = silver.getBanknoteStorage();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -151,10 +164,13 @@ public class Software {
 			this.coinValidator = gold.getCoinValidator();
 			this.cardReader = gold.getCardReader();
 			this.banknoteDispenser = gold.getBanknoteOutput();
+			this.banknoteStorageUnit = gold.getBanknoteStorage();
 			this.coinTray = gold.getCoinTray();
 			this.printer = gold.getPrinter();
 			this.coinDispensers = gold.getCoinDispensers();
 			this.reusableBagDispenser = gold.getReusableBagDispenser();
+			this.coinStorage = gold.getCoinStorage();
+			this.bankNoteStorage = gold.getBanknoteStorage();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -164,10 +180,13 @@ public class Software {
 			this.coinValidator = hardware.getCoinValidator();
 			this.cardReader = hardware.getCardReader();
 			this.banknoteDispenser = hardware.getBanknoteOutput();
+			this.banknoteStorageUnit = hardware.getBanknoteStorage();
 			this.coinTray = hardware.getCoinTray();
 			this.printer = hardware.getPrinter();
 			this.coinDispensers = hardware.getCoinDispensers();
 			this.reusableBagDispenser = hardware.getReusableBagDispenser();
+			this.coinStorage = hardware.getCoinStorage();
+			this.bankNoteStorage = hardware.getBanknoteStorage();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
@@ -187,6 +206,7 @@ public class Software {
 
 
 		//Initialize Product Lists and Weight Limit
+		PopulateProductDatabases.populateDatabases();
 		productsInOrder = new HashMap<>();
 		barcodedProductsInOrder = new ArrayList<>();
 		pluCodedProductsInOrder = new ArrayList<>();
@@ -200,6 +220,7 @@ public class Software {
 	 * This method must be called before starting a session or conducting any self-checkout operations.
 	 */
 	public void turnOn() {
+		PowerGrid.engageUninterruptiblePowerSource();
 		PowerGrid grid = PowerGrid.instance();
 		station.plugIn(grid);
 		station.turnOn();
@@ -220,6 +241,7 @@ public class Software {
 		handHeldScanner.enable();
 		mainScanner.enable();
 		baggingAreaScale.enable();
+		scannerScale.enable();
 		
 		// Check for maintenance and predict issues
 		maintenance.checkInk(printReceipt.getAveragePrintedChars());
@@ -297,6 +319,7 @@ public class Software {
 	public void unblockCustomer() {
 		handHeldScanner.enable();
 		mainScanner.enable();
+		scannerScale.enable();
 		blocked = false;
 	}
 	
@@ -319,6 +342,16 @@ public class Software {
             setPendingMaintenance(true);
         } else {
             disableHardwareComponents();
+            
+            baggingAreaScale.disable();
+            scannerScale.disable();
+            handHeldScanner.disable();
+            mainScanner.disable();
+            banknoteValidator.disable();
+            coinValidator.disable();
+            cardReader.disable();
+            banknoteDispenser.disable();
+            printer.disable();
             customerStationBlock = true;
         }
     }
@@ -477,7 +510,9 @@ public class Software {
 	public BanknoteDispensationSlot getBanknoteDispenser() {
 		return banknoteDispenser;
 	}
-
+	public BanknoteStorageUnit getBankNoteStorage() {
+		return bankNoteStorage;
+	}
 	/**
 	 * Retrieves the coin tray of the self-checkout station.
 	 *
@@ -513,10 +548,10 @@ public class Software {
 		        // First, validate the format of the membership number
 		        if (membershipValidator.isValid(membershipNumber)) {
 		            // Convert the string to an integer for database lookup
-		            int memberId = Integer.parseInt(membershipNumber);
+		            // int memberId = Integer.parseInt(membershipNumber);
 
 		            // Check if the member exists in the database
-		            if (membershipDatabase.memberExists(memberId)) {
+		            if (membershipDatabase.memberExists(membershipNumber)) {
 		                // Process the valid membership number
 		                System.out.println("Membership number is valid and found in the database.");
 		                // TODO: Link to customer session, update points, etc.
@@ -546,7 +581,7 @@ public class Software {
 	 * @return The coin storage unit.
 	 */
 	public CoinStorageUnit getCoinStorage() {
-		return station.getCoinStorage();
+		return coinStorage;
 	}
 	
     public void setPendingMaintenance(boolean pending) {
@@ -577,6 +612,7 @@ public class Software {
 	    if (needsAttention == true) {
 	    	attendant.setAttendedToFalse();
 	        attendant.respondToCustomer();
+	        
 	    } else {
 	        // Nothing should happen here since this should never happen
 	    }

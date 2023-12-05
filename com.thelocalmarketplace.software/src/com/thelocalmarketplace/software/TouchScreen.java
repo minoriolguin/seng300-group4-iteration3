@@ -1,12 +1,45 @@
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software;
 
-
+import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.card.Card;
+import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
+import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
+
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Currency;
 
 /**
  * The {@code TouchScreen} class represents the touch screen interface in a self-checkout system.
@@ -22,10 +55,21 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * The self-checkout software instance associated with the touch screen.
      */
     private final Software software;
+
+    private Calendar calendar;
     /**
      * Flag indicating whether to skip the bagging process for the next item.
      */
     public boolean skip;
+
+    private Card CreditCard = new Card("credit", "234567", "John",
+            "245", "7429", true, true);
+
+    private Card DebitCard = new Card("debit", "4567890", "Jane",
+            "908", "3579", true, true);
+    private Currency CAD;
+
+    private Boolean cardsRegistered = false;
 
     /**
      * Constructs a new {@code TouchScreen} instance associated with the provided self-checkout software.
@@ -37,56 +81,170 @@ public class TouchScreen implements WeightDiscrepancyListener {
         software.weightDiscrepancy.register(this);
         this.software = software;
         skip = false;
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR,2);
+
+    }
+
+    /**
+     * GUI displays message No items in Cart
+     */
+    public void displayNoItemsInCart(){
+
     }
     
     /**
+     * Should Display this option during session
      * Initiates the payment process using coins.
      * Enables and activates the coin validator and enables the printer.
      */
     public void payByCoin () {
-        software.coinValidator.enable();
-        software.coinValidator.activate();
-        software.printer.enable();
+        if (!software.getProductsInOrder().isEmpty()){
+            software.coinValidator.enable();
+            software.coinValidator.activate();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
+
     }
     
     /**
      * Initiates the payment process using banknotes.
      * Enables and activates the banknote validator and enables the printer.
      */
-    public void payByBanknote () {
-        software.banknoteValidator.enable();
-        software.banknoteValidator.activate();
-        software.printer.enable();
+    private void payByBanknote () {
+        CAD = Currency.getInstance("CAD");
+        Coin.DEFAULT_CURRENCY = CAD;
+        if (!software.getProductsInOrder().isEmpty()){
+            software.banknoteValidator.enable();
+            software.banknoteValidator.activate();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
+    }
+    //TODO: finish implementing banknote and coin payment
+    public void insertBanknote()
+    {
+        payByBanknote();
     }
     
     /**
      * Initiates the payment process using a card swipe.
      * Enables the card reader and enables the printer.
      */
-    public void payByCard () {
-        software.cardReader.enable();
-        software.printer.enable();
+    private void payByCard () {
+        if (!cardsRegistered) {
+            software.payByCard.addCardData("credit", "234567", "John", calendar, "245", 120);
+            software.payByCard.addCardData("debit", "4567890", "Jane", calendar, "908", 210);
+            cardsRegistered = true;
+        }
+        if (!software.getProductsInOrder().isEmpty()) {
+            software.cardReader.enable();
+            software.printer.enable();
+        }
+        else
+            displayNoItemsInCart();
     }
 
-    public void addPLUProduct(PriceLookUpCode code){
-        PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
-        software.updateCart.addPLUProduct(product);
+    public void payViaSwipe(String type) throws IOException {
+        payByCard();
+        if (type.equals("credit"))
+            software.cardReader.swipe(CreditCard);
+        else
+            software.cardReader.swipe(DebitCard);
     }
-    
+
+    public void payViaTap(String type) throws IOException {
+        payByCard();
+        if (type.equals("credit"))
+            software.cardReader.tap(CreditCard);
+        else
+            software.cardReader.tap(DebitCard);
+    }
+
+    public void payViaInsert(String type, String pin) throws IOException{
+        payByCard();
+        if (type.equals("credit"))
+            try {
+                software.cardReader.insert(CreditCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+        else
+            try {
+                software.cardReader.insert(DebitCard, pin);
+            }
+            catch (Exception e)
+            {
+                software.cardReader.remove();
+            }
+    }
+
+
     /**
-     * Prints the receipt for the current order.
+     * Displays message when product not found in DataBase
+     */
+    public void displayProductNotInDataBase(){
+    }
+
+    /**
+     * @param code of Product enter on touchscreen sends product to updated cart
+     * think about making this class ScannerScale listener so when item is on
+     * scale the "key in PLU code buttons are displayed"
+     */
+    public void selectAddPLUProduct(PriceLookUpCode code){
+        if (ProductDatabases.PLU_PRODUCT_DATABASE.containsKey(code)) {
+            PLUCodedProduct product = ProductDatabases.PLU_PRODUCT_DATABASE.get(code);
+            software.updateCart.addProduct(product);
+        }
+        else
+            displayProductNotInDataBase();
+
+    }
+
+    /**
+     * @param barcode entered on GUI
+     *            adds barcoded product to order
+     */
+    public void manuallyEnterBarcode(Barcode barcode){
+        if (ProductDatabases.BARCODED_PRODUCT_DATABASE.containsKey(barcode)){
+            BarcodedProduct product = ProductDatabases.BARCODED_PRODUCT_DATABASE.get(barcode);
+            software.updateCart.addProduct(product);
+        }
+        else
+            displayProductNotInDataBase();
+    }
+
+    /**
+     * Prints the receipt for the current order. Is this auto called when payment
+     * happens?  Does products in order get cleared preventing this from printing
+     * current order?
      */
     public void printReceipt() {
         software.printReceipt.print();
     }
 
     /**
-     * Removes a selected barcoded product from the order.
+     * Removes a selected product from the order.
      *
-     * @param product The barcoded product to be removed.
+     * @param product The product to be removed.
      */
-    public void removeSelectedBarcodedProduct(BarcodedProduct product){
+    public void removeProduct(Product product){
         software.updateCart.removeItem(product);
+    }
+
+
+    /**
+     * This is to pop up after every barcode is scanned or plu product is added
+     * one button to call another to move back to order or displaying additem to
+     * bagging area
+     */
+    public void SelectSkipBaggingItem(){
+        skip = true;
     }
     
     /**
@@ -118,10 +276,20 @@ public class TouchScreen implements WeightDiscrepancyListener {
     /**
      * Signals that the bags have been added, enabling scanners.
      */
-    public void bagsAdded(){
+    public void selectBagsAdded(){
         software.weightDiscrepancy.expectOwnBagsToBeAdded = false;
         software.mainScanner.enable();
         software.handHeldScanner.enable();
+    }
+
+
+    /**
+     * @param amount number of bags they want
+     * @throws EmptyDevice if no bag in dispenser
+     *
+     */
+    public void purchaseBags(int amount) throws EmptyDevice {
+        software.purchaseBags.AddBagToOrder(amount);
     }
 
     /**
@@ -129,30 +297,19 @@ public class TouchScreen implements WeightDiscrepancyListener {
      * Item on GUI clicked and calls this method passing in a Product param
      */
     public void visualProductClicked(Product itemClicked) {
-    	//Is PLU coded Product
-    	if (!itemClicked.isPerUnit()) {
-    		// CAST TYPE: Unsure if this works
-    		software.updateCart.addPLUProduct((PLUCodedProduct) itemClicked);
-    	}
-    	else{
-    	// Is a barcoded product
-    	// Need barcode
-    	BarcodedProduct convertItemClicked = (BarcodedProduct)itemClicked;
-    	Barcode barcode = convertItemClicked.getBarcode();
-    	software.updateCart.addScannedItem(barcode);
-    	}
+        software.updateCart.addProduct(itemClicked);
     }
     /**
-     * Displays a prompt for adding an item.
+     * Displays a prompt for adding an item to bagging area.
      */
-    public void displayAddItem(){
+    public void displayAddItemToBaggingArea(){
         // Implementation to be done in Iteration 3
     }
     
     /**
      * Displays a prompt for removing an item.
      */
-    public void displayRemoveItem(){
+    public void displayRemoveItemFromBaggingArea(){
         // Implementation to be done in Iteration 3
     }
     
@@ -178,17 +335,24 @@ public class TouchScreen implements WeightDiscrepancyListener {
     	software.notifyAttendant();
     }
     
-    
+    /**
+     * get software associated with touchscreen, need for gui
+     */
+    public Software getSoftware() {
+    	return this.software;
+    }
     //Listeners Below 
     
     @Override
     public void RemoveItemFromScale() {
-        displayRemoveItem();
+        software.blockCustomer();
+        displayRemoveItemFromBaggingArea();
     }
 
     @Override
     public void AddItemToScale() {
-        displayAddItem();
+        software.blockCustomer();
+        displayAddItemToBaggingArea();
     }
 
     @Override
@@ -204,4 +368,5 @@ public class TouchScreen implements WeightDiscrepancyListener {
     @Override
     public void bagsTooHeavy() {
     }
+    
 }

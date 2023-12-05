@@ -1,7 +1,34 @@
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.jjjwelectronics.IDevice;
 import com.jjjwelectronics.IDeviceListener;
@@ -14,6 +41,7 @@ import com.tdc.IComponentObserver;
 import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
 import com.tdc.banknote.BanknoteStorageUnit;
+import com.tdc.banknote.BanknoteStorageUnitObserver;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinDispenserObserver;
 import com.tdc.coin.CoinStorageUnit;
@@ -30,11 +58,12 @@ import ca.ucalgary.seng300.simulation.SimulationException;
  * type in the Arraylist `issues` to simulate maintenance codes.
  * 
  */
-public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver {
+public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserver, CoinStorageUnitObserver, BanknoteStorageUnitObserver {
     private Software software;
     private int inkRemaining;
-    private int averagePaperUsedPerSession;
+	private int averagePaperUsedPerSession;
 	private int averageInkUsagePerSession;
+
 	private int remainingPaper;
     
     // Specs
@@ -44,15 +73,16 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     public int lowPaperLevel = (int)(MAXIMUM_PAPER * 0.1);
 
 	public int MAXIMUM_BANKNOTES;
-	public int lowbanknoteslevel = (int)(MAXIMUM_BANKNOTES * 0.1);
 
-	private BanknoteStorageUnit banknoteStorageUnit;
+	public int lowbanknoteslevel;
+	int highbanknoteslevel;
 
-	private int averageBanknotesUsagePerSession;
+	private int averageBanknotesUsagePerSession = 5;
 
-	private int currentBanknotes;
-    
-    ArrayList<String> issues;
+	private int currentBanknotes = 0;
+	
+
+	ArrayList<String> issues;
 
 	// String messages that simulate maintenance codes
     String outOfInkMsg = "PRINTER_OUT_OF_INK";
@@ -70,18 +100,35 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     String lowPaperMsg = "PRINTER_LOW_PAPER";
     String lowPaperSoonMsg = "PRINTER_LOW_PAPER_SOON";
 
-	String outOfBanknotesMsg = "PRINTER_OUT_OF_BANKNOTES";
-	String lowBanknotesMsg = "PRINTER_LOW_BANKNOTES";
-	String lowBanknotesSoonMsg = "PRINTER_LOW_BANKNOTES_SOON";
+	String outOfBanknotesMsg = "OUT_OF_BANKNOTES";
+	String lowBanknotesMsg = "LOW_BANKNOTES";
+	String lowBanknotesSoonMsg = "LOW_BANKNOTES_SOON";
+	String fullBanknotesSoonMsg = "BANKNOTES_ALMOST_FULL";
 
 	String bankNotesFullMsg = "BANKNOTES_FULL";
+	private boolean keepValue = false;
     
     public Maintenance(Software software){
         this.software = software;
+        
+        // attach this class as an observer to each coin dispenser
+        if (software.getCoinDenominations() == null) {
+        	throw new NullPointerSimulationException("coin denominations");   		
+        }
+       
+        // attach this class as an observer to each coin dispenser
+        for (BigDecimal coinDenomination : software.getCoinDenominations()) {
+        	software.getCoinDispensers().get(coinDenomination).attach(this);
+        }
+        
+        // attach this class as an observer to the coin storage unit
+        software.getCoinStorage().attach(this);
+
         // make predictions (check component statuses)
         this.inkRemaining = 0;
         this.averageInkUsagePerSession = 0;
 		issues = new ArrayList<>();
+		
     }
     
     /**
@@ -119,6 +166,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		// Remove if exists in issues arraylist; does nothing otherwise
     		issues.remove(lowInkMsg);
     		issues.remove(outOfInkMsg);
+    		software.attendant.enableCustomerStation();
     		// Estimate when low ink might occur
     		predictLowInk();
     	}
@@ -145,10 +193,11 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @throws OverloadedDevice if quantity added causes ink level to be more than allowable
      */
     public void resolveInkIssue(int quantity) throws OverloadedDevice {
-    	if (quantity >= (MAXIMUM_INK-inkRemaining)) {
+    	if (quantity > (MAXIMUM_INK-inkRemaining)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
     	}
     	software.printer.addInk(quantity);
+    	this.inkRemaining += quantity;
     	checkInk(averageInkUsagePerSession);	
     }
     
@@ -168,6 +217,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			software.attendant.disableCustomerStation();
 		} else {
 			issues.remove(lowCoinsSoonDisp);
+			software.attendant.enableCustomerStation();
 		}	
     }
     
@@ -187,6 +237,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(dispAlmostFull);
+    		software.attendant.enableCustomerStation();
     	}
     }
     
@@ -205,6 +256,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		software.attendant.disableCustomerStation();
     	} else {
     		issues.remove(storAlmostFull);
+    		software.attendant.enableCustomerStation();
     	}
     }
     
@@ -214,9 +266,9 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @param denomination - the type of denomination for that dispenser
      * @param amount - the amount of coins to be placed in the dispenser 
      */
-    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException {
+    public void addCoinsInDispenser(ICoinDispenser dispenser, BigDecimal denomination, int amount) throws SimulationException, CashOverloadException, DisabledException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {
@@ -224,14 +276,10 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     	} else {
     		int i;
     		Coin coin = new Coin(denomination);
-    		Coin[] coins = new Coin[amount];
     		
     		for (i = 0; i <= amount - 1; i++ ) {
-    			coins[i] = coin;
-    		}
-    		
-    		dispenser.load(coins);
-    		
+    			dispenser.receive(coin);
+    		}  		
     	}
    	}
     	    
@@ -242,7 +290,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      */
     public void removeCoinsInDispenser(ICoinDispenser dispenser, int amount) throws CashOverloadException, NoCashAvailableException, DisabledException {
     	if (dispenser == null) {
-    		throw new NullPointerSimulationException();   		
+    		throw new NullPointerSimulationException("dispenser");   		
     	}
     	
     	if (!software.isCustomerStationBlocked()) {
@@ -293,6 +341,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
     		// Remove if exists in issues arraylist; does nothing otherwise
     		issues.remove(lowPaperMsg);
     		issues.remove(outOfPaperMsg);
+    		software.attendant.enableCustomerStation();
     		// Estimate when low paper might occur
     		predictLowPaper();
     	}				 
@@ -317,23 +366,28 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
      * @throws OverloadedDevice
      */
 	public void resolvePrinterPaperIssue(int amount) throws OverloadedDevice {
-		if (amount >= (MAXIMUM_PAPER-remainingPaper)) {
+		if (amount > (MAXIMUM_PAPER-remainingPaper)) {
     		throw new RuntimeException("Process aborted: Quantity will overload the device.");
     	}
     	software.printer.addPaper(amount);
+    	this.remainingPaper += amount;
     	checkPaper(averagePaperUsedPerSession);	
     }
 
-
+	/**
+     * Checks to see the count of banknotes and send the appropriate message.
+     * @param averageBanknotesUsagePerSession, banknoteStorageUnit
+     */
 	public void checkBanknotes(int averageBanknotesUsagePerSession, BanknoteStorageUnit banknoteStorageUnit){
 
 		this.averageBanknotesUsagePerSession = averageBanknotesUsagePerSession;
 
-
 		try {
-			this.banknoteStorageUnit = banknoteStorageUnit;
-			this.MAXIMUM_BANKNOTES = banknoteStorageUnit.getCapacity();
-			this.currentBanknotes = banknoteStorageUnit.getBanknoteCount();
+			if(keepValue == false) {this.MAXIMUM_BANKNOTES = banknoteStorageUnit.getCapacity();}
+			if (currentBanknotes==0){this.currentBanknotes = banknoteStorageUnit.getBanknoteCount();}
+			lowbanknoteslevel = (int)(MAXIMUM_BANKNOTES * 0.1);
+			highbanknoteslevel = Math.round(( MAXIMUM_BANKNOTES* 3)/4);
+			
 		} catch (UnsupportedOperationException e) {
 			// if station type is bronze
 		}
@@ -359,17 +413,25 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 		}
 
 		else {
+			while(issues.contains(lowBanknotesMsg) || issues.contains(outOfBanknotesMsg) || issues.contains(bankNotesFullMsg) || issues.contains(lowBanknotesSoonMsg)) {
 			issues.remove(lowBanknotesMsg);
 			issues.remove(outOfBanknotesMsg);
 			issues.remove(bankNotesFullMsg);
-			issues.remove(lowBanknotesSoonMsg);
+			issues.remove(lowBanknotesSoonMsg);}
+			
+			software.attendant.enableCustomerStation();
 
-			predictLowBanknotes();
+			predictLowBanknotes(banknoteStorageUnit);
+			predictBanknotesFull(banknoteStorageUnit);
 		}
 	}
 
 
-	public void predictLowBanknotes() {
+	/**
+     * Predicts if the storage unit is running out of banknotes
+     * @param banknoteStorageUnit
+     */
+	public void predictLowBanknotes(BanknoteStorageUnit banknoteStorageUnit) {
 		if (currentBanknotes <= lowbanknoteslevel+averageBanknotesUsagePerSession) {
 			issues.add(lowBanknotesSoonMsg);
 			software.attendant.disableCustomerStation();
@@ -377,18 +439,102 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 			issues.remove(lowBanknotesSoonMsg);
 		}
 	}
-
-
-	public void resolveBanknotesIssues(Banknote... banknotes) throws CashOverloadException, DisabledException {
-		if (banknotes.length >= (MAXIMUM_BANKNOTES-currentBanknotes)) {
+	
+	/**
+     * Predicts if the storage unit is almost full of banknotes
+     * @param banknoteStorageUnit
+     */
+	public void predictBanknotesFull(BanknoteStorageUnit banknoteStorageUnit) {
+		if (currentBanknotes >= highbanknoteslevel) {
+			issues.add(fullBanknotesSoonMsg);
+			software.attendant.disableCustomerStation();
+		} else {
+			issues.remove(fullBanknotesSoonMsg);
+		}
+	}
+	
+	/**
+     * resolves low amount of banknotes issue
+     * @param banknoteStorageUnit, banknotes
+     * @throws CashOverloadException, DisabledException
+     */
+	public void resolveBanknotesLow(BanknoteStorageUnit banknoteStorageUnit, ArrayList<Banknote> banknotes) throws CashOverloadException, DisabledException {
+		if (banknotes.size() >= (MAXIMUM_BANKNOTES-currentBanknotes)) {
 			throw new RuntimeException("Process aborted: Quantity will overload the device.");
 		}
 		for(Banknote banknote : banknotes)
 			if(banknote == null)
 				throw new NullPointerSimulationException("banknote instance");
 			else
-				software.banknoteDispenser.receive(banknote);
+				banknoteStorageUnit.load(banknote);
 		checkBanknotes(averageBanknotesUsagePerSession, banknoteStorageUnit);
+	}
+	
+	/**
+     * resolves the isssue of having the storage unit reach maximum capacity of banknotes
+     * @param banknoteStorageUnit
+     * @throws CashOverloadException, DisabledException
+     */
+	public void resolveBanknotesFull(BanknoteStorageUnit banknoteStorageUnit) throws CashOverloadException, DisabledException {
+		currentBanknotes = banknoteStorageUnit.getBanknoteCount();
+		if (currentBanknotes < (lowbanknoteslevel)) {
+			throw new RuntimeException("Process aborted: Quantity will be lower than minimum.");
+		}
+		
+		List<Banknote> unloaded = new ArrayList<>(banknoteStorageUnit.unload());
+		
+		while(currentBanknotes+1>highbanknoteslevel) {
+			unloaded.remove(unloaded.size()-1);
+			currentBanknotes = unloaded.size();
+		}
+		
+		for(Banknote banknote : unloaded)
+			if(banknote != null)
+				banknoteStorageUnit.load(banknote);
+		checkBanknotes(averageBanknotesUsagePerSession, banknoteStorageUnit);
+	}
+	
+    public int getInkRemaining() {
+		return inkRemaining;
+	}
+    
+    public int getPaperRemaining() {
+    	return remainingPaper;
+    }
+    
+    public void setInkRemaining(int amount) {
+		inkRemaining = amount;
+	}
+
+	public void setCurrentBanknotes(int currentBanknotes) {
+		this.currentBanknotes = currentBanknotes;
+	}
+	
+	public void setMAXIMUM_BANKNOTES(int mAXIMUM_BANKNOTES) {
+		MAXIMUM_BANKNOTES = mAXIMUM_BANKNOTES;
+		highbanknoteslevel = Math.round(( MAXIMUM_BANKNOTES* 3)/4);
+		lowbanknoteslevel = (int)(MAXIMUM_BANKNOTES * 0.1);
+		keepValue = true;
+	}
+    
+    public void setPaperRemaining(int amount) {
+    	remainingPaper = amount;
+    }
+    
+	public int getAverageInkUsagePerSession() {
+		return averageInkUsagePerSession;
+	}
+	
+	public int getAveragePaperUsagePerSession() {
+		return averagePaperUsedPerSession;
+	}
+
+	public void setAverageInkUsagePerSession(int averageInkUsagePerSession) {
+		this.averageInkUsagePerSession = averageInkUsagePerSession;
+	}
+	
+	public void setAveragePaperUsagePerSession(int averagePaperUsage) {
+		this.averagePaperUsedPerSession = averagePaperUsage;
 	}
 
 	@Override
@@ -439,7 +585,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowInk() {
-		issues.add(lowInkSoonMsg);
+		issues.add(lowInkMsg);
 		
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowInkSoonMsg);
@@ -449,7 +595,7 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void thePrinterHasLowPaper() {
-		issues.add(lowPaperSoonMsg);
+		issues.add(lowPaperMsg);
 				
 		// remove these elements if exists in issues; does nothing otherwise
 		issues.remove(lowPaperSoonMsg);
@@ -565,6 +711,30 @@ public class Maintenance implements ReceiptPrinterListener, CoinDispenserObserve
 
 	@Override
 	public void coinsUnloaded(ICoinDispenser dispenser, Coin... coins) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void banknotesFull(BanknoteStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void banknoteAdded(BanknoteStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void banknotesLoaded(BanknoteStorageUnit unit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void banknotesUnloaded(BanknoteStorageUnit unit) {
 		// TODO Auto-generated method stub
 		
 	}

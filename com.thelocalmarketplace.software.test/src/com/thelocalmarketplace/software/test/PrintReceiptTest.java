@@ -1,50 +1,54 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software.test;
 
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.OverloadedDevice;
-import com.jjjwelectronics.printer.ReceiptPrinterBronze;
-import com.jjjwelectronics.printer.ReceiptPrinterGold;
-import com.jjjwelectronics.printer.ReceiptPrinterSilver;
 import com.jjjwelectronics.scanner.Barcode;
-import com.thelocalmarketplace.hardware.BarcodedProduct;
-import com.thelocalmarketplace.hardware.PLUCodedProduct;
-import com.thelocalmarketplace.hardware.PriceLookUpCode;
+import com.thelocalmarketplace.hardware.*;
+import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.PrintReceipt;
 
-import powerutility.PowerGrid;
-import java.util.ArrayList;
+import com.thelocalmarketplace.software.Software;
+
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PrintReceiptTest{
-    PowerGrid power = PowerGrid.instance();
-    ReceiptPrinterBronze printerBronze;
-    ReceiptPrinterSilver printerSilver;
-    ReceiptPrinterGold printerGold;
-    ArrayList<BarcodedProduct> barcodeInCart;
-    ArrayList<PLUCodedProduct> pluInCart;
-    BarcodedProduct barcodeProduct;
-    PLUCodedProduct pluProduct;
-    PrintReceiptTestAttendantStub attendantStub;
 
-    // barcode product details
-    Barcode barcode;
-    String barProductDescription;
-    long barProductPrice;
-    double barProductWeight;
+    private SelfCheckoutStationGold hardware;
+    private Software software;
+    private BarcodedProduct barcodeProduct;
+    private PLUCodedProduct pluProduct;
+    private PrintReceiptTestAttendantStub attendantStub;
+    private long barProductPrice;
+    private double barProductWeight;
 
     // plu product details
     PriceLookUpCode pluCode;
@@ -53,25 +57,13 @@ public class PrintReceiptTest{
     
     @Before
     public void setUp() throws OverloadedDevice {
-        // hardware setup
-        power = PowerGrid.instance();
-        PowerGrid.engageUninterruptiblePowerSource();
-        
-        printerBronze = new ReceiptPrinterBronze();
-        printerBronze.plugIn(power);
-        printerBronze.turnOn();
-        printerBronze.addInk(5000);
-        printerBronze.addPaper(500);
-        printerSilver = new ReceiptPrinterSilver();
-        printerSilver.plugIn(power);
-        printerSilver.turnOn();
-        printerSilver.addInk(5000);
-        printerSilver.addPaper(500);
-        printerGold = new ReceiptPrinterGold();
-        printerGold.plugIn(power);
-        printerGold.turnOn();
-        printerGold.addInk(5000);
-        printerGold.addPaper(500);
+
+        hardware = new SelfCheckoutStationGold();
+        software = Software.getInstance(hardware);
+        software.turnOn();
+
+        //hardware.getPrinter().addInk(5000);
+        //hardware.getPrinter().addPaper(500);
 
         // Restore PrintReceipt to default
         PrintReceipt.defaultStartString();
@@ -79,8 +71,9 @@ public class PrintReceiptTest{
 
         // Product setup
         Numeral[] num1 = {Numeral.one};
-        barcode = new Barcode(num1);
-        barProductDescription = "Barcoded product";
+        // barcode product details
+        Barcode barcode1 = new Barcode(num1);
+        String barProductDescription = "Barcoded product";
         barProductPrice = 100L;
         barProductWeight = 1;
         
@@ -88,17 +81,17 @@ public class PrintReceiptTest{
         pluProductDescription = "PLU product";
         pluProductPrice = 150L;
 
-        barcodeProduct = new BarcodedProduct(barcode,barProductDescription,barProductPrice,barProductWeight);
-        barcodeInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
+        barcodeProduct = new BarcodedProduct(barcode1, barProductDescription,barProductPrice,barProductWeight);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1,barcodeProduct);
+        software.updateCart.addProduct(barcodeProduct);
         
         pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
-        pluInCart = new ArrayList<>();
-        pluInCart.add(pluProduct);
+        ProductDatabases.PLU_PRODUCT_DATABASE.put(pluCode,pluProduct);
+        software.updateCart.addPLUProduct(pluProduct);
         
         // stub setup
-        attendantStub = new PrintReceiptTestAttendantStub(printerBronze);
-        printerBronze.register(attendantStub);
+        attendantStub = new PrintReceiptTestAttendantStub(hardware.getPrinter());
+        hardware.getPrinter().register(attendantStub);
     }
 
    
@@ -108,84 +101,67 @@ public class PrintReceiptTest{
         PrintReceipt.setStartString("Hello!\n");
         PrintReceipt.setEndString("");
 
-        printerBronze = new ReceiptPrinterBronze();
-        printerBronze.plugIn(power);
-        printerBronze.turnOn();
-        printerBronze.addInk(5000);
-        printerBronze.addPaper(1);
-        attendantStub = new PrintReceiptTestAttendantStub(printerBronze);
-        printerBronze.register(attendantStub);
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(1);
 
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
-        assertEquals(1, attendantStub.outOfPaperCounter);
+        software.printReceipt.print();
+        assertTrue(attendantStub.outOfPaper);
     }
 
     @Test
     public void testOutOfInkCallsAttendantStub() throws OverloadedDevice {
         PrintReceipt.setStartString(".\n");
         PrintReceipt.setEndString("");
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
 
-        printerBronze = new ReceiptPrinterBronze();
-        printerBronze.plugIn(power);
-        printerBronze.turnOn();
-        printerBronze.addInk(1);
-        printerBronze.addPaper(500);
-        attendantStub = new PrintReceiptTestAttendantStub(printerBronze);
-        printerBronze.register(attendantStub);
+        hardware.getPrinter().addInk(1);
+        hardware.getPrinter().addPaper(500);
 
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
-        assertEquals(1, attendantStub.outOfInkCounter);
+        software.printReceipt.print();
+        assertTrue(attendantStub.outOfInk);
     }
 
     @Test
-    public void testPrintOnlyDefaultTemplate(){
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();        
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
+    public void testPrintOnlyDefaultTemplate() throws OverloadedDevice {
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
+        software.updateCart.removeItem(pluProduct);
+        software.updateCart.removeItem(barcodeProduct);
+        assertTrue(software.getProductsInOrder().isEmpty());
+        software.printReceipt.print();
         String expected = """
-                    
+
                     Thelocalmarketplace
                     ------------------------------------------------------------
                     ------------------------------------------------------------
                     Thank you!
                     Please come again!
                     """;// new line is entered automatically
-        assertEquals(expected, printerBronze.removeReceipt());
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
     }
 
     @Test
-    public void testSetTemplatesAndSimpleSingleLine(){
+    public void testSetTemplatesAndSimpleSingleLine() throws OverloadedDevice {
         PrintReceipt.setStartString("Hello\n");
         PrintReceipt.setEndString("world!\n");
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
+        software.printReceipt.print();
         String expected = """
                     Hello
-                         product                                      $1.00
-                                                               Total: $1.00
+                         Barcoded product                             $1.00
+                         PLU product                                  $1.50
+                                                               Total: $2.50
                     world!
                     """;
-        assertEquals(expected, printerBronze.removeReceipt());
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
     }
 
-    
+
     @Test (expected = RuntimeException.class)
     public void testSetStartStringWithoutNewLine(){
         PrintReceipt.setStartString("Hello");
     }
-    
+
     @Test (expected = RuntimeException.class)
     public void testSetStartStringToBadValue(){
         PrintReceipt.setStartString("---------*---------*---------*---------*---------*---------*---------*\n");
@@ -201,121 +177,81 @@ public class PrintReceiptTest{
     }
 
     @Test
-    public void testPrintSimpleSingleLineBronze(){
+    public void testPrintSimpleSingleLine() throws OverloadedDevice {
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
+        software.printReceipt.print();
         String expected = """
-                     product                                      $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                                                           Total: $2.50
+                """;
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
+    }
+
+    @Test
+    public void testPrintSingleLineWithDecimals() throws OverloadedDevice {
+        PrintReceipt.setStartString("");
+        PrintReceipt.setEndString("");
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
+        software.updateCart.removeItem(pluProduct);
+        software.printReceipt.print();
+        String expected = """
+                     Barcoded product                             $1.00
                                                            Total: $1.00
                 """;
-        assertEquals(expected, printerBronze.removeReceipt());
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
     }
 
     @Test
-    public void testPrintSimpleSingleLineSilver(){
-        PrintReceipt.setStartString("");
-        PrintReceipt.setEndString("");
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
-        PrintReceipt r = new PrintReceipt(printerSilver);
-        r.print();
-        String expected = """
-                     product                                      $1.00
-                                                           Total: $1.00
-                """;
-        assertEquals(expected, printerSilver.removeReceipt());
-    }
-
-    @Test
-    public void testPrintSimpleSingleLineGold(){
-        PrintReceipt.setStartString("");
-        PrintReceipt.setEndString("");
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
-        PrintReceipt r = new PrintReceipt(printerGold);
-        r.print();
-        String expected = """
-                     product                                      $1.00
-                                                           Total: $1.00
-                """;
-        assertEquals(expected, printerGold.removeReceipt());
-    }
-
-    @Test
-    public void testPrintSingleLineWithDecimals(){
+    public void testPrintSingleLineWhereTheDescriptionIsTooLong() throws OverloadedDevice {
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
 
-        barProductPrice = 251L;
-        barcodeProduct = new BarcodedProduct(barcode, barProductDescription, barProductPrice, barProductWeight);
+        software.updateCart.removeItem(pluProduct);
+        software.updateCart.removeItem(barcodeProduct);
 
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
+        String barProductDescription1 = "------------------------------------------------------------";
+        Numeral[] num2 = {Numeral.two};
+        Barcode barcode1 = new Barcode(num2);
+        BarcodedProduct barcodeProduct1 = new BarcodedProduct(barcode1, barProductDescription1, barProductPrice, barProductWeight);
+        ProductDatabases.BARCODED_PRODUCT_DATABASE.put(barcode1,barcodeProduct1);
+        //pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
+        software.updateCart.addProduct(barcodeProduct1);
 
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
-        String expected = """
-                     product                                      $2.51
-                                                           Total: $2.51
-                """;
-        assertEquals(expected, printerBronze.removeReceipt());
-    }
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
 
-    @Test
-    public void testPrintSingleLineWhereTheDescriptionIsTooLong(){
-        PrintReceipt.setStartString("");
-        PrintReceipt.setEndString("");
 
-        barProductDescription = "------------------------------------------------------------";
-        barcodeProduct = new BarcodedProduct(barcode, barProductDescription, barProductPrice, barProductWeight);
-        pluProduct = new PLUCodedProduct(pluCode, pluProductDescription, pluProductPrice);
-
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
+        software.printReceipt.print();
         String expected = """
                      -----------------------------------...       $1.00
                                                            Total: $1.00
                 """;
-        assertEquals(expected, printerBronze.removeReceipt());
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
     }
 
     @Test
-    public void testPrintMultiLine(){
+    public void testPrintMultiLine() throws OverloadedDevice {
         PrintReceipt.setStartString("");
         PrintReceipt.setEndString("");
 
-        barcodeInCart = new ArrayList<>();
-        pluInCart = new ArrayList<>();
-        barcodeInCart.add(barcodeProduct);
-        barcodeInCart.add(barcodeProduct);
-        pluInCart.add(pluProduct);
-        pluInCart.add(pluProduct);
+        hardware.getPrinter().addInk(5000);
+        hardware.getPrinter().addPaper(500);
+        software.updateCart.addProduct(barcodeProduct);
+        software.updateCart.addProduct(pluProduct);
 
-        PrintReceipt r = new PrintReceipt(printerBronze);
-        r.print();
+        software.printReceipt.print();
         String expected = """
-                     product                                      $1.00
-                     product                                      $1.00
-                     product                                      $1.00
-                     product                                      $1.00
-                                                           Total: $4.00
+                     Barcoded product                             $1.00
+                     Barcoded product                             $1.00
+                     PLU product                                  $1.50
+                     PLU product                                  $1.50
+                                                           Total: $5.00
                 """; // one new line included automatically
-        assertEquals(expected, printerBronze.removeReceipt());
+        assertEquals(expected, hardware.getPrinter().removeReceipt());
     }
 }
