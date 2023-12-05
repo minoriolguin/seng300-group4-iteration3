@@ -338,24 +338,25 @@ public class Software {
 	 * the hardware or software is out of order.
 	 */
     public void blockCustomerStation() {
-    	
         if (isSessionActive()) {
             setPendingMaintenance(true);
-            System.out.println("Disabling pending: Session is currently active.");
         } else {
-            
-            baggingAreaScale.disable();
-            scannerScale.disable();
-            handHeldScanner.disable();
-            mainScanner.disable();
-            banknoteValidator.disable();
-            coinValidator.disable();
-            cardReader.disable();
-            banknoteDispenser.disable();
-            printer.disable();
+            disableHardwareComponents();
             customerStationBlock = true;
-            System.out.println("Station disabled for maintenance. 'Out of order'");
         }
+    }
+    
+    private void disableHardwareComponents() {
+        baggingAreaScale.disable();
+        scannerScale.disable();
+        handHeldScanner.disable();
+        mainScanner.disable();
+        banknoteValidator.disable();
+        coinValidator.disable();
+        cardReader.disable();
+        banknoteDispenser.disable();
+        coinTray.disable();
+        printer.disable();
     }
 
 	/**
