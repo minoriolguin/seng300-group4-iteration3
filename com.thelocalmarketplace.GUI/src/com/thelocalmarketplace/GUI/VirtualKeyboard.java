@@ -165,10 +165,12 @@ public class VirtualKeyboard {
          * Updates customer product shopping cart when clicked
           **/
         private void handleProductClicked(Product item){
-        	software.updateCart.addProduct(item);
-        	RunGUI.setOrderTotal(software.getOrderTotal().intValue());
-        	RunGUI.setWeight(software.getExpectedTotalWeight().inGrams());
-        	RunGUI.updateOrderList();
+        	AddToScaleGUI screen = new AddToScaleGUI(item,software);
+        	//software.updateCart.addProduct(item);
+        	
+//        	RunGUI.setOrderTotal(software.getOrderTotal().intValue());
+//        	RunGUI.setWeight(software.getExpectedTotalWeight().inGrams());
+//        	RunGUI.updateOrderList();
         }
 		
     }
