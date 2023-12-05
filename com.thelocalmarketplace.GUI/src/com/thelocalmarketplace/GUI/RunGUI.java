@@ -1032,49 +1032,56 @@ public class RunGUI extends JFrame implements logicObserver {
     
     //Screen 3 Payment Panel (Coin Coin)
     private JPanel createCashCoinPanel() {
+        
         JPanel CoinBillPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        JButton payment_button1 = new JButton("$0.01");
+        JButton payment_button1 = new JButton("$0.05");
         payment_button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("0.01");
+            	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.05"));
+                System.out.println("$0.05");
             }
         });
-        JButton payment_button2 = new JButton("$0.05");
+        JButton payment_button2 = new JButton("$0.10");
         payment_button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("0.05");
+               	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.10"));
+                System.out.println("$0.10");
             }
         });
-        JButton payment_button3 = new JButton("$0.10");
+        JButton payment_button3 = new JButton("$0.25");
         payment_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("0.10");
+            	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("0.25"));
+                System.out.println("$0.25");
             }
         });
-        JButton payment_button4 = new JButton("$0.25");
+        JButton payment_button4 = new JButton("$1.00");
         payment_button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("0.25");
+            	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("1.00"));
+                System.out.println("1.00");
             }
         });
-        JButton payment_button5 = new JButton("$1.00");
+        JButton payment_button5 = new JButton("$2.00");
         payment_button5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("1.00");
+            	guiLogicInstance.payment_CustomerPaysWithCoin(new BigDecimal("2.00"));
+                System.out.println("$2.00");
             }
         });
         JButton payment_button6 = new JButton("Pay for Order");
         payment_button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	guiLogicInstance.payment_CustomerCompletesCoinPayment();
                 switchPanels("thankYouPanel");
             }
         });

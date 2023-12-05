@@ -28,6 +28,7 @@ package com.thelocalmarketplace.software;
 
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.coin.Coin;
@@ -61,8 +62,9 @@ public abstract class AbstractPayByCash {
      * If the amount due is less than 0, dispense the amount of change due to the customer
      * If the amount due is equal to the total payment, payment has completed with exact amount
      * @param denomination The value of the banknote just inserted
+     * @throws NoCashAvailableException 
      */
-    public void pay(Currency currency, BigDecimal denomination) {
+    public void pay(Currency currency, BigDecimal denomination) throws NoCashAvailableException {
         // The current total price of the order
         amountDue = software.getOrderTotal();
         amountDue = amountDue.subtract(denomination);
@@ -78,7 +80,7 @@ public abstract class AbstractPayByCash {
             System.out.println("Payment completed.\nChange due to customer: " + (amountDue.negate()));
             software.setUpdatedOrderTotal(amountDue);
             returnChange(currency);
-            software.printReceipt.print();
+          //  software.printReceipt.print();
             software.endSession();
 
             // Support for printing receipt will come in later iterations
@@ -87,7 +89,7 @@ public abstract class AbstractPayByCash {
             // Signal to the customer that the payment is completed
             System.out.println("Payment complete with exact amount.");
             software.setUpdatedOrderTotal(amountDue);
-            software.printReceipt.print();
+          //  software.printReceipt.print();
             software.endSession();
 
             // Support for printing receipt will come in later iterations
@@ -97,15 +99,16 @@ public abstract class AbstractPayByCash {
     /**
      * Return the amount of change due to the customer
      * @param currency The amount of change due to the customer
+     * @throws NoCashAvailableException 
      */
-    public void returnChange(Currency currency) {
+    public void returnChange(Currency currency) throws NoCashAvailableException {
         amountDue = amountDue.negate();
 
         // List of banknotes to be returned
         ArrayList<Banknote> banknoteChangeList = new ArrayList<>();
 
         // List of coins to be returned
-        ArrayList<Coin> coinChangeList = new ArrayList<>();
+        List<BigDecimal> coinChangeList = new ArrayList<>();
 
         // The denominations of banknotes
         BigDecimal[] banknoteDenominations = software.getBanknoteDenominations();
@@ -139,7 +142,7 @@ public abstract class AbstractPayByCash {
                 // Subtract the amount due by the denomination
                 amountDue = amountDue.subtract(denomination);
                 // Add the coin to the list of coins to be returned
-                coinChangeList.add(new Coin(currency, denomination));
+                coinChangeList.add(denomination);
             }
         }
 
@@ -165,12 +168,11 @@ public abstract class AbstractPayByCash {
         // Dispense the list of banknotes inserted into the dispenser
         banknoteDispenser.dispense();
 
-        CoinTray coinTray = software.getCoinTray();
-        for (Coin coin : coinChangeList) {
+        for (BigDecimal coin : coinChangeList) {
             try {
                 // For each coin in the list of coins to be returned,
                 // dispense that coin to the coin dispenser
-                coinTray.receive(coin);
+            	software.getCoinDispensers().get(coin).emit();
             } catch (DisabledException e) {
                 // Throw exception when the dispenser is disabled
                 // Should be handled by hardware

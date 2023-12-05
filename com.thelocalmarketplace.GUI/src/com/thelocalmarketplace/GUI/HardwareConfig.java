@@ -47,14 +47,12 @@ public class HardwareConfig {
     private static final BigDecimal value_quarter = new BigDecimal("0.25");
     private static final BigDecimal value_dime = new BigDecimal("0.10");
     private static final BigDecimal value_nickel = new BigDecimal("0.05");
-    private static final BigDecimal value_penny = new BigDecimal("0.01");
 
     private Coin coin_toonie = new Coin(CAD_Currency,value_toonie);
     private Coin coin_loonie = new Coin(CAD_Currency,value_loonie);
     private Coin coin_quarter = new Coin(CAD_Currency,value_quarter);
     private Coin coin_dime = new Coin(CAD_Currency,value_dime);
     private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
-    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
     private SelfCheckoutStationBronze bronze_station;
     private SelfCheckoutStationGold gold_station;
     private SelfCheckoutStationSilver silver_staiton;
@@ -63,12 +61,12 @@ public class HardwareConfig {
     public HardwareConfig() {
     	coindenominations = new ArrayList<BigDecimal>();
         CAD = Currency.getInstance("CAD");
+        Coin.DEFAULT_CURRENCY = CAD;
         coindenominations.add(value_toonie);
         coindenominations.add(value_loonie);
         coindenominations.add(value_quarter);
         coindenominations.add(value_dime);
         coindenominations.add(value_nickel);
-        coindenominations.add(value_penny);
         
 
         billDenominations = new BigDecimal[5];
@@ -84,17 +82,12 @@ public class HardwareConfig {
                 new BigDecimal("20.00"),
                 new BigDecimal("50.00"),
                 new BigDecimal("100.00")};
-        BigDecimal[] coinDenom = { new BigDecimal("0.01"),
-                new BigDecimal("0.05"),
-                new BigDecimal("0.1"),
-                new BigDecimal("0.25"),
-                new BigDecimal("1"),
-                new BigDecimal("2") };
 
         AbstractSelfCheckoutStation.resetConfigurationToDefaults();
         AbstractSelfCheckoutStation.configureCurrency(c);
         AbstractSelfCheckoutStation.configureBanknoteDenominations(billDenom);
-        AbstractSelfCheckoutStation.configureCoinDenominations(coinDenom);
+        AbstractSelfCheckoutStation.configureCoinDenominations(coindenominations.toArray(
+                new BigDecimal[coindenominations.size()]));
         AbstractSelfCheckoutStation.configureReusableBagDispenserCapacity(20);
         AbstractSelfCheckoutStation.configureBanknoteStorageUnitCapacity(20);
         AbstractSelfCheckoutStation.configureCoinStorageUnitCapacity(20);

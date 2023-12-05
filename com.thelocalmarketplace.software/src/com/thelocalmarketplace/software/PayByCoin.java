@@ -28,6 +28,7 @@ package com.thelocalmarketplace.software;
 
 import com.tdc.IComponent;
 import com.tdc.IComponentObserver;
+import com.tdc.NoCashAvailableException;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.CoinValidatorObserver;
@@ -91,7 +92,11 @@ public class PayByCoin extends AbstractPayByCash implements CoinValidatorObserve
 
     @Override
     public void validCoinDetected(CoinValidator validator, BigDecimal value) {
-        pay(Coin.DEFAULT_CURRENCY, value);
+        try {
+			pay(Coin.DEFAULT_CURRENCY, value);
+		} catch (NoCashAvailableException e) {
+			System.out.println("No Cash Exception " + e);
+		}
     }
 
     /**

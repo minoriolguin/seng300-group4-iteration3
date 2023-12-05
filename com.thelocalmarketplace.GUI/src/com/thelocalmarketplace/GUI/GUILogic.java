@@ -231,6 +231,13 @@ public class GUILogic {
 		return false;
 	}
 
+	public void payment_CustomerPaysWithCoin(BigDecimal denomination) {
+		screen.addCoinToList(denomination);
+	}
+	
+	public void payment_CustomerCompletesCoinPayment() {
+		screen.payByCoin();
+	}
 	
 	
 //----------------------------------------------------------------

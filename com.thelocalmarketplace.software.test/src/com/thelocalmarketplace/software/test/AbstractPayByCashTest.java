@@ -31,6 +31,7 @@ import java.util.*;
 import org.junit.*;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.*;
@@ -97,7 +98,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayLess() {
+    public void testPayLess() throws NoCashAvailableException {
         // test when payment is less than amountDue with COINS &/OR BANKNOTES
         System.out.println("Test when payment is less than amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -111,7 +112,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayGreater() {
+    public void testPayGreater() throws NoCashAvailableException {
         // test when payment is greater than amountDue with BANKNOTES
         System.out.println("Test when payment is greater than amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -123,7 +124,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayEqual() {
+    public void testPayEqual() throws NoCashAvailableException {
         // test when payment is equal to amountDue with COINS &/OR BANKNOTES
         System.out.println("Test when payment is equal to amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -137,7 +138,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testReturnChange() {
+    public void testReturnChange() throws NoCashAvailableException {
         // test change
         System.out.println("Test for change:");
         station.addToOrderTotal(new BigDecimal("2.52"));

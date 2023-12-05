@@ -30,6 +30,8 @@ import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.card.InvalidPINException;
 import com.jjjwelectronics.scanner.Barcode;
+import com.tdc.CashOverloadException;
+import com.tdc.DisabledException;
 import com.tdc.coin.Coin;
 import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
@@ -38,8 +40,11 @@ import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.List;
 
 /**
  * The {@code TouchScreen} class represents the touch screen interface in a self-checkout system.
@@ -93,20 +98,42 @@ public class TouchScreen implements WeightDiscrepancyListener {
 
     }
     
+    
+    private List<BigDecimal> coins = new ArrayList<>();
+
+    /** 
+     * Stores each coin that the customer adds to this list
+     * @param List of coin denominations.
+     */
+    public void addCoinToList (BigDecimal denomination) {
+        if (!software.getProductsInOrder().isEmpty()){
+        	coins.add(denomination);
+        }
+        else
+            displayNoItemsInCart();
+    }
+    
     /**
      * Should Display this option during session
      * Initiates the payment process using coins.
      * Enables and activates the coin validator and enables the printer.
      */
-    public void payByCoin () {
-        if (!software.getProductsInOrder().isEmpty()){
-            software.coinValidator.enable();
-            software.coinValidator.activate();
-            software.printer.enable();
-        }
-        else
-            displayNoItemsInCart();
-
+    
+    public void payByCoin() {
+    	for (BigDecimal coin : coins) {
+    		Coin coinType = new Coin(coin);
+    		software.coinValidator.enable();
+    		software.coinValidator.activate();
+    		software.printer.enable();
+    		
+    		try {
+				software.getCoinSlot().receive(coinType);
+			} catch (DisabledException e) {
+				System.out.println("Component is disabled " + e);
+			} catch (CashOverloadException e) {
+				System.out.println("Component is overfilled with cash " + e);
+			}
+    	}
     }
     
     /**
