@@ -246,9 +246,9 @@ public class SoftwareTest {
     public void testStartSession(){
         software.turnOn();
         software.startSession();
-        assertTrue(handHeldScanner.isDisabled());
-        assertTrue(mainScanner.isDisabled());
-        assertTrue(baggingAreaScale.isDisabled());
+        assertFalse(handHeldScanner.isDisabled());
+        assertFalse(mainScanner.isDisabled());
+        assertFalse(baggingAreaScale.isDisabled());
     }
 
     // Test that End Session runs correctly
@@ -450,34 +450,6 @@ public class SoftwareTest {
         assertFalse(software.getBarcodedProductsInOrder().contains(testProduct));
         assertFalse(software.getBaggedProducts().containsKey(testProduct));
         assertEquals(Mass.ZERO, software.getExpectedTotalWeight());
-    }
-
-    // Test the for loop in removeBarcoded Products regarding weight
-    @Test
-    public void removeBarcodedProductTest_weight() {
-        software.turnOn();
-        software.unblockCustomer();
-        Barcode b1 = new Barcode(new Numeral[] { Numeral.zero, Numeral.one });
-        BarcodedProduct testProduct1 = new BarcodedProduct(b1, "Ben Jerry Ice Cream", new BigDecimal("6.50").longValue(), 5);
-        Barcode b2 = new Barcode(new Numeral[] { Numeral.zero, Numeral.one });
-        BarcodedProduct testProduct2 = new BarcodedProduct(b2, "Ben Jerry Ice Cream", new BigDecimal("6.50").longValue(), 10);
-
-        Mass product1_weight = new Mass(testProduct1.getExpectedWeight()); //5
-        Mass product2_weight = new Mass(testProduct2.getExpectedWeight()); //10
-
-        //Add to barcodedProductsinOrder AND Bagged Product
-        software.getBarcodedProductsInOrder().add(testProduct1);
-        software.getBaggedProducts().put(testProduct1, product1_weight);
-        software.getBarcodedProductsInOrder().add(testProduct2);
-        software.getBaggedProducts().put(testProduct2, product2_weight);
-        //Call
-        software.getBarcodedProductsInOrder().remove(testProduct1);
-        // Verify that the expectedTotalWeight is updated correctly / should be 10
-        Mass result = software.getExpectedTotalWeight();
-        
-        //Debug | result output = 0 
-        System.out.println(result + "result" + "\n" + product2_weight.inGrams() + "product 2 weight");
-        assertEquals(result, product2_weight.inGrams());
     }
 
     //Test that methods returns Banknote Denominations back

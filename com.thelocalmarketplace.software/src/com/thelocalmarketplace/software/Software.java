@@ -290,12 +290,10 @@ public class Software {
        
         // Check for pending maintenance and disable the station if needed
         if (isPendingMaintenance()) {
-            blockCustomerStation(); // This will now immediately disable the station
-            setPendingMaintenance(false);
-            System.out.println("Session ended. Pending maintenance: Station disabled.");
-        } else {
-            System.out.println("Session ended. No pending maintenance.");
-        }
+			blockCustomerStation(); // This will now immediately disable the station
+			setPendingMaintenance(false);
+		}
+
     }
 
 
@@ -338,26 +336,17 @@ public class Software {
 	 * the hardware or software is out of order.
 	 */
     public void blockCustomerStation() {
-        if (isSessionActive()) {
-            setPendingMaintenance(true);
-        } else {
-            disableHardwareComponents();
-            customerStationBlock = true;
-        }
-    }
-    
-    private void disableHardwareComponents() {
-        baggingAreaScale.disable();
-        scannerScale.disable();
-        handHeldScanner.disable();
-        mainScanner.disable();
-        banknoteValidator.disable();
-        coinValidator.disable();
-        cardReader.disable();
-        banknoteDispenser.disable();
-        coinTray.disable();
-        printer.disable();
-    }
+		baggingAreaScale.disable();
+		scannerScale.disable();
+		handHeldScanner.disable();
+		mainScanner.disable();
+		banknoteValidator.disable();
+		coinValidator.disable();
+		cardReader.disable();
+		banknoteDispenser.disable();
+		printer.disable();
+		customerStationBlock = true;
+	}
 
 	/**
 	 * Unblocks customer interactions by enabling necessary hardware and software components.
@@ -580,10 +569,6 @@ public class Software {
     
     public boolean isPendingMaintenance() {
         return this.pendingMaintenance;
-    }
-    
-    public boolean isSessionActive() {
-        return orderTotal.compareTo(BigDecimal.ZERO) > 0;
     }
 
 	/**
