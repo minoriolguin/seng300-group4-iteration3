@@ -33,11 +33,9 @@ import java.util.List;
 
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.card.InvalidPINException;
+import com.tdc.NoCashAvailableException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
 import com.thelocalmarketplace.software.TouchScreen;
-
-
-
 
 /*
  * This is where Project 3 Logic will be entered 
@@ -308,20 +306,25 @@ public class GUILogic {
 	}
 
 	//TODO: finish implementing banknote and coin payment
-	public void PayBanknoteValFive() {
-
+	public void PayBanknoteValFive() throws NoCashAvailableException {
+		screen.insertBanknote(BigDecimal.valueOf(5));
 	}
 
-	public void PayBanknoteValTen() {
+	public void PayBanknoteValTen() throws NoCashAvailableException {
+		screen.insertBanknote(BigDecimal.valueOf(10));
 	}
 
-	public void PayBanknoteValTwenty() {
+	public void PayBanknoteValTwenty() throws NoCashAvailableException {
+		screen.insertBanknote(BigDecimal.valueOf(20));
 	}
 
-	public void PayBanknoteValFifty() {
+	public void PayBanknoteValFifty() throws NoCashAvailableException {
+		screen.insertBanknote(BigDecimal.valueOf(50));
 	}
 
-	public void PayBanknoteValHundred() {
+	public void PayBanknoteValHundred() throws NoCashAvailableException {
+		screen.insertBanknote(BigDecimal.valueOf(100));
 	}
+
 }
 
