@@ -58,6 +58,7 @@ public class BagPanel {
     		   screen.selectAddOwnBags();
 	           int count = Integer.parseInt(bagCounter.getText());
 	           bagCounter.setText(Integer.toString(count + 1));
+	           addBagSimulate();
 	           screen.selectBagsAdded();
     	   }
     	});
@@ -119,6 +120,50 @@ public class BagPanel {
     	bag_panel.add(backButton);
 	
    	}
+   
+   public void addBagSimulate() {
+	   JFrame add_own_bag_frame = new JFrame();
+	   JPanel add_own_bag_panel = new JPanel();
+	   JLabel bagWeightPromptLabel = new JLabel("<html><p>Select how heavy your bag  is: "
+			   									+"<br>Selecting a weight will simulate placeing "
+			   									+"your bag in the bagging area!<p><html>");
+	   JButton lightBagButton = new JButton();
+	   JButton heavyBagButton = new JButton();
+	   JLabel lightBagLabel = new JLabel("100 g");
+	   JLabel heavyBagLabel = new JLabel("300 g");
+	   
+	   add_own_bag_frame.add(add_own_bag_panel);
+	   add_own_bag_panel.setLayout(new GridLayout(3,3));
+	   lightBagButton.add(lightBagLabel);
+	   heavyBagButton.add(heavyBagLabel);
+	   
+	   add_own_bag_panel.add(bagWeightPromptLabel);
+	   add_own_bag_panel.add(lightBagButton);
+	   add_own_bag_panel.add(heavyBagButton);
+	  
+	   add_own_bag_frame.setSize(400, 400);
+	   add_own_bag_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	   add_own_bag_frame.setVisible(true);
+	   
+	   lightBagButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e)
+		    {	
+		    	screen.AddItemToScale();
+		    	add_own_bag_frame.dispose();
+		    }
+		});
+	   
+	   heavyBagButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent e)
+		    {
+		    	screen.AddItemToScale();
+		    	screen.weightOverLimit();
+		    	add_own_bag_frame.dispose();
+		    }
+		});
+	   
+   }
+  
    
    public JButton getAddOwnBagButton() {
 	   return addOwnBagButton;

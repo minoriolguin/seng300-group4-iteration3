@@ -204,7 +204,6 @@ public class Software {
 		maintenance = new Maintenance(this);
 		purchaseBags = new PurchaseBags(this);
 
-
 		//Initialize Product Lists and Weight Limit
 		PopulateProductDatabases.populateDatabases();
 		productsInOrder = new HashMap<>();
@@ -263,7 +262,7 @@ public class Software {
 	 */
     public void endSession() {
 	  	  // Check for maintenance and predict issues
-	  	  maintenance.checkInk(printReceipt.getAveragePrintedChars());
+	  	maintenance.checkInk(printReceipt.getAveragePrintedChars());
         maintenance.checkPaper(printReceipt.getAveragePaperUsed());
         maintenance.predictCoinsFullStorage();
         for (BigDecimal denomination : coinDispensers.keySet()) {
