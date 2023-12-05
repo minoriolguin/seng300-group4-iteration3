@@ -50,7 +50,7 @@ public class test {
 	    	//To open GUI 
         SwingUtilities.invokeLater(() -> {
         	
-            SelfCheckoutSimulation simulation = new SelfCheckoutSimulation(bronze,gold,silver);
+            SelfCheckoutSimulation simulation = new SelfCheckoutSimulation();
     });
 	}
 }

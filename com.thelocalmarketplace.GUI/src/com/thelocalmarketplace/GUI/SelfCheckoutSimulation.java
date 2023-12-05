@@ -38,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.jjjwelectronics.OverloadedDevice;
 import com.tdc.banknote.BanknoteValidator;
 import com.tdc.coin.Coin;
 import com.tdc.coin.CoinValidator;
@@ -67,15 +68,13 @@ public class SelfCheckoutSimulation extends JFrame {
 	    private Coin coin_dime = new Coin(CAD_Currency,value_dime);
 	    private Coin coin_nickel = new Coin(CAD_Currency,value_nickel);
 	    private Coin coin_penny = new Coin(CAD_Currency,value_penny);
-	    private SelfCheckoutStationBronze bronze_station;
-	    private SelfCheckoutStationGold gold_station;
-	    private SelfCheckoutStationSilver silver_staiton;
-	 public SelfCheckoutSimulation(SelfCheckoutStationBronze b, SelfCheckoutStationGold g, SelfCheckoutStationSilver s ) {
+
+		private SelfCheckoutStationGold hardware;
+		private Software software;
+
+	 public SelfCheckoutSimulation() {
 		 	
-	    
-	        bronze_station = b;
-	        gold_station = g;
-	        silver_staiton = s;
+
 	        
 	        // Set frame properties
 	        setTitle("Selfcheckout Station Simulation");
@@ -93,9 +92,27 @@ public class SelfCheckoutSimulation extends JFrame {
 
 	        // Array of button listeners
 	        ActionListener[] buttonListeners = {
-	            e -> handleButtonClick(1),
-	            e -> handleButtonClick(2),
-	            e -> handleButtonClick(3),
+	            e -> {
+					try {
+						handleButtonClick(1);
+					} catch (OverloadedDevice ex) {
+						throw new RuntimeException(ex);
+					}
+				},
+	            e -> {
+					try {
+						handleButtonClick(2);
+					} catch (OverloadedDevice ex) {
+						throw new RuntimeException(ex);
+					}
+				},
+	            e -> {
+					try {
+						handleButtonClick(3);
+					} catch (OverloadedDevice ex) {
+						throw new RuntimeException(ex);
+					}
+				},
 	            
 	        };
 
@@ -114,17 +131,19 @@ public class SelfCheckoutSimulation extends JFrame {
 	        setVisible(true);
 	    }
 	 
-	 private void handleButtonClick(int buttonNumber) {
+	 private void handleButtonClick(int buttonNumber) throws OverloadedDevice {
 	        switch (buttonNumber) {
 	            case 1:
-	                System.out.println("Meow");
-	                Software software = new Software(bronze_station);
-	                software.turnOn();
-	                TouchScreen touchscreen = new TouchScreen(software);
-	                GUILogic guiLogic = new GUILogic(touchscreen);
+	                System.out.println("Start Session");
+					hardware = new SelfCheckoutStationGold();
+					software = Software.getInstance(hardware);
+					software.turnOn();
+					//software.maintenance.resolveInkIssue(1000);
+					//software.maintenance.resolvePrinterPaperIssue(1000);
+	                TouchScreen touchscreen = software.touchScreen;
+	                GUILogic guiLogic = new GUILogic(software);
 	                RunGUI gui = new RunGUI(guiLogic);
 					//bronze_station.getScreen().getFrame().setContentPane(gui);
-	                break;
 	            case 2:
 	                System.out.println("Button Clicked");
 	                //insert Logic

@@ -105,7 +105,7 @@ public class VirtualKeyboard {
 
             switch (buttonText) {
                 case "Backspace":
-                    if (inputArea.getText().length() > 0) {
+                    if (!inputArea.getText().isEmpty()) {
                         inputArea.setText(inputArea.getText().substring(0, inputArea.getText().length() - 1));
                     }
                     break;

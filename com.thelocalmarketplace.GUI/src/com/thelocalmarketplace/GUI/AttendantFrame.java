@@ -56,6 +56,7 @@ import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.PriceLookUpCode;
 import com.thelocalmarketplace.hardware.Product;
 import com.thelocalmarketplace.software.Attendant;
+import com.thelocalmarketplace.software.Software;
 import com.thelocalmarketplace.software.TouchScreen;
 
 public class AttendantFrame {
@@ -67,12 +68,12 @@ public class AttendantFrame {
 	private JFrame attend_frame;
 	private Attendant attendant;
 	public Product product;
-	public TouchScreen screen;
+	public Software software;
 	
 	JPanel middlePanel = new JPanel();
-    public AttendantFrame(TouchScreen s) {
+    public AttendantFrame(Software software) {
     	
-    	screen = s;
+    	this.software = software;
     	
     	// For Testing Purpose
 //    	PriceLookUpCode testcode = new PriceLookUpCode("1234");
@@ -80,7 +81,7 @@ public class AttendantFrame {
 //    	screen.getSoftware().updateCart.addPLUProduct(testProduct);
     	
     	
-    	attendant = new Attendant(s.getSoftware());
+    	attendant = software.attendant;
         attend_frame = new JFrame("Attendant Screen");
         attend_frame.setSize(450, 800);
         attend_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -148,7 +149,7 @@ public class AttendantFrame {
                 // Init new keyboard frame
                 VirtualKeyboard keyboard = new VirtualKeyboard();
                 // Run keyboard frame
-                keyboard.run(screen.getSoftware());
+                keyboard.run(software);
                 break;
             case 2:
             	// Call removeItemCall function
@@ -222,7 +223,7 @@ public class AttendantFrame {
     	middlePanel.add(title);
     	// Iterate through PLUCodedProduct in order list to get all items and make them a label with
     	// proper mouse click event handling and add to panel
-    	for(PLUCodedProduct item: screen.getSoftware().getPluCodedProductsInOrder()) {
+    	for(PLUCodedProduct item: software.getPluCodedProductsInOrder()) {
     		JLabel itemLabel = new JLabel(item.getDescription());
     		itemLabel.setBorder(BorderFactory.createLineBorder(Color.black));
     		itemLabel.addMouseListener(new MouseListener() {
@@ -230,7 +231,7 @@ public class AttendantFrame {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					// Remove item from product list
-					screen.removeProduct(item);
+					software.touchScreen.removeProduct(item);
 					middlePanel.remove(itemLabel);
 					middlePanel.revalidate();
 					middlePanel.repaint();
@@ -267,7 +268,7 @@ public class AttendantFrame {
     	}
     	// Iterate through BarCoded Product in order list to get all items and make them a label with
     	// proper mouse click event handling and add to panel
-    	for(BarcodedProduct item: screen.getSoftware().getBarcodedProductsInOrder()) {
+    	for(BarcodedProduct item: software.getBarcodedProductsInOrder()) {
     		JLabel itemLabel = new JLabel(item.getDescription());
     		itemLabel.setBorder(BorderFactory.createLineBorder(Color.black));
     		itemLabel.addMouseListener(new MouseListener() {
@@ -275,7 +276,7 @@ public class AttendantFrame {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					// Remove item from product list
-					screen.removeProduct(item);
+					software.touchScreen.removeProduct(item);
 					middlePanel.remove(itemLabel);
 					middlePanel.revalidate();
 					middlePanel.repaint();
@@ -316,8 +317,8 @@ public class AttendantFrame {
     		middlePanel.removeAll();
     		middlePanel.revalidate();
         	middlePanel.repaint();
-        	RunGUI.setOrderTotal(screen.getSoftware().getOrderTotal().intValue());
-        	RunGUI.setWeight(screen.getSoftware().getExpectedTotalWeight().inGrams());
+        	RunGUI.setOrderTotal(software.getOrderTotal().intValue());
+        	RunGUI.setWeight(software.getExpectedTotalWeight().inGrams());
         	RunGUI.updateOrderList();
     		
     	});

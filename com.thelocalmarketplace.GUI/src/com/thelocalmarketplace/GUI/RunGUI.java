@@ -79,7 +79,7 @@ public class RunGUI extends JFrame implements logicObserver {
 
     // Constructor to initialize GUILogic
     public RunGUI(GUILogic guiLogicInstance) {
-        this.guiLogicInstance = guiLogicInstance;
+        RunGUI.guiLogicInstance = guiLogicInstance;
         SelfCheckoutGUI();
 
 
@@ -139,9 +139,9 @@ public class RunGUI extends JFrame implements logicObserver {
             Barcode milkBarcode = new Barcode(testBarcode);
             BarcodedProduct milkProduct = new BarcodedProduct(milkBarcode, "Milk", 5, 11);
             ProductDatabases.BARCODED_PRODUCT_DATABASE.put(milkBarcode,milkProduct);
-            guiLogicInstance.screen.getSoftware().updateCart.addScannedProduct(milkBarcode);
+            guiLogicInstance.software.updateCart.addScannedProduct(milkBarcode);
            setOrderTotal(guiLogicInstance.getTotal());
-           setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
+           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
            updateOrderList();
     		switchPanels("AddItemsPanel");
     	});
@@ -162,9 +162,9 @@ public class RunGUI extends JFrame implements logicObserver {
             Barcode selfAssembleBasketballHoop = new Barcode(testBarcode);
             BarcodedProduct basketballHoop = new BarcodedProduct(selfAssembleBasketballHoop, "Basketball Hoop", 150, 400);
             ProductDatabases.BARCODED_PRODUCT_DATABASE.put(selfAssembleBasketballHoop,basketballHoop);
-            guiLogicInstance.screen.getSoftware().updateCart.addScannedProduct(selfAssembleBasketballHoop);
+            guiLogicInstance.software.updateCart.addScannedProduct(selfAssembleBasketballHoop);
            setOrderTotal(guiLogicInstance.getTotal());
-           setWeight(guiLogicInstance.screen.getSoftware().getExpectedTotalWeight().inGrams());
+           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
            updateOrderList();
     		switchPanels("AddItemsPanel");
     	});
@@ -347,7 +347,7 @@ public class RunGUI extends JFrame implements logicObserver {
 
         // Top Left Panel (To Display Total)
         JPanel topLeftPanel = createLabelPanel("", 500, 20);
-        custTotalLabel = new JLabel("Total is: "+ guiLogicInstance.screen.getSoftware().getOrderTotal());
+        custTotalLabel = new JLabel("Total is: "+ guiLogicInstance.software.getOrderTotal());
         topLeftPanel.add(custTotalLabel);
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -412,11 +412,11 @@ public class RunGUI extends JFrame implements logicObserver {
     }
     public static void updateOrderList() {
     	leftPanel.removeAll();
-    	for(PLUCodedProduct item: guiLogicInstance.screen.getSoftware().getPluCodedProductsInOrder()) {
+    	for(PLUCodedProduct item: guiLogicInstance.software.getPluCodedProductsInOrder()) {
     	JLabel itemLabel = new JLabel("Product Name: "+item.getDescription() +"," +" Cost: "+ item.getPrice());
     	leftPanel.add(itemLabel);
     	}
-    	for(BarcodedProduct item:guiLogicInstance.screen.getSoftware().getBarcodedProductsInOrder()) {
+    	for(BarcodedProduct item:guiLogicInstance.software.getBarcodedProductsInOrder()) {
     		JLabel itemLabel = new JLabel("Product Name: "+item.getDescription() +"," +" Cost: "+ item.getPrice());
         	leftPanel.add(itemLabel);
     	}

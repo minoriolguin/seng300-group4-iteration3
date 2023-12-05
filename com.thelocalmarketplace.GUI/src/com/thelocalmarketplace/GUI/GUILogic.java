@@ -34,6 +34,7 @@ import java.util.List;
 import com.jjjwelectronics.EmptyDevice;
 import com.jjjwelectronics.card.InvalidPINException;
 import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.Software;
 import com.thelocalmarketplace.software.TouchScreen;
 
 
@@ -45,9 +46,9 @@ import com.thelocalmarketplace.software.TouchScreen;
  * GUI code) and Panels
  */
 public class GUILogic {
-	public TouchScreen screen;
-	public GUILogic(TouchScreen t) {
-		this.screen = t;
+	public Software software;
+	public GUILogic(Software software) {
+		this.software = software;
 	}
 //----------------------------------------------------------------
 //Start Session Panel, 
@@ -74,23 +75,23 @@ public class GUILogic {
 	public void buttonR3_CustomerCallsAttendant() {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
-        screen.signalForAttendant();
-        AttendantFrame attendant_frame = new AttendantFrame(screen);
+        software.touchScreen.signalForAttendant();
+        AttendantFrame attendant_frame = new AttendantFrame(software);
         attendant_frame.show();
 	}
 	
 	public void buttonR4_CustomerAddsBag() {
         System.out.println("buttonR4_CustomerAddsBag"); 
         //Logic Here
-        screen.selectAddOwnBags();
+        software.touchScreen.selectAddOwnBags();
         try {
-			screen.purchaseBags(total);
+			software.touchScreen.purchaseBags(total);
 		} catch (EmptyDevice e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        screen.selectBagsAdded();
-        BagPanel bag_panel = new BagPanel(screen);
+        software.touchScreen.selectBagsAdded();
+        BagPanel bag_panel = new BagPanel(software);
         bag_panel.show();
 	}
 	
@@ -183,7 +184,7 @@ public class GUILogic {
         //Example Code Here 
         //Logic Here
 		//for testing
-		screen.getSoftware().addToOrderTotal(BigDecimal.TEN);
+		software.addToOrderTotal(BigDecimal.TEN);
 
         String addItemB1_result = Integer.toString(this.getTotal());
 		return addItemB1_result;
@@ -206,24 +207,24 @@ public class GUILogic {
 	}
 	
 	public void payment_buttonB1_CustomerPaysWithDebitSwipe(int total) throws IOException {
-		screen.payViaSwipe("debit");
+		software.touchScreen.payViaSwipe("debit");
 	}
 
 	public void payment_buttonB2_CustomerPaysWithCreditSwipe(int total) throws IOException {
-		screen.payViaSwipe("credit");
+		software.touchScreen.payViaSwipe("credit");
 	}
 
 	public void payment_buttonB4_CustomerPaysWithDebitTap(int total) throws IOException {
-		screen.payViaTap("debit");
+		software.touchScreen.payViaTap("debit");
 	}
 
 	public void payment_buttonB5_CustomerPaysWithCreditTap(int total) throws IOException {
-		screen.payViaTap("credit");
+		software.touchScreen.payViaTap("credit");
 	}
 
 	public boolean payment_CustomerPaysWithCreditInsert(int total, String PIN) throws IOException {
 		try {
-			screen.payViaInsert("credit", PIN);
+			software.touchScreen.payViaInsert("credit", PIN);
 		}
 		catch (InvalidPINException e)
 		{
@@ -235,7 +236,7 @@ public class GUILogic {
 	}
 
 	public boolean payment_CustomerPaysWithDebitInsert(int total, String PIN) throws IOException {
-		screen.payViaInsert("debit", PIN);
+		software.touchScreen.payViaInsert("debit", PIN);
 
 		if (getTotal() == 0 )
 			return true;
@@ -243,11 +244,11 @@ public class GUILogic {
 	}
 
 	public void payment_CustomerPaysWithCoin(BigDecimal denomination) {
-		screen.addCoinToList(denomination);
+		software.touchScreen.addCoinToList(denomination);
 	}
 	
 	public void payment_CustomerCompletesCoinPayment() {
-		screen.payByCoin();
+		software.touchScreen.payByCoin();
 	}
 	
 	
@@ -294,7 +295,7 @@ public class GUILogic {
 	public int getTotal() {
 		//System.out.println("The total is "+total);
 		//return total;
-		return screen.getSoftware().getOrderTotal().intValue();
+		return software.getOrderTotal().intValue();
 	}
 	
 	public void addtoTotal(int meow) {

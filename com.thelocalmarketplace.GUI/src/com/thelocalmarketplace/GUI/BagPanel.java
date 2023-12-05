@@ -43,11 +43,12 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import com.jjjwelectronics.EmptyDevice;
+import com.thelocalmarketplace.software.Software;
 import com.thelocalmarketplace.software.TouchScreen;
 
 public class BagPanel {
 
-   public TouchScreen screen;
+   public Software software;
    private JFrame bag_panel;
    
    private JButton addOwnBagButton = new JButton("Add Own Bag");
@@ -57,8 +58,8 @@ public class BagPanel {
    private JLabel bagCounter = new JLabel();
    private int bagWeight;
 
-   public BagPanel(TouchScreen s) {
-       screen = s;
+   public BagPanel(Software software) {
+       this.software = software;
        bag_panel = new JFrame("Bagging Screen");
        bag_panel.setSize(450, 800);
        bag_panel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -79,12 +80,12 @@ public class BagPanel {
        getAddOwnBagButton().addActionListener(new ActionListener() {
     	   @Override
     	   public void actionPerformed(ActionEvent e) {
-    		   screen.selectAddOwnBags();
+    		   software.touchScreen.selectAddOwnBags();
 	           int count = Integer.parseInt(bagCounter.getText());
 	           bagCounter.setText(Integer.toString(count + 1));
 	           setBagWeight(addBagSimulation());
-	           screen.selectAddOwnBags();
-	           screen.selectBagsAdded();
+	           software.touchScreen.selectAddOwnBags();
+	           software.touchScreen.selectBagsAdded();
     	   }
     	});
        addOwnBagButton.setOpaque(true);
@@ -99,10 +100,10 @@ public class BagPanel {
     	   public void actionPerformed(ActionEvent e) {
     	       // Call the method to purchase a bag in the TouchScreen class
     	       try {
-    	           screen.purchaseBags(1);
+    	           software.touchScreen.purchaseBags(1);
     	           int count = Integer.parseInt(bagCounter.getText());
     	           bagCounter.setText(Integer.toString(count + 1));
-    	           screen.selectBagsAdded();
+    	           software.touchScreen.selectBagsAdded();
     	       } catch (EmptyDevice e1) {
     	    	   JOptionPane.showMessageDialog(null, "Bag dispenser is empty");
     	       }
