@@ -58,7 +58,7 @@ public class BagPanel {
     		   screen.selectAddOwnBags();
 	           int count = Integer.parseInt(bagCounter.getText());
 	           bagCounter.setText(Integer.toString(count + 1));
-	           addBagSimulate();
+	           addBagSimulation();
 	           screen.selectBagsAdded();
     	   }
     	});
@@ -121,7 +121,7 @@ public class BagPanel {
 	
    	}
    
-   public void addBagSimulate() {
+   public void addBagSimulation() {
 	   JFrame add_own_bag_frame = new JFrame();
 	   JPanel add_own_bag_panel = new JPanel();
 	   JLabel bagWeightPromptLabel = new JLabel("<html><p>Select how heavy your bag  is: "
@@ -158,12 +158,12 @@ public class BagPanel {
 		    {
 		    	screen.AddItemToScale();
 		    	screen.weightOverLimit();
+		    	
 		    	add_own_bag_frame.dispose();
 		    }
 		});
 	   
    }
-  
    
    public JButton getAddOwnBagButton() {
 	   return addOwnBagButton;
