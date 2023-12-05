@@ -43,9 +43,11 @@ import com.thelocalmarketplace.hardware.BarcodedProduct;
 import com.thelocalmarketplace.hardware.PLUCodedProduct;
 import com.thelocalmarketplace.hardware.external.ProductDatabases;
 import com.thelocalmarketplace.software.PayByCard;
+import com.jjjwelectronics.Mass;
 import com.jjjwelectronics.Numeral;
 import com.jjjwelectronics.card.Card;
 import com.jjjwelectronics.scanner.Barcode;
+import com.jjjwelectronics.scanner.BarcodedItem;
 import com.thelocalmarketplace.software.TouchScreen;
 
 import javax.swing.Action;
@@ -90,7 +92,7 @@ public class RunGUI extends JFrame implements logicObserver {
      */
     private void SelfCheckoutGUI() {
     	//Frame Size
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 800);
         setLocation(0,0);
         
@@ -105,7 +107,8 @@ public class RunGUI extends JFrame implements logicObserver {
         cardPanel.add(createPaymentPanel(), "paymentPanel");
         cardPanel.add(createCashBillPanel(), "cashBillPanel");
         cardPanel.add(createCashCoinPanel(), "cashCoinPanel");
-
+        cardPanel.add(addToBaggingAreaPanel(),"bag");
+        cardPanel.add(addToBaggingAreaPanelHand(),"hand");
         cardPanel.add(createInsertPINPanel(),"insertPINPanel");
         cardPanel.add(mainScannerAddItemPanel(),"mainScanner");
         cardPanel.add(miniScannerAddItemPanel(),"miniScanner");
@@ -122,6 +125,54 @@ public class RunGUI extends JFrame implements logicObserver {
         setVisible(true);
 
     }
+    
+    private JPanel addToBaggingAreaPanel() {
+    	JPanel panel = new JPanel();
+    	JButton button = new JButton("Add to Bagging Area");
+    	panel.add(button);
+    	button.addActionListener(e->{
+    		Numeral[] testBarcode = new Numeral[4];
+            testBarcode[0] = Numeral.nine;
+            testBarcode[1] = Numeral.five;
+            testBarcode[2] = Numeral.eight;
+            testBarcode[3] = Numeral.eight;
+            Barcode milkBarcode = new Barcode(testBarcode);
+            BarcodedProduct milkProduct = new BarcodedProduct(milkBarcode, "Milk", 5, 11);
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(milkBarcode,milkProduct);
+            Mass tempmass = new Mass(milkProduct.getExpectedWeight());
+            BarcodedItem item = new BarcodedItem(milkBarcode,tempmass);
+            guiLogicInstance.software.getHardware().getBaggingArea().addAnItem(item);
+            guiLogicInstance.software.updateCart.addScannedProduct(milkBarcode);
+           setOrderTotal(guiLogicInstance.getTotal());
+           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
+           updateOrderList();
+           switchPanels("AddItemsPanel");
+    	});
+    	return panel;
+    }
+    private JPanel addToBaggingAreaPanelHand() {
+    	JPanel panel = new JPanel();
+    	JButton button = new JButton("Add to Bagging Area");
+    	panel.add(button);
+    	button.addActionListener(e->{
+    		Numeral[] testBarcode = new Numeral[2];
+    		testBarcode[0] = Numeral.zero;
+            testBarcode[1] = Numeral.one;
+            Barcode selfAssembleBasketballHoop = new Barcode(testBarcode);
+            BarcodedProduct basketballHoop = new BarcodedProduct(selfAssembleBasketballHoop, "Basketball Hoop", 150, 400);
+            Mass barItemMass = new Mass(basketballHoop.getExpectedWeight());
+            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(selfAssembleBasketballHoop,basketballHoop);
+            BarcodedItem item = new BarcodedItem(selfAssembleBasketballHoop, barItemMass);
+            guiLogicInstance.software.getHardware().getBaggingArea().addAnItem(item);
+            guiLogicInstance.software.updateCart.addScannedProduct(selfAssembleBasketballHoop);
+           setOrderTotal(guiLogicInstance.getTotal());
+           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
+           updateOrderList();
+    		switchPanels("AddItemsPanel");
+           
+    	});
+    	return panel;
+    }
     /** 
      * Function simulates user scanning a milk carton with the main scanner
      **/
@@ -131,19 +182,7 @@ public class RunGUI extends JFrame implements logicObserver {
     	JLabel item = new JLabel("Milk");
     	JButton addButton = new JButton("SCAN WITH MAIN SCANNER");
     	addButton.addActionListener(e->{
-    		Numeral[] testBarcode = new Numeral[4];
-            testBarcode[0] = Numeral.nine;
-            testBarcode[1] = Numeral.five;
-            testBarcode[2] = Numeral.eight;
-            testBarcode[3] = Numeral.eight;
-            Barcode milkBarcode = new Barcode(testBarcode);
-            BarcodedProduct milkProduct = new BarcodedProduct(milkBarcode, "Milk", 5, 11);
-            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(milkBarcode,milkProduct);
-            guiLogicInstance.software.updateCart.addScannedProduct(milkBarcode);
-           setOrderTotal(guiLogicInstance.getTotal());
-           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
-           updateOrderList();
-    		switchPanels("AddItemsPanel");
+    		switchPanels("bag");
     	});
     	panel.add(label);
     	panel.add(item);
@@ -156,17 +195,7 @@ public class RunGUI extends JFrame implements logicObserver {
     	JLabel item = new JLabel("Build it yourself basketball net");
     	JButton addButton = new JButton("SCAN WITH HANDHELD SCANNER");
     	addButton.addActionListener(e->{
-    		Numeral[] testBarcode = new Numeral[2];
-    		testBarcode[0] = Numeral.zero;
-            testBarcode[1] = Numeral.one;
-            Barcode selfAssembleBasketballHoop = new Barcode(testBarcode);
-            BarcodedProduct basketballHoop = new BarcodedProduct(selfAssembleBasketballHoop, "Basketball Hoop", 150, 400);
-            ProductDatabases.BARCODED_PRODUCT_DATABASE.put(selfAssembleBasketballHoop,basketballHoop);
-            guiLogicInstance.software.updateCart.addScannedProduct(selfAssembleBasketballHoop);
-           setOrderTotal(guiLogicInstance.getTotal());
-           setWeight(guiLogicInstance.software.getExpectedTotalWeight().inGrams());
-           updateOrderList();
-    		switchPanels("AddItemsPanel");
+    		switchPanels("hand");
     	});
     	panel.add(label);
     	panel.add(item);

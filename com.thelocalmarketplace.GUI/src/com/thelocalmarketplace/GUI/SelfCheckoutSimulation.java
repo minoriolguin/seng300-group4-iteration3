@@ -135,17 +135,21 @@ public class SelfCheckoutSimulation extends JFrame {
 	        switch (buttonNumber) {
 	            case 1:
 	                System.out.println("Start Session");
-					CreateThread thread = new CreateThread();
+					CreateThread thread = new CreateThread(1);
 					Thread newThread = new Thread(thread);
 					newThread.start();
 					//bronze_station.getScreen().getFrame().setContentPane(gui);
 	            case 2:
 	                System.out.println("Button Clicked");
-	                //insert Logic
+	                CreateThread thread2 = new CreateThread(2);
+					Thread newThread2 = new Thread(thread2);
+					newThread2.start();
 	                break;
 	            case 3:
 	                System.out.println("Button Clicked");
-	                //insert Logic
+	                CreateThread thread3 = new CreateThread(3);
+					Thread newThread3 = new Thread(thread3);
+					newThread3.start();
 	                break;
 	            
 	        }

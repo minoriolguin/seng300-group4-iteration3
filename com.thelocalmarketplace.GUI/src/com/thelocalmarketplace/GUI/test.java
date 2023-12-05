@@ -44,9 +44,7 @@ public class test {
 	public static void main(String[] args) {
 		HardwareConfig hardwareConfig = new HardwareConfig();
 		PopulateProductDatabases.populateDatabases();
-		SelfCheckoutStationBronze bronze = new SelfCheckoutStationBronze();
-		SelfCheckoutStationGold	gold = new SelfCheckoutStationGold();
-		SelfCheckoutStationSilver silver= new SelfCheckoutStationSilver();
+		
 	    	//To open GUI 
         SwingUtilities.invokeLater(new Runnable()  {
         	
