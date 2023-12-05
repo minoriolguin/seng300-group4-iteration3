@@ -539,6 +539,16 @@ public class RunGUI extends JFrame implements logicObserver {
                 switchPanels("paymentPanel");
             }
         });
+        JButton buttonL1 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
+                + "Enter Item<br>(PLU Code)</div></html>");
+        buttonL1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String addItemAttendantPLU_result = guiLogicInstance.buttonL1_AttendantLookUpProduct_PLUCode();
+                addNewLabel(addItemAttendantPLU_result);
+
+            }
+        });
         
         //Turns Pay Button 9 (PAY) Green
         button9.setBackground(new Color(0, 255, 0));
@@ -553,6 +563,7 @@ public class RunGUI extends JFrame implements logicObserver {
         panel.add(button7);
         panel.add(button8);
         panel.add(button9);
+        panel.add(buttonL1);
 
         // Set a smaller font size for each button
         Font smallFont = new Font(button1.getFont().getName(), Font.BOLD, 10); // Adjust the font size as needed
@@ -565,6 +576,7 @@ public class RunGUI extends JFrame implements logicObserver {
         button7.setFont(smallFont);
         button8.setFont(smallFont);
         button9.setFont(smallFont);
+        buttonL1.setFont(smallFont);
     
 		// Set maximum size for each button to control the width
 		Dimension buttonMaxSize = new Dimension(width / 3, height / 3);
@@ -577,6 +589,7 @@ public class RunGUI extends JFrame implements logicObserver {
 		button7.setMaximumSize(buttonMaxSize);
 		button8.setMaximumSize(buttonMaxSize);
 		button9.setMaximumSize(buttonMaxSize);
+        buttonL1.setMaximumSize(buttonMaxSize);
 		
         return panel;
     }
@@ -589,56 +602,56 @@ public class RunGUI extends JFrame implements logicObserver {
     private JPanel createButtonPanelBottomPanel(String label, int width, int height) {
         JPanel panel = new JPanel(new GridLayout(3, 3, 10, 10));
         panel.setBorder(BorderFactory.createTitledBorder(label));
-        panel.setMaximumSize(new Dimension(width-5, height));
-        
+        panel.setMaximumSize(new Dimension(width - 5, height));
+
         JButton bot_button1 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add Item<br>(Barcoded Product)<br>Main Scanner</div></html>");
+                + "Add Item<br>(Barcoded Product)<br>Main Scanner</div></html>");
         bot_button1.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //TODO: this functionality here adds $10 to order, strictly for testing payments
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO: this functionality here adds $10 to order, strictly for testing payments
 //        	String addItem_result = guiLogicInstance.buttonB1_CustomerScansBarcodedProduct_MainScanner();
 //        	addNewLabel(addItem_result);
-        	// ADD A BARCODED ITEM
-        	switchPanels("mainScanner");
-        	
-        	}
-        });
-        
-       JButton bot_button2 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add Item<br>(Barcoded Product)<br>HandheldScanner</div></html>");
-        bot_button2.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-        	switchPanels("miniScanner");
+                // ADD A BARCODED ITEM
+                switchPanels("mainScanner");
+
             }
         });
-        
+
+        JButton bot_button2 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
+                + "Add Item<br>(Barcoded Product)<br>HandheldScanner</div></html>");
+        bot_button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switchPanels("miniScanner");
+            }
+        });
+
         JButton bot_button3 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add Item<br>RFID Tag</div></html>");
+                + "Add Item<br>RFID Tag</div></html>");
         // Button 4: Custom Title
         bot_button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	String addItem_result = guiLogicInstance.buttonB3_CustomerScansBarcodedProduct_RFIDTag();
-            	addNewLabel(addItem_result);
-            	TransparentOverlayPanel overlayPanel = new TransparentOverlayPanel(guiLogicInstance);
-            	addOverlayPanel(overlayPanel);
-            	//openOverlayPanel();
+                String addItem_result = guiLogicInstance.buttonB3_CustomerScansBarcodedProduct_RFIDTag();
+                addNewLabel(addItem_result);
+                TransparentOverlayPanel overlayPanel = new TransparentOverlayPanel(guiLogicInstance);
+                addOverlayPanel(overlayPanel);
+                //openOverlayPanel();
             }
         });
-        
+
         JButton bot_button4 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Add Item <br>to Bagging Area</div></html>");
+                + "Add Item <br>to Bagging Area</div></html>");
         bot_button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Button Clicked!");
             }
         });
-        
+
         JButton bot_button5 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Remove Item <br>from Bagging Area</div></html>");
+                + "Remove Item <br>from Bagging Area</div></html>");
         bot_button5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -647,18 +660,18 @@ public class RunGUI extends JFrame implements logicObserver {
         });
 
         JButton bot_button6 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "BLANK<br>..</div></html>");
+                + "BLANK<br>..</div></html>");
         bot_button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle Custom Title button click
                 System.out.println("Button Clicked!");
-              
+
             }
         });
-        
+
         JButton bot_button7 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "BLANK</div></html>");
+                + "BLANK</div></html>");
         bot_button7.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -666,9 +679,9 @@ public class RunGUI extends JFrame implements logicObserver {
                 System.out.println("Button Clicked!");
             }
         });
-        
+
         JButton bot_button8 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "BLANK</div></html>");
+                + "BLANK</div></html>");
         bot_button8.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -678,7 +691,7 @@ public class RunGUI extends JFrame implements logicObserver {
         });
 
         JButton bot_button9 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
-        		+ "Try to Steal</div></html>");
+                + "Try to Steal</div></html>");
         bot_button9.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -686,6 +699,16 @@ public class RunGUI extends JFrame implements logicObserver {
                 System.out.println("Button Clicked!");
             }
         });
+        JButton bot_buttonL1 = new JButton("<html><div style='text-align: center; display: flex; flex-direction: column; align-items: center;'>"
+                + "Add Item<PLU Code><br>Attendant</div></html>");
+        bot_buttonL1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Handle Custom Title button click
+                System.out.println("Button Clicked!");
+            }
+        });
+
         // Set a smaller font size for each button
         Font smallFont = new Font(bot_button1.getFont().getName(), Font.PLAIN, 12); // Adjust the font size as needed
         bot_button1.setFont(smallFont);
@@ -697,6 +720,7 @@ public class RunGUI extends JFrame implements logicObserver {
         bot_button7.setFont(smallFont);
         bot_button8.setFont(smallFont);
         bot_button9.setFont(smallFont);
+        bot_buttonL1.setFont(smallFont);
     
 	    // Set maximum size for each button to control the width
 	    Dimension buttonMaxSize = new Dimension(width / 3, height / 3);
@@ -709,6 +733,7 @@ public class RunGUI extends JFrame implements logicObserver {
 	    bot_button7.setMaximumSize(buttonMaxSize);
 	    bot_button8.setMaximumSize(buttonMaxSize);
 	    bot_button9.setMaximumSize(buttonMaxSize);
+        bot_buttonL1.setMaximumSize(buttonMaxSize);
 
         //Display the Buttons on the GUI Panel
         panel.add(bot_button1);
@@ -720,6 +745,7 @@ public class RunGUI extends JFrame implements logicObserver {
         panel.add(bot_button7);
         panel.add(bot_button8);
         panel.add(bot_button9);
+        panel.add(bot_buttonL1);
 
         return panel;
     }
