@@ -39,9 +39,12 @@ import com.jjjwelectronics.card.ICardReader;
 import com.jjjwelectronics.printer.IReceiptPrinter;
 import com.jjjwelectronics.scale.IElectronicScale;
 import com.jjjwelectronics.scanner.*;
+import com.tdc.Sink;
 import com.tdc.banknote.BanknoteDispensationSlot;
 import com.tdc.banknote.BanknoteStorageUnit;
 import com.tdc.banknote.BanknoteValidator;
+import com.tdc.coin.Coin;
+import com.tdc.coin.CoinSlot;
 import com.tdc.coin.CoinStorageUnit;
 import com.tdc.coin.CoinValidator;
 import com.tdc.coin.ICoinDispenser;
@@ -103,6 +106,8 @@ public class Software {
 	public final Map<BigDecimal, ICoinDispenser> coinDispensers;
 	public final CoinStorageUnit coinStorage;
 	public final  BanknoteStorageUnit bankNoteStorage;
+	private Map<BigDecimal, Sink<Coin>> coinSinks;
+	public final CoinSlot coinSlot;
 	
 	/**
      * A boolean variable that keeps track of whether a customer needs attention.
@@ -137,6 +142,7 @@ public class Software {
 			this.reusableBagDispenser = bronze.getReusableBagDispenser();
 			this.coinStorage = bronze.getCoinStorage();
 			this.bankNoteStorage = bronze.getBanknoteStorage();
+			this.coinSlot = bronze.getCoinSlot();
 		} else if (hardware instanceof SelfCheckoutStationSilver silver) {
 			this.station = silver;
 			this.baggingAreaScale = silver.getBaggingArea();
@@ -154,6 +160,7 @@ public class Software {
 			this.reusableBagDispenser = silver.getReusableBagDispenser();
 			this.coinStorage = silver.getCoinStorage();
 			this.bankNoteStorage = silver.getBanknoteStorage();
+			this.coinSlot = silver.getCoinSlot();
 		} else if (hardware instanceof SelfCheckoutStationGold gold) {
 			this.station = gold;
 			this.baggingAreaScale = gold.getBaggingArea();
@@ -171,6 +178,7 @@ public class Software {
 			this.reusableBagDispenser = gold.getReusableBagDispenser();
 			this.coinStorage = gold.getCoinStorage();
 			this.bankNoteStorage = gold.getBanknoteStorage();
+			this.coinSlot = gold.getCoinSlot();
 		} else {
 			this.baggingAreaScale = hardware.getBaggingArea();
 			this.scannerScale = hardware.getScanningArea();
@@ -187,11 +195,23 @@ public class Software {
 			this.reusableBagDispenser = hardware.getReusableBagDispenser();
 			this.coinStorage = hardware.getCoinStorage();
 			this.bankNoteStorage = hardware.getBanknoteStorage();
+			this.coinSlot = hardware.getCoinSlot();
 		}
 
 		expectedTotalWeight = Mass.ZERO;
 		orderTotal = BigDecimal.ZERO;
 
+
+		// connects coin slot to the coin dispensers, coin storage unit, and coin tray
+		coinSinks = new HashMap<>();
+		
+		for (int i = 0; i < this.getCoinDenominations().size(); i++) {
+			coinSinks.put(this.getCoinDenominations().get(i), 
+					this.getCoinDispensers().get(this.getCoinDenominations().get(i)));
+		}
+		
+		coinValidator.setup(coinTray, coinSinks, coinStorage);
+		
 		//Initialize Software Components
 		weightDiscrepancy = new WeightDiscrepancy(this);
 		touchScreen = new TouchScreen(this);
@@ -605,5 +625,14 @@ public class Software {
 	 **/
 	public void setNeedsAttentionToFalse() {
 		needsAttention = false;
+	}
+	
+	
+	/**
+	 *  Retrieves the coin slot of the self checkout station.
+	 * @return the coin slot.
+	 */
+	public CoinSlot getCoinSlot() {
+		return coinSlot;
 	}
 }
