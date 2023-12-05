@@ -183,6 +183,7 @@ public class Attendant implements WeightDiscrepancyListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
 	/** 
 	 * Method for attendant to refill bank notes till full capacity
 	 * **/
@@ -197,6 +198,7 @@ public class Attendant implements WeightDiscrepancyListener {
 			}
 		}
 	}
+	
 	/** 
 	 * Method for attendant to empty all bank notes in the station storage
 	 * **/
@@ -204,6 +206,7 @@ public class Attendant implements WeightDiscrepancyListener {
 		software.getBankNoteStorage().unload();
 		System.out.println(software.getBankNoteStorage().getBanknoteCount());
 	}
+	
 	/** 
 	 * Method for attendant to refill paper till full capacity
 	 * **/
@@ -216,6 +219,7 @@ public class Attendant implements WeightDiscrepancyListener {
 			e.printStackTrace();
 		}
 	}
+	
 	/** 
 	 * Method for attendant to refill ink till full capacity
 	 * **/
