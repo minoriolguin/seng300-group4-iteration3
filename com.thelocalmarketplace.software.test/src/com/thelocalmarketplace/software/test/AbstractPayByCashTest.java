@@ -1,15 +1,29 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software.test;
 
 import java.math.*;
@@ -17,6 +31,7 @@ import java.util.*;
 import org.junit.*;
 import com.tdc.CashOverloadException;
 import com.tdc.DisabledException;
+import com.tdc.NoCashAvailableException;
 import com.tdc.banknote.Banknote;
 import com.tdc.coin.*;
 import com.thelocalmarketplace.hardware.*;
@@ -83,7 +98,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayLess() {
+    public void testPayLess() throws NoCashAvailableException {
         // test when payment is less than amountDue with COINS &/OR BANKNOTES
         System.out.println("Test when payment is less than amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -97,7 +112,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayGreater() {
+    public void testPayGreater() throws NoCashAvailableException {
         // test when payment is greater than amountDue with BANKNOTES
         System.out.println("Test when payment is greater than amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -109,7 +124,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testPayEqual() {
+    public void testPayEqual() throws NoCashAvailableException {
         // test when payment is equal to amountDue with COINS &/OR BANKNOTES
         System.out.println("Test when payment is equal to amountDue:");
         station.addToOrderTotal(new BigDecimal ("6.50")); // Initialize order total to $6.50
@@ -123,7 +138,7 @@ public class AbstractPayByCashTest {
     }
 
     @Test
-    public void testReturnChange() {
+    public void testReturnChange() throws NoCashAvailableException {
         // test change
         System.out.println("Test for change:");
         station.addToOrderTotal(new BigDecimal("2.52"));

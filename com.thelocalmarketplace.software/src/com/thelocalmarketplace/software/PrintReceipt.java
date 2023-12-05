@@ -1,3 +1,29 @@
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
+
 package com.thelocalmarketplace.software;
 
 import java.math.BigDecimal;
@@ -30,7 +56,15 @@ public class PrintReceipt {
     private int paperUsed;
     private int averagePaperUsed;
 
-    private IReceiptPrinter printer;
+    public int getAveragePrintedChars() {
+		return averagePrintedChars;
+	}
+
+	public int getAveragePaperUsed() {
+		return averagePaperUsed;
+	}
+
+	private IReceiptPrinter printer;
 
     /**
      * A constructor that takes a copy of the software.
@@ -38,9 +72,18 @@ public class PrintReceipt {
      */
     public PrintReceipt(Software software){
         this.software = software;
+        this.pluInCart = software.getPluCodedProductsInOrder();
+        this.barcodedProductsInCart = software.getBarcodedProductsInOrder();
         printer = software.printer;
         averagePaperUsed = 0;
         averagePrintedChars = 0;
+
+    }
+    public void setPluInCart(ArrayList<PLUCodedProduct> products){
+        this.pluInCart = products;
+    }
+    public void setBarcodedProductsInCart(ArrayList<BarcodedProduct> products){
+        this.barcodedProductsInCart = products;
     }
 
     /**
@@ -73,14 +116,12 @@ public class PrintReceipt {
         // print the end template
         printLine(endString);
         printer.cutPaper();
-        averagePrintedChars = getAveragePrintedChars();
+        averagePrintedChars = calculateAveragePrintedChars();
+        averagePaperUsed = calculateAveragePaperUsed();
         // reset
         printedChars = 0;
         paperUsed = 0;
         totalPrice = BigDecimal.ZERO;
-        software.maintenance.checkInk(averagePrintedChars);
-        software.maintenance.checkPaper(averagePaperUsed); 
-
     }
 
     /**
@@ -206,7 +247,9 @@ public class PrintReceipt {
         retStr += ph;
 
         // product price
-        BigDecimal price = BigDecimal.valueOf(product.getPrice()).divide(BigDecimal.valueOf(100));
+        long tempPrice = ((software.getProductsInOrder().get(product).inGrams().longValue())/1000) * product.getPrice();
+        // Convert price to type 'BigDecimal'
+        BigDecimal price = BigDecimal.valueOf(tempPrice).divide(BigDecimal.valueOf(100));
         totalPrice = totalPrice.add(price);
         ph = new StringBuilder(currencyFormat.format(price));
         // fill the left space up to 12.
@@ -284,11 +327,11 @@ public class PrintReceipt {
         endString = s;
     }
     
-    public int getAveragePrintedChars() {
+    public int calculateAveragePrintedChars() {
     	return (printedChars + averagePrintedChars) / 2;
     }
     
-    public int getAveragePaperUsed() {
+    public int calculateAveragePaperUsed() {
     	return (paperUsed + averagePaperUsed) / 2;
     }
 }

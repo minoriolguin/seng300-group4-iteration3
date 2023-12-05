@@ -1,20 +1,40 @@
-// Project 2 Iteration Group 3
-//Julie Kim 10123567
-//Aryaman Sandhu 30017164
-//Arcleah Pascual 30056034
-//Aoi Ueki 30179305
-//Ernest Shukla 30156303
-//Shawn Hanlon 10021510
-//Jaimie Marchuk 30112841
-//Sofia Rubio 30113733
-//Maria Munoz 30175339
-//Anne Lumumba 30171346
-//Nathaniel Dafoe 30181948
+ /**
+ *Project, Iteration 3, Group 4
+ *  Group Members:
+ * - Arvin Bolbolanardestani / 30165484
+ * - Anthony Chan / 30174703
+ * - Marvellous Chukwukelu / 30197270
+ * - Farida Elogueil / 30171114
+ * - Ahmed Elshabasi / 30188386
+ * - Shawn Hanlon / 10021510
+ * - Steven Huang / 30145866
+ * - Nada Mohamed / 30183972
+ * - Jon Mulyk / 30093143
+ * - Althea Non / 30172442
+ * - Minori Olguin / 30035923
+ * - Kelly Osena / 30074352
+ * - Muhib Qureshi / 30076351
+ * - Sofia Rubio / 30113733
+ * - Muzammil Saleem / 30180889
+ * - Steven Susorov / 30197973
+ * - Lydia Swiegers / 30174059
+ * - Elizabeth Szentmiklossy / 30165216
+ * - Anthony Tolentino / 30081427
+ * - Johnny Tran / 30140472
+ * - Kaylee Xiao / 30173778 
+ **/
 
 package com.thelocalmarketplace.GUI;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.jjjwelectronics.EmptyDevice;
+import com.jjjwelectronics.card.InvalidPINException;
+import com.thelocalmarketplace.hardware.AbstractSelfCheckoutStation;
+import com.thelocalmarketplace.software.TouchScreen;
 
 
 
@@ -25,7 +45,10 @@ import java.util.List;
  * GUI code) and Panels
  */
 public class GUILogic {
-	
+	public TouchScreen screen;
+	public GUILogic(TouchScreen t) {
+		this.screen = t;
+	}
 //----------------------------------------------------------------
 //Start Session Panel, 
 	
@@ -51,11 +74,24 @@ public class GUILogic {
 	public void buttonR3_CustomerCallsAttendant() {
         System.out.println("CustomerCallsAttendant");
         //Logic Here
+        screen.signalForAttendant();
+        AttendantFrame attendant_frame = new AttendantFrame(screen);
+        attendant_frame.show();
 	}
 	
-	public void buttonR4_CustomerAddsOwnBag() {
-        System.out.println("buttonR4_CustomerAddsOwnBag"); 
+	public void buttonR4_CustomerAddsBag() {
+        System.out.println("buttonR4_CustomerAddsBag"); 
         //Logic Here
+        screen.selectAddOwnBags();
+        try {
+			screen.purchaseBags(total);
+		} catch (EmptyDevice e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        screen.selectBagsAdded();
+        BagPanel bag_panel = new BagPanel(screen);
+        bag_panel.show();
 	}
 	
 	public void buttonR5_CustomerWantstoRemoveItem() {
@@ -63,8 +99,8 @@ public class GUILogic {
         //Logic Here
 	}
 	
-	public void buttonR6_BLANK() {
-        System.out.println("buttonR6_BLANK");       
+	public void buttonR6_CustomerSelectsLanguage() {
+        System.out.println("buttonR6_CustomerSelectsLanguage");       
         //Logic Here
 	}
 	
@@ -74,7 +110,8 @@ public class GUILogic {
 	public String buttonR7_CustomerAddsItem_PLUCode() {
         System.out.println("buttonR7_CustomerAddsItem_PLUCode");
         //Logic Here
-        //Example Code Here 
+        //Example Code Here
+
         String addItemPLU_result = "New Item thru PLU Code";
 		return addItemPLU_result;
 	}
@@ -91,9 +128,12 @@ public class GUILogic {
 	}
 	
 	// This will switch to the Payment Panel
-	public void buttonR9_CustomerWantsToPay() {
+	public void buttonR9_CustomerWantsToPay(int total) {
         System.out.println("buttonR9_CustomerWantsToPay!");
-        //Logic Here
+
+
+
+
 	}
 	
 //----------------------------------------------------------------
@@ -130,8 +170,11 @@ public class GUILogic {
 	public String buttonB1_CustomerScansBarcodedProduct_MainScanner() {
         System.out.println("buttonB1_CustomerScansBarcodedProduct_MainScanner");
         //Example Code Here 
-        // Logic Here 
-        String addItemB1_result = "New Barcoded Product thru Main Scanner";
+        //Logic Here
+		//for testing
+		screen.getSoftware().addToOrderTotal(BigDecimal.TEN);
+
+        String addItemB1_result = Integer.toString(this.getTotal());
 		return addItemB1_result;
 	}
 	
@@ -151,10 +194,50 @@ public class GUILogic {
 		return addItemB3_result;
 	}
 	
-//----------------------------------------------------------------
+	public void payment_buttonB1_CustomerPaysWithDebitSwipe(int total) throws IOException {
+		screen.payViaSwipe("debit");
+	}
 
+	public void payment_buttonB2_CustomerPaysWithCreditSwipe(int total) throws IOException {
+		screen.payViaSwipe("credit");
+	}
+
+	public void payment_buttonB4_CustomerPaysWithDebitTap(int total) throws IOException {
+		screen.payViaTap("debit");
+	}
+
+	public void payment_buttonB5_CustomerPaysWithCreditTap(int total) throws IOException {
+		screen.payViaTap("credit");
+	}
+
+	public boolean payment_CustomerPaysWithCreditInsert(int total, String PIN) throws IOException {
+		try {
+			screen.payViaInsert("credit", PIN);
+		}
+		catch (InvalidPINException e)
+		{
+			return false;
+		}
+		if (getTotal() == 0)
+			return true;
+		return false;
+	}
+
+	public boolean payment_CustomerPaysWithDebitInsert(int total, String PIN) throws IOException {
+		screen.payViaInsert("debit", PIN);
+
+		if (getTotal() == 0 )
+			return true;
+		return false;
+	}
+
+	public void payment_CustomerPaysWithCoin(BigDecimal denomination) {
+		screen.addCoinToList(denomination);
+	}
 	
-	
+	public void payment_CustomerCompletesCoinPayment() {
+		screen.payByCoin();
+	}
 	
 	
 //----------------------------------------------------------------
@@ -198,8 +281,9 @@ public class GUILogic {
 	}
 	
 	public int getTotal() {
-		System.out.println("The total is "+total);
-		return total;
+		//System.out.println("The total is "+total);
+		//return total;
+		return screen.getSoftware().getOrderTotal().intValue();
 	}
 	
 	public void addtoTotal(int meow) {
@@ -210,6 +294,23 @@ public class GUILogic {
 	public void subtractTotal(int meow) {
 		total = total - meow;
 		System.out.println("The total is "+total);
+	}
+
+	//TODO: finish implementing banknote and coin payment
+	public void PayBanknoteValFive() {
+
+	}
+
+	public void PayBanknoteValTen() {
+	}
+
+	public void PayBanknoteValTwenty() {
+	}
+
+	public void PayBanknoteValFifty() {
+	}
+
+	public void PayBanknoteValHundred() {
 	}
 }
 
